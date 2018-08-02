@@ -6454,7 +6454,8 @@ public class ViewCreator {
                     } else {
                         ((Switch) componentViewResult.componentView)
                                 .setChecked(false);
-                        componentViewResult.componentView.setVisibility(View.GONE);
+                        ((Switch) componentViewResult.componentView).setEnabled(false);
+                        //componentViewResult.componentView.setVisibility(View.GONE);
                     }
                 }
 

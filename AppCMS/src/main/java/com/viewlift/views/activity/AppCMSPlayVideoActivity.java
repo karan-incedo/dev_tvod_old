@@ -62,7 +62,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         AppCMSPlayVideoFragment.OnUpdateContentDatumEvent,
         VideoPlayerView.StreamingQualitySelector,
         VideoPlayerView.ClosedCaptionSelector,
-        VideoPlayerSettingsEvent,
+      //  VideoPlayerSettingsEvent,
         AppCMSPlayVideoFragment.RegisterOnResumeVideo {
     private static final String TAG = "VideoPlayerActivity";
 
@@ -778,43 +778,4 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         return language;
     }
 
-
-    @Override
-    public void launchSetting(List<ClosedCaptions> closeCaptions, List<HLSStreamingQuality> availableStreamingHLS, List<String> availableStreaming) {
-        Intent intent = new Intent(this, AppCMSPlayerSettings.class);
-        Bundle bundle =new Bundle();
-
-        binder.setAvailableClosedCaptions(closeCaptions);
-        binder.setAvailableStreamingQualitiesHLS(availableStreamingHLS);
-        binder.setAvailableStreamingQualities(availableStreaming);
-
-        bundle.putBinder(getString(R.string.app_cms_video_player_binder_key),binder);
-
-        intent.putExtra("ADAPTER_BUNDLE", bundle);
-
-            /*
-            intent.putExtra("streamingQualityAdapter",listViewAdapter);
-            intent.putExtra("ccAdapter",closedCaptionSelectorAdapter);
-            */
-        startActivityForResult(intent,PLAYER_SETTING_RESULT);
-    }
-    int PLAYER_SETTING_RESULT = 1003;
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PLAYER_SETTING_RESULT){
-            if (resultCode == Activity.RESULT_OK){
-                if (onResumeVideo != null) {
-                    onResumeVideo.onResumeVideo1();
-                    if (data.getExtras().getInt("SelectedClosedCaptionIndex") >= 0){
-                        onResumeVideo.setCloseCaption(data.getExtras().getInt("SelectedClosedCaptionIndex"));
-                }
-                    if (data.getExtras().getInt("SelectedStreamingQualityIndex") >= 0) {
-                        onResumeVideo.setStreamingQuality(data.getExtras().getInt("SelectedStreamingQualityIndex"));
-                    }
-                }
-            }
-        }
-    }
 }

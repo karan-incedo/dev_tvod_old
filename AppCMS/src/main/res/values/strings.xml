@@ -480,6 +480,7 @@
     
     
     <string name="no_fight_records">No fight records found</string>
+    <string name="no_settings_available">Player settings are not available for now!</string>
 
     <string name="rupee_symbol">\u20B9</string>
 </resources>

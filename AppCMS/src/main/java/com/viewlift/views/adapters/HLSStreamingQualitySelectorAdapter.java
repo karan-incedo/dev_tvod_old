@@ -73,6 +73,10 @@ public class HLSStreamingQualitySelectorAdapter extends AppCMSDownloadRadioAdapt
         this.selectedIndex = selectedIndex;
     }
 
+    public int getSelectedIndex() {
+        return selectedIndex;
+    }
+
     public int getDownloadQualityPosition() {
         return downloadQualityPosition;
     }

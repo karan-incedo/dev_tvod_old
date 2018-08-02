@@ -141,13 +141,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".views.activity.AppCMSPlayerSettings"
-            android:label=""
-            android:launchMode="singleTop"
-            android:screenOrientation="landscape"
-            android:configChanges="orientation|screenSize"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
-        </activity>
     </application>
 
 </manifest>

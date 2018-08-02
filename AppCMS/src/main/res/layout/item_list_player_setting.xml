@@ -8,9 +8,8 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/item_list"
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:layout_height="match_parent"
-        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
         android:layout_alignParentLeft="true"
     />
         <!--tools:context="com.viewlift.tabbeddialog.ItemListActivity"

@@ -6,8 +6,4 @@ package com.viewlift.views.fragments;
 
 public interface OnResumeVideo {
     void onResumeVideo();
-    void onResumeVideo1();
-    void setCloseCaption(int position);
-    void setStreamingQuality(int position);
-
 }

@@ -30,19 +30,30 @@ public class StreamingQualitySelectorAdapter extends AppCMSDownloadRadioAdapter<
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         ViewHolder viewHolder = super.onCreateViewHolder(viewGroup, i);
 
-        viewHolder.getmText().setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
+        if (appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) {
+            viewHolder.getmText().setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
+        }else {
+            viewHolder.getmText().setTextColor(Color.WHITE);
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (viewHolder.getmRadio().getButtonDrawable() != null) {
+                viewHolder.getmRadio().getButtonDrawable().setColorFilter(appCMSPresenter.getPlatformType()== AppCMSPresenter.PlatformType.TV?
+                                appCMSPresenter.getBrandPrimaryCtaColor()
+                                :Color.WHITE,PorterDuff.Mode.MULTIPLY);
+/*
                 viewHolder.getmRadio().getButtonDrawable().setColorFilter(Color.parseColor(
                         ViewCreator.getColor(viewGroup.getContext(),
-                                appCMSPresenter.getAppCtaBackgroundColor())),
-                        PorterDuff.Mode.MULTIPLY);
+                                        appCMSPresenter.getAppCtaBackgroundColor())),
+                        PorterDuff.Mode.MULTIPLY);*/
             }
         } else {
-            int switchOnColor = Color.parseColor(
+            int switchOnColor = appCMSPresenter.getPlatformType()== AppCMSPresenter.PlatformType.TV?
+                    appCMSPresenter.getBrandPrimaryCtaColor()
+                    :Color.WHITE;
+            /*int switchOnColor = Color.parseColor(
                     ViewCreator.getColor(viewGroup.getContext(),
-                            appCMSPresenter.getAppCtaBackgroundColor()));
+                            appCMSPresenter.getAppCtaBackgroundColor()));*/
             ColorStateList colorStateList = new ColorStateList(
                     new int[][]{
                             new int[]{android.R.attr.state_checked},

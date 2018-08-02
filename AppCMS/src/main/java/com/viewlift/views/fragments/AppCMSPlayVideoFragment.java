@@ -40,12 +40,17 @@ import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.beacon.BeaconBuffer;
 import com.viewlift.models.data.appcms.beacon.BeaconPing;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
+import com.viewlift.models.data.playersettings.HLSStreamingQuality;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.adapters.ClosedCaptionSelectorAdapter;
+import com.viewlift.views.adapters.StreamingQualitySelectorAdapter;
+import com.viewlift.views.customviews.PlayerSettingsView;
 import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
 
@@ -67,6 +72,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         implements
         VideoPlayerView.ErrorEventListener,
         VideoPlayerView.OnBeaconAdsEvent,
+        VideoPlayerView.VideoPlayerSettingsEvent,
         Animation.AnimationListener,
         AudioManager.OnAudioFocusChangeListener,
         OnResumeVideo {
@@ -148,6 +154,8 @@ public class AppCMSPlayVideoFragment extends Fragment
     private VideoPlayerView.StreamingQualitySelector streamingQualitySelector;
     private VideoPlayerView.ClosedCaptionSelector closedCaptionSelector;
     private VideoPlayerView.VideoPlayerSettingsEvent videoPlayerSettingsEvent;
+
+    PlayerSettingsView playerSettingsView;
 
     private boolean showEntitlementDialog = false;
     private String mStreamId;
@@ -402,6 +410,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                 appCMSPresenter.getAppCtaBackgroundColor())));
         videoPlayerView.setOnBeaconAdsEvent(this);
 
+        videoPlayerView.setVideoPlayerSettingsEvent(this);
+
         if (streamingQualitySelector != null) {
             videoPlayerView.setStreamingQualitySelector(streamingQualitySelector);
         }
@@ -409,9 +419,9 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (closedCaptionSelector != null) {
             videoPlayerView.setClosedCaptionsSelector(closedCaptionSelector);
         }
-        if (videoPlayerSettingsEvent != null) {
-            videoPlayerView.setVideoPlayerSettingsEvent(videoPlayerSettingsEvent);
-        }
+
+
+
 
         if (!TextUtils.isEmpty(policyCookie) &&
                 !TextUtils.isEmpty(signatureCookie) &&
@@ -623,6 +633,10 @@ public class AppCMSPlayVideoFragment extends Fragment
             isLiveStreaming = onUpdateContentDatumEvent.getCurrentContentDatum().getStreamingInfo().getIsLiveStream();
         }
         videoPlayerView.getPlayerView().getController().setPlayingLive(isLiveStreaming);
+
+        playerSettingsView = rootView.findViewById(R.id.playerSettingView);
+        playerSettingsView.initializeView(appCMSPresenter);
+
 
         initViewForCRW(rootView);
 
@@ -1455,13 +1469,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
     }
 
-    @Override
-    public void onResumeVideo1() {
-        resumeVideo();
-        if (videoPlayerView != null) {
-            videoPlayerView.resumePlayer();
-        }
-    }
+
     @Override
     public void onResumeVideo() {
         resumeVideo();
@@ -1471,17 +1479,23 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     @Override
-    public void setCloseCaption(int position) {
-        if (videoPlayerView != null) {
-            videoPlayerView.setClosedCaption(position);
-        }
+    public void launchSetting(ClosedCaptionSelectorAdapter closedCaptionSelectorAdapter, StreamingQualitySelectorAdapter streamingQualitySelectorAdapter){
+        videoPlayerView.pausePlayer();
+        videoPlayerMainContainer.setVisibility(View.GONE);
+        playerSettingsView.setClosedCaptionSelectorAdapter(closedCaptionSelectorAdapter);
+        playerSettingsView.setStreamingQualitySelectorAdapter(streamingQualitySelectorAdapter);
+        playerSettingsView.updateSettingItems();
+        playerSettingsView.setPlayerSettingsEvent(this);
+        playerSettingsView.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void setStreamingQuality(int position) {
-        if (videoPlayerView != null) {
-            videoPlayerView.setStreamingQuality(0,"");
-        }
+    public void finishPlayerSetting(){
+        playerSettingsView.setVisibility(View.GONE);
+        videoPlayerMainContainer.setVisibility(View.VISIBLE);
+        videoPlayerView.setClosedCaption(playerSettingsView.getSelectedClosedCaptionIndex());
+        videoPlayerView.setStreamingQuality(playerSettingsView.getSelectedStreamingQualityIndex(),"");
+        videoPlayerView.startPlayer(true);
     }
 
     public interface OnClosePlayerEvent {
