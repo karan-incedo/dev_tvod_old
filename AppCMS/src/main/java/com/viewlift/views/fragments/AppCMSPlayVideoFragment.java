@@ -1423,7 +1423,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     @Override
     public void onResumeVideo() {
         resumeVideo();
-        if (videoPlayerView != null) {
+        if (videoPlayerView != null && showEntitlementDialog == false) {
             videoPlayerView.startPlayer(true);
         }
     }
