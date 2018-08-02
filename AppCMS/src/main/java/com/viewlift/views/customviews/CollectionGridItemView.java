@@ -1747,13 +1747,13 @@ public class CollectionGridItemView extends BaseView {
                                 plan.append(planAmt.toString());
                                 plan.append(planDuration.toString());
                                 Spannable text = new SpannableString(plan.toString());
-                                float payFont = 1.0f;
-                                float durationFont = 1.0f;
-                                float priceFont = 1.5f;
+                                float payFont = 0.8f;
+                                float durationFont = 0.8f;
+                                float priceFont = 1.0f;
                                 if (BaseView.isTablet(context)) {
-                                    payFont = 1.1f;
-                                    durationFont = 1.1f;
-                                    priceFont = 2.0f;
+                                    payFont = 0.8f;
+                                    durationFont = 0.8f;
+                                    priceFont = 1.1f;
                                 }
                                 text.setSpan(new RelativeSizeSpan(payFont), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                                 text.setSpan(new StyleSpan(Typeface.BOLD), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -1762,6 +1762,9 @@ public class CollectionGridItemView extends BaseView {
                                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                                 text.setSpan(new RelativeSizeSpan(durationFont), pay.length() + planAmt.toString().length() + 1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                                 ((TextView) view).setText(text, TextView.BufferType.SPANNABLE);
+                                FrameLayout.LayoutParams layPar = (FrameLayout.LayoutParams) ((TextView) view).getLayoutParams();
+                                layPar.gravity = Gravity.TOP;
+                                view.setLayoutParams(layPar);
                             } else {
                                 StringBuilder plan = new StringBuilder();
                                 plan.append(planAmt.toString());

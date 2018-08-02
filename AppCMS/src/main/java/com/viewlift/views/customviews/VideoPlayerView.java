@@ -130,7 +130,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     protected PlayerState playerState;
     protected SimpleExoPlayer player;
     protected AppCMSSimpleExoPlayerView playerView;
-
     boolean isLoadedNext;
     OnBeaconAdsEvent onBeaconAdsEvent;
     DefaultTrackSelector trackSelector;
@@ -516,7 +515,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         useHls = !Utils.isHLS() ? getResources().getBoolean(R.bool.use_hls) : Utils.isHLS();
 
         ccToggleButton = createCC_ToggleButton();
-
         ((RelativeLayout) playerView.findViewById(R.id.exo_controller_container)).addView(ccToggleButton);
         /*ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
          *//*if (onClosedCaptionButtonClicked != null) {
@@ -615,13 +613,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
                 onPlayerControlsStateChanged.call(visibility);
             }
-
-            if (visibility == View.VISIBLE) {
-                offsetSubtitleView();
-            } else {
-                resetSubtitleView();
+            if (appCMSPresenter.getPlatformType().equals(AppCMSPresenter.PlatformType.TV)){
+                if (visibility == View.VISIBLE) {
+                    offsetSubtitleView();
+                } else {
+                    resetSubtitleView();
+                }
             }
-
         });
         player.addVideoListener(this);
 
@@ -776,7 +774,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     /**
      * Returns the selected CC group index
-     *
      * @return selected Closed Caption track
      */
     private int getSelectedCCTrack() {
@@ -801,7 +798,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     /**
      * overrides the CC track selection with the group id passed as a paramater
-     *
      * @param groupIndex index of the group you wanna select
      */
     private void setSelectedCCTrack(int groupIndex) {
@@ -1303,18 +1299,17 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
             if (playbackState == Player.STATE_READY /*checking if the playback state is ready*/
                     && !getPlayerView().getController().isPlayingLive() /* if video is not Live*/
-                    && !isLiveStreaming()
                     && useHls /*createStreamingQualitySelectorForHLS is only called for HLS stream*/
                     && !streamingQualitySelectorCreated /*making sure the selector isn't already created*/
-                    ) {
+                    && isLiveStreaming()) {
                 createStreamingQualitySelectorForHLS();
                 // Default "Auto" is selected
                 currentStreamingQualitySelector.setText(getContext().getString(R.string.auto));
                 showStreamingQualitySelector();
             } else if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)
                     && !useHls
-                    && !isLiveStreaming()
-                    && !streamingQualitySelectorCreated) {
+                    && !streamingQualitySelectorCreated
+                    && isLiveStreaming()) {
 
                 createStreamingQualitySelector();
                 String defaultVideoResolution = getContext().getString(R.string.default_video_resolution);
@@ -2153,6 +2148,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     break;
                 case ALL_ADS_COMPLETED:
                     System.out.println("Ads:-   ALL_ADS_COMPLETED  ");
+                    imaAdsLoader.release();
                     break;
                 case CONTENT_PAUSE_REQUESTED:
                     if (onBeaconAdsEvent != null) {
@@ -2282,10 +2278,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             ccToggleButton.setSelected(isSelected);
         }
     }
-    public boolean isLiveStreaming() {
-        if (getPlayerView() != null  /* if video is not Live*/
+    public boolean isLiveStreaming(){
+        if (getPlayerView() != null  /* if video is not Live */
                 && getPlayerView().getController() != null
-                && getPlayerView().getController().isPlayingLive() /* if video is not Live*/) {
+                && getPlayerView().getController().isPlayingLive() /* if video is not Live */
+                && appCMSPresenter.getPlatformType() != AppCMSPresenter.PlatformType.ANDROID){
             return true;
         } else {
             return false;

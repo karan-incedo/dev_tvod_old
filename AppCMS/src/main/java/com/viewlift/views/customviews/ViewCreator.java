@@ -3459,6 +3459,7 @@ public class ViewCreator {
                 /*videoPlayerViewSingle.setLayoutParams(new FrameLayout.LayoutParams((int)BaseView.getViewWidth(context,component.getLayout(), ViewGroup.LayoutParams.MATCH_PARENT),
                         (int)BaseView.getViewHeight(context,component.getLayout(), ViewGroup.LayoutParams.WRAP_CONTENT)));
 */
+                videoPlayerViewSingle.releasePreviousAdsPlayer();
                 FrameLayout.LayoutParams videoPlayerParentLP = new FrameLayout.LayoutParams((int) BaseView.getViewWidth(context, component.getLayout(), ViewGroup.LayoutParams.MATCH_PARENT),
                         (int) BaseView.getViewHeight(context, component.getLayout(), ViewGroup.LayoutParams.WRAP_CONTENT));
                 videoPlayerViewSingle.setLayoutParams(videoPlayerParentLP);
