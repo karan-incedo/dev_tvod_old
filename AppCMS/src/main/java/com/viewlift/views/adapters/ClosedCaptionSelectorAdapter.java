@@ -38,19 +38,13 @@ public class ClosedCaptionSelectorAdapter extends AppCMSDownloadRadioAdapter<Clo
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (viewHolder.getmRadio().getButtonDrawable() != null) {
-                viewHolder.getmRadio().getButtonDrawable().setColorFilter(appCMSPresenter.getPlatformType()== AppCMSPresenter.PlatformType.TV?
-                        appCMSPresenter.getBrandPrimaryCtaColor()
-                        :Color.WHITE,PorterDuff.Mode.MULTIPLY);
+                viewHolder.getmRadio().getButtonDrawable().setColorFilter(
+                        appCMSPresenter.getBrandPrimaryCtaColor(),PorterDuff.Mode.MULTIPLY);
 
-                /*viewHolder.getmRadio().getButtonDrawable().setColorFilter(Color.parseColor(
-                        ViewCreator.getColor(viewGroup.getContext(),
-                                appCMSPresenter.getAppCtaBackgroundColor())),
-                        PorterDuff.Mode.MULTIPLY);*/
+
             }
         } else {
-            int switchOnColor = appCMSPresenter.getPlatformType()== AppCMSPresenter.PlatformType.TV?
-                    appCMSPresenter.getBrandPrimaryCtaColor()
-                    :Color.WHITE;
+            int switchOnColor = appCMSPresenter.getBrandPrimaryCtaColor();
            /* int switchOnColor = Color.parseColor(
                     ViewCreator.getColor(viewGroup.getContext(),
                             appCMSPresenter.getAppCtaBackgroundColor()));*/

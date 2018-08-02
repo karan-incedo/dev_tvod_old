@@ -8,9 +8,7 @@ import android.os.Build;
 import android.view.ViewGroup;
 
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.views.customviews.ViewCreator;
 
-import java.io.Serializable;
 import java.util.List;
 
 public class StreamingQualitySelectorAdapter extends AppCMSDownloadRadioAdapter<String>  {
@@ -38,9 +36,8 @@ public class StreamingQualitySelectorAdapter extends AppCMSDownloadRadioAdapter<
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (viewHolder.getmRadio().getButtonDrawable() != null) {
-                viewHolder.getmRadio().getButtonDrawable().setColorFilter(appCMSPresenter.getPlatformType()== AppCMSPresenter.PlatformType.TV?
-                                appCMSPresenter.getBrandPrimaryCtaColor()
-                                :Color.WHITE,PorterDuff.Mode.MULTIPLY);
+                viewHolder.getmRadio().getButtonDrawable().setColorFilter(
+                        appCMSPresenter.getBrandPrimaryCtaColor(),PorterDuff.Mode.MULTIPLY);
 /*
                 viewHolder.getmRadio().getButtonDrawable().setColorFilter(Color.parseColor(
                         ViewCreator.getColor(viewGroup.getContext(),
@@ -48,9 +45,7 @@ public class StreamingQualitySelectorAdapter extends AppCMSDownloadRadioAdapter<
                         PorterDuff.Mode.MULTIPLY);*/
             }
         } else {
-            int switchOnColor = appCMSPresenter.getPlatformType()== AppCMSPresenter.PlatformType.TV?
-                    appCMSPresenter.getBrandPrimaryCtaColor()
-                    :Color.WHITE;
+            int switchOnColor = appCMSPresenter.getBrandPrimaryCtaColor();
             /*int switchOnColor = Color.parseColor(
                     ViewCreator.getColor(viewGroup.getContext(),
                             appCMSPresenter.getAppCtaBackgroundColor()));*/
