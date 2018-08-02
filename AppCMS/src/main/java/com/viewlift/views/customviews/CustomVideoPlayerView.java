@@ -767,6 +767,16 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
         }
     }
 
+    public void releasePreviousAdsPlayer(){
+        try {
+
+            if (imaAdsLoader != null)
+                imaAdsLoader.release();
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
+
     private void setVideoPlayerStatus() {
         showOverlayWhenCastingConnected();
         if (mToggleButton != null && mToggleButton.isChecked()) {

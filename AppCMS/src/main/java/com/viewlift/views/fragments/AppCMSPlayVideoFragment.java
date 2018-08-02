@@ -527,7 +527,14 @@ public class AppCMSPlayVideoFragment extends Fragment
                 }
 
                 if (onClosePlayerEvent != null && playerState.isPlayWhenReady() && !showEntitlementDialog) {
-
+                    //entitlementCheckTimerTask.cancel();
+                    // tell the activity that the movie is finished
+                    onClosePlayerEvent.onMovieFinished();
+                }else if(appCMSPresenter.isAppSVOD() &&
+                        !isTrailer &&
+                        !freeContent &&
+                        !appCMSPresenter.isUserSubscribed() && !entitlementCheckCancelled){
+                    //entitlementCheckTimerTask.cancel();
                     // tell the activity that the movie is finished
                     onClosePlayerEvent.onMovieFinished();
                 }

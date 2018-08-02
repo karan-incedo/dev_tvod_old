@@ -1266,14 +1266,15 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     && useHls /*createStreamingQualitySelectorForHLS is only called for HLS stream*/
                     && !streamingQualitySelectorCreated /*making sure the selector isn't already created*/
                     && !streamingQualitySelector.isLiveStream() /*Create the Quality Selector only if it a non-live content*/
-                    ) {
+                    && isLiveStreaming()) {
                 createStreamingQualitySelectorForHLS();
                 // Default "Auto" is selected
                 currentStreamingQualitySelector.setText(getContext().getString(R.string.auto));
                 showStreamingQualitySelector();
             } else if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)
                     && !useHls
-                    && !streamingQualitySelectorCreated) {
+                    && !streamingQualitySelectorCreated
+                    && isLiveStreaming()) {
 
                 createStreamingQualitySelector();
                 String defaultVideoResolution = getContext().getString(R.string.default_video_resolution);
@@ -2342,6 +2343,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     break;
                 case ALL_ADS_COMPLETED:
                     System.out.println("Ads:-   ALL_ADS_COMPLETED  ");
+                    imaAdsLoader.release();
                     break;
                 case CONTENT_PAUSE_REQUESTED:
                     if (onBeaconAdsEvent != null) {
@@ -2389,5 +2391,16 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         public void sendBeaconAdImprassion();
 
         public void sendBeaconAdRequest();
+    }
+
+    public boolean isLiveStreaming(){
+        if (getPlayerView() != null  /* if video is not Live */
+                && getPlayerView().getController() != null
+                && getPlayerView().getController().isPlayingLive() /* if video is not Live */
+                && appCMSPresenter.getPlatformType() != AppCMSPresenter.PlatformType.ANDROID){
+            return true;
+        } else {
+            return false;
+        }
     }
 }
