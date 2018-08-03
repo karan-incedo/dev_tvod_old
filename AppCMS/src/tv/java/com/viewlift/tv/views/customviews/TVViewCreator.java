@@ -55,6 +55,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
@@ -312,6 +313,9 @@ public class TVViewCreator {
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "language_setting.json"), ModuleList.class);
             }*/
 
+            if(module.getBlockName().equalsIgnoreCase("videoPlayerInfo01")){
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail1.json"), ModuleList.class);
+            }
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
             if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())
@@ -752,6 +756,49 @@ public class TVViewCreator {
         }
 
         switch (componentType) {
+
+            case PAGE_UPCOMING_TIMER_KEY:
+                if((moduleAPI != null && moduleAPI.getContentData() != null &&
+                        moduleAPI.getContentData().get(0) != null &&
+                        moduleAPI.getContentData().get(0).getGist() != null /*&&
+                        moduleAPI.getContentData().get(0).getGist().getScheduleStartDate() > 0 */)){
+                    VisualTimer visualTimer = new VisualTimer(context, moduleAPI, component, appCMSPresenter);
+                    long eventDate = (moduleAPI.getContentData().get(0).getGist().getScheduleStartDate());
+                    eventDate = 1534306500L;
+
+                    //calculate remaining time from event date and current date
+                    long remainingTime = AppCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L, "EEE MMM dd HH:mm:ss");
+                    visualTimer.setOnClickListener(v -> appCMSPresenter.showMoreDialog("title", "Description"));
+                    //if event date is greater than current date then start the timer
+                    if (remainingTime > 0) {
+                        visualTimer.startTimer(remainingTime);
+                    } else {
+                        if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
+                            if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off) != null) {
+                                TextView timerTile = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off);
+                                timerTile.setVisibility(View.GONE);
+                            }
+                            if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id) != null) {
+                                LinearLayout linearLayout = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id);
+                                linearLayout.setVisibility(View.GONE);
+                            }
+                            visualTimer.setVisibility(View.GONE);
+                        }
+                    }
+                    componentViewResult.componentView = visualTimer;
+                } else {
+                    if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
+                        if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off) != null) {
+                            TextView timerTile = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off);
+                            timerTile.setVisibility(View.GONE);
+                        }
+                        if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id) != null) {
+                            LinearLayout linearLayout = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id);
+                            linearLayout.setVisibility(View.GONE);
+                        }
+                    }
+                }
+                break;
             case PAGE_AUTOPLAY_ROTATING_LOADER_VIEW_KEY:
                 componentViewResult.componentView = new AppCMSTVAutoplayCustomLoader(context, component);
                 componentViewResult.componentView.setId(R.id.autoplay_rotating_loader_view_id);
@@ -1062,6 +1109,7 @@ public class TVViewCreator {
 
                     case PAGE_START_WATCHING_BUTTON_KEY:
                         Button startWatchingButton = (Button) componentViewResult.componentView;
+                        startWatchingButton.setId(R.id.btn_start_watching);
                         if (appCMSPresenter.isUserLoggedIn()) {
 
                             if (null != moduleAPI && null != moduleAPI.getContentData()
@@ -1087,6 +1135,17 @@ public class TVViewCreator {
                         }
 
                         View componentView = componentViewResult.componentView;
+                        long eventDate = (moduleAPI.getContentData().get(0).getGist().getScheduleStartDate());
+                        eventDate = 1534306500L;
+
+                        //calculate remaining time from event date and current date
+                        long remainingTime = (eventDate * 1000L) - System.currentTimeMillis();
+
+                        if (remainingTime > 0){
+                            componentView.setEnabled(false);
+                            componentView.setFocusable(false);
+                        }
+
                         componentView.setOnClickListener(v -> {
                             playVideo(appCMSPresenter, context, component, moduleAPI);
                             componentView.setClickable(false);

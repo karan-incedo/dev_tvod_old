@@ -39,7 +39,9 @@ import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -476,6 +478,8 @@ public class Utils {
         res.addState(new int[]{android.R.attr.state_focused}, new ColorDrawable(selectedColor));
         res.addState(new int[]{android.R.attr.state_pressed}, new ColorDrawable(selectedColor));
         res.addState(new int[]{android.R.attr.state_selected}, new ColorDrawable(selectedColor));
+        res.addState(new int[]{android.R.attr.state_enabled}, getButtonNormalState(context, component, unFocusStateBorderColor, borderWidth));
+        res.addState(new int[] {-android.R.attr.state_enabled}, new ColorDrawable(context.getResources().getColor(android.R.color.darker_gray)));
 
         if (null != component) {
             GradientDrawable gradientDrawable = getButtonNormalState(context, component, unFocusStateBorderColor, borderWidth);
@@ -1000,5 +1004,79 @@ public class Utils {
 
         //Send the intent to the Launcher
         context.sendBroadcast(intent);
+    }
+
+    public static String calculateTimeDiff(Date otherDate) {
+
+        Date d1 = new Date();
+
+        long diff = otherDate.getTime() - d1.getTime();
+        /*long diffSeconds = diff / 1000 % 60;
+        long diffMinutes = diff / (60 * 1000) % 60;
+        long diffHours = diff / (60 * 60 * 1000);
+        int diffInDays = (int) diff / (1000 * 60 * 60 * 24);*/
+
+        long secondsInMilli = 1000;
+        long minutesInMilli = secondsInMilli * 60;
+        long hoursInMilli = minutesInMilli * 60;
+        long daysInMilli = hoursInMilli * 24;
+
+        long elapsedDays = diff / daysInMilli;
+        diff = diff % daysInMilli;
+
+        long elapsedHours = diff / hoursInMilli;
+        diff = diff % hoursInMilli;
+
+        long elapsedMinutes = diff / minutesInMilli;
+        diff = diff % minutesInMilli;
+
+        long elapsedSeconds = diff / secondsInMilli;
+
+        return String.format(Locale.getDefault(), "%02d", elapsedDays)
+                + ":" + String.format(Locale.getDefault(), "%02d", elapsedHours)
+                + ":" + String.format(Locale.getDefault(), "%02d", elapsedMinutes)
+                + ":" + String.format(Locale.getDefault(), "%02d", elapsedSeconds);
+
+        /*if (diffInDays > 0)
+            return diffInDays + " Days Remaining";
+        else if (diffHours > 0)
+            return diffHours + " Hours Remaining";
+        else if (diffMinutes > 0)
+            return diffMinutes + " Minutes Remaining";
+        else
+            return diffSeconds + " Seconds Remaining";*/
+    }
+
+    public static String formatTimeAndDate(long diff) {
+
+        long secondsInMilli = 1000;
+        long minutesInMilli = secondsInMilli * 60;
+        long hoursInMilli = minutesInMilli * 60;
+        long daysInMilli = hoursInMilli * 24;
+
+        long elapsedDays = diff / daysInMilli;
+        diff = diff % daysInMilli;
+
+        long elapsedHours = diff / hoursInMilli;
+        diff = diff % hoursInMilli;
+
+        long elapsedMinutes = diff / minutesInMilli;
+        diff = diff % minutesInMilli;
+
+        long elapsedSeconds = diff / secondsInMilli;
+
+        return String.format(Locale.getDefault(), "%02d", elapsedDays)
+                + ":" + String.format(Locale.getDefault(), "%02d", elapsedHours)
+                + ":" + String.format(Locale.getDefault(), "%02d", elapsedMinutes)
+                + ":" + String.format(Locale.getDefault(), "%02d", elapsedSeconds);
+
+        /*if (diffInDays > 0)
+            return diffInDays + " Days Remaining";
+        else if (diffHours > 0)
+            return diffHours + " Hours Remaining";
+        else if (diffMinutes > 0)
+            return diffMinutes + " Minutes Remaining";
+        else
+            return diffSeconds + " Seconds Remaining";*/
     }
 }

@@ -183,6 +183,22 @@
       "type": "castView",
       "textColor": "#ffffff",
       "key": "castView"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "fontSizeKey": 11.5,
+          "topMargin": 200,
+          "leftMargin": 1190,
+          "width": 500
+        }
+      },
+      "text": "Content will be available in:",
+      "fontFamilyKey": "OpenSans-ExtraBold",
+      "fontFamilyValue": "OpenSans",
+      "type": "timer",
+      "textColor": "#ffffff",
+      "key": "timer"
     }
   ]
 }

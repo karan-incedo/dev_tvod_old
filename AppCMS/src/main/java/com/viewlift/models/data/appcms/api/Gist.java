@@ -11,6 +11,301 @@ import java.util.List;
 @UseStag
 public class Gist implements Serializable {
 
+
+    @SerializedName("purchaseStatus")
+    @Expose
+    private String purchaseStatus;
+
+
+    @SerializedName("contentId")
+    @Expose
+    private String contentId;
+
+
+    public String getSeriesPermalink() {
+        return seriesPermalink;
+    }
+
+    public void setSeriesPermalink(String seriesPermalink) {
+        this.seriesPermalink = seriesPermalink;
+    }
+
+    @SerializedName("seriesPermalink")
+    @Expose
+    private String seriesPermalink;
+
+
+
+    public long getTransactionDateEpoch() {
+        return transactionDateEpoch;
+    }
+
+    public void setTransactionDateEpoch(long transactionDateEpoch) {
+        this.transactionDateEpoch = transactionDateEpoch;
+    }
+
+    @SerializedName("transactionDateEpoch")
+    @Expose
+    private long transactionDateEpoch;
+
+    public void setTransactionEndDate(long transactionEndDate) {
+        this.transactionEndDate = transactionEndDate;
+    }
+
+    public long getTransactionEndDate() {
+        return transactionEndDate;
+    }
+
+    @SerializedName("transactionEndDate")
+    @Expose
+    long transactionEndDate;
+
+
+    @SerializedName("userId")
+    @Expose
+    private String userId;
+
+
+    @SerializedName("videoId")
+    @Expose
+    private String videoId;
+
+    @SerializedName("seasonId")
+    @Expose
+    private String seasonId;
+
+    @SerializedName("paymentHandler")
+    @Expose
+    private String paymentHandler;
+
+    @SerializedName("siteOwner")
+    @Expose
+    private String siteOwner;
+
+
+    @SerializedName("gatewayChargeId")
+    @Expose
+    private String gatewayChargeId;
+
+    @SerializedName("site")
+    @Expose
+    private String site;
+
+
+    public long getScheduleStartDate() {
+        return scheduleStartDate;
+    }
+
+    public void setScheduleStartDate(long scheduleStartDate) {
+        this.scheduleStartDate = scheduleStartDate;
+    }
+
+    public long getScheduleEndDate() {
+        return scheduleEndDate;
+    }
+
+    public void setScheduleEndDate(long scheduleEndDate) {
+        this.scheduleEndDate = scheduleEndDate;
+    }
+
+    private long scheduleStartDate    ;
+
+    private long scheduleEndDate    ;
+
+
+    public String getPurchaseStatus() {
+        return purchaseStatus;
+    }
+
+    public void setPurchaseStatus(String purchaseStatus) {
+        this.purchaseStatus = purchaseStatus;
+    }
+
+    public String getContentId() {
+        return contentId;
+    }
+
+    public void setContentId(String contentId) {
+        this.contentId = contentId;
+    }
+
+
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getVideoId() {
+        return videoId;
+    }
+
+    public void setVideoId(String videoId) {
+        this.videoId = videoId;
+    }
+
+    public String getSeasonId() {
+        return seasonId;
+    }
+
+    public void setSeasonId(String seasonId) {
+        this.seasonId = seasonId;
+    }
+
+    public String getPaymentHandler() {
+        return paymentHandler;
+    }
+
+    public void setPaymentHandler(String paymentHandler) {
+        this.paymentHandler = paymentHandler;
+    }
+
+    public String getSiteOwner() {
+        return siteOwner;
+    }
+
+    public void setSiteOwner(String siteOwner) {
+        this.siteOwner = siteOwner;
+    }
+
+    public String getGatewayChargeId() {
+        return gatewayChargeId;
+    }
+
+    public void setGatewayChargeId(String gatewayChargeId) {
+        this.gatewayChargeId = gatewayChargeId;
+    }
+
+    public String getSite() {
+        return site;
+    }
+
+    public void setSite(String site) {
+        this.site = site;
+    }
+
+    public String getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
+    }
+
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
+    }
+
+    public String getIsLiveStream() {
+        return isLiveStream;
+    }
+
+    public void setIsLiveStream(String isLiveStream) {
+        this.isLiveStream = isLiveStream;
+    }
+
+    public String getPurchaseType() {
+        return purchaseType;
+    }
+
+    public void setPurchaseType(String purchaseType) {
+        this.purchaseType = purchaseType;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
+
+    public String getIsTrailer() {
+        return isTrailer;
+    }
+
+    public void setIsTrailer(String isTrailer) {
+        this.isTrailer = isTrailer;
+    }
+
+    public String getVideoQuality() {
+        return videoQuality;
+    }
+
+    public void setVideoQuality(String videoQuality) {
+        this.videoQuality = videoQuality;
+    }
+
+    public String getSiteId() {
+        return siteId;
+    }
+
+    public void setSiteId(String siteId) {
+        this.siteId = siteId;
+    }
+
+    public String getSeriesId() {
+        return seriesId;
+    }
+
+    public void setSeriesId(String seriesId) {
+        this.seriesId = seriesId;
+    }
+
+    @SerializedName("platform")
+    @Expose
+    private String platform;
+
+
+    @SerializedName("currencyCode")
+    @Expose
+    private String currencyCode;
+
+
+    @SerializedName("isLiveStream")
+    @Expose
+    private String isLiveStream;
+
+    @SerializedName("purchaseType")
+    @Expose
+    private String purchaseType;
+
+    @SerializedName("transactionStartDate")
+    @Expose
+    private String transactionStartDate;
+
+    @SerializedName("countryCode")
+    @Expose
+    private String countryCode;
+
+    @SerializedName("isTrailer")
+    @Expose
+    private String isTrailer;
+
+
+    @SerializedName("videoQuality")
+    @Expose
+    private String videoQuality;
+
+
+    @SerializedName("siteId")
+    @Expose
+    private String siteId;
+
+
+    @SerializedName("seriesId")
+    @Expose
+    private String seriesId;
+
+
+
     boolean selectedPosition;
 
     @SerializedName("id")
@@ -133,6 +428,18 @@ public class Gist implements Serializable {
     @SerializedName("badgeImages")
     @Expose
     BadgeImages badgeImages;
+
+    public Images getImages() {
+        return images;
+    }
+
+    public void setImages(Images images) {
+        this.images = images;
+    }
+
+    @SerializedName("images")
+    @Expose
+    Images images;
 
     @SerializedName("addedDate")
     @Expose
@@ -282,23 +589,23 @@ public class Gist implements Serializable {
     long currentPlayingPosition;
     Boolean isCastingConnected;
 
-    public Boolean getDataLoaded() {
-        return isDataLoaded;
+    public long getEndDate() {
+        return endDate;
     }
 
-    public void setDataLoaded(Boolean dataLoaded) {
-        isDataLoaded = dataLoaded;
+    public void setEndDate(long endDate) {
+        this.endDate = endDate;
     }
+
+    public String getSubscriptionType() {
+        return subscriptionType;
+    }
+
+    long endDate;
+    String subscriptionType;
 
     Boolean isDataLoaded=false;
 
-    public String getLandscapeImageUrl() {
-        return landscapeImageUrl;
-    }
-
-    public void setLandscapeImageUrl(String landscapeImageUrl) {
-        this.landscapeImageUrl = landscapeImageUrl;
-    }
 
     String landscapeImageUrl;
     /**
@@ -532,6 +839,7 @@ public class Gist implements Serializable {
     public void setCastingConnected(Boolean castingConnected) {
         isCastingConnected = castingConnected;
     }
+
     public String getArtistName() {
         return artistName;
     }
@@ -547,7 +855,6 @@ public class Gist implements Serializable {
     public void setDirectorName(String directorName) {
         this.directorName = directorName;
     }
-
 
 
     public boolean isSelectedPosition() {
@@ -736,6 +1043,64 @@ public class Gist implements Serializable {
 
     public void setMetadata(List<MetaData> metadata) {
         this.metadata = metadata;
+    }
+
+    String episodeNum;
+    String showName;
+    String seasonNum;
+
+
+    public String getEpisodeNum() {
+        return episodeNum;
+    }
+
+    public void setEpisodeNum(String episodeNum) {
+        this.episodeNum = episodeNum;
+    }
+
+    public String getShowName() {
+        return showName;
+    }
+
+    public void setShowName(String showName) {
+        this.showName = showName;
+    }
+
+    public String getSeasonNum() {
+        return seasonNum;
+    }
+
+    public void setSeasonNum(String seasonNum) {
+        this.seasonNum = seasonNum;
+    }
+
+    public void setSubscriptionType(String subscriptionType) {
+        this.subscriptionType = subscriptionType;
+    }
+
+
+    public Boolean getDataLoaded() {
+        return isDataLoaded;
+    }
+
+    public void setDataLoaded(Boolean dataLoaded) {
+        isDataLoaded = dataLoaded;
+    }
+
+    public String getLandscapeImageUrl() {
+        return landscapeImageUrl;
+    }
+
+    public void setLandscapeImageUrl(String landscapeImageUrl) {
+        this.landscapeImageUrl = landscapeImageUrl;
+    }
+
+    public String getTransactionStartDate() {
+        return transactionStartDate;
+    }
+
+    public void setTransactionStartDate(String transactionStartDate) {
+        this.transactionStartDate = transactionStartDate;
     }
 }
 
