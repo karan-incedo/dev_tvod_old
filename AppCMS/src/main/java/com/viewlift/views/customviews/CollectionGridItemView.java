@@ -2065,10 +2065,11 @@ public class CollectionGridItemView extends BaseView {
     }
 
     public void inVisibleIfSeries(final ContentDatum data, final View view) {
-        if (data != null &&
+        if ((data != null &&
                 data.getGist() != null &&
                 data.getGist().getContentType() != null &&
-                data.getGist().getContentType().equalsIgnoreCase("SERIES")) {
+                data.getGist().getContentType().equalsIgnoreCase("SERIES") )
+        || data.getGist().getRuntime() == 0) {
             view.setVisibility(GONE);
         } /*else {
             view.setVisibility(VISIBLE);

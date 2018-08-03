@@ -61,6 +61,7 @@ import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -4034,6 +4035,7 @@ public class ViewCreator {
                                                     null);
                                             return;
                                         }
+
                                         appCMSPlaylistAdapter.startDownloadPlaylist();
 
                                     }
@@ -5503,8 +5505,12 @@ public class ViewCreator {
                                     if (moduleAPI.getContentData().get(0).getGist().getPublishDate() != null) {
                                         publishDateMillseconds = Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate());
                                         String publishDate = context.getResources().getString(R.string.published_on) + " " + AppCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd, yyyy");
-                                        builder.append(" | ");
-                                        builder.append(publishDate);
+                                        if (runtime ==0 ){
+                                            builder.replace(0,secondsToTime.length(),publishDate);
+                                        }else {
+                                            builder.append(" | ");
+                                            builder.append(publishDate);
+                                        }
                                     }
 
                                     ((TextView) componentViewResult.componentView).setText(builder);
@@ -6473,9 +6479,16 @@ public class ViewCreator {
                                 .setOnCheckedChangeListener((buttonView, isChecked)
                                         -> appCMSPresenter.setAutoplayEnabledUserPref(context, isChecked));
                     } else {
+                        componentViewResult.componentView.setEnabled(false);
                         ((Switch) componentViewResult.componentView)
                                 .setChecked(false);
-                        componentViewResult.componentView.setVisibility(View.GONE);
+                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                appCMSPresenter.showToast("Auto play not enable from provider", Toast.LENGTH_SHORT);
+                            }
+                        });
+                        //componentViewResult.componentView.setVisibility(View.GONE);
                     }
                 }
 
@@ -6532,6 +6545,9 @@ public class ViewCreator {
                                 .getDownloadOverCellularEnabled());
                         componentViewResult.componentView.setEnabled(true);
                         ((Switch) componentViewResult.componentView).setChecked(appCMSPresenter.getDownloadOverCellularEnabled());
+                    }else {
+                        componentViewResult.componentView.setEnabled(false);
+                        ((Switch) componentViewResult.componentView).setChecked(false);
                     }
                 }
 
@@ -7587,7 +7603,8 @@ public class ViewCreator {
                                         imageButton.setOnClickListener(addClickListener);
                                 }
                             });
-                        } else {
+                        } else if( appCMSPresenter.getAppCMSMain() != null
+                                && appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()){
                             appCMSPresenter.showDownloadQualityScreen(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this);
                         }
                     }

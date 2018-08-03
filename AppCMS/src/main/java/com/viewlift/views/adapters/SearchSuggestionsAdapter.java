@@ -89,7 +89,10 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
                 && mediaType.toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase()) && !TextUtils.isEmpty(songYear)){
             runtime.append(" | "+songYear);
         }
-        if (mediaType.toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())) {
+        if (mediaType == null
+                || mediaType.equalsIgnoreCase("null")){
+            runtime.setText("");
+        } else if (mediaType.toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())) {
             runtime.setText("");
         }else if (mediaType.toLowerCase().contains(context.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())) {
             runtime.setText("");
