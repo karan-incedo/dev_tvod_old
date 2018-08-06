@@ -149,6 +149,18 @@ public class ContentDatum implements Serializable {
     @Expose
     boolean isDRMEnabled = false;
 
+    public Pricing getPricing() {
+        return pricing;
+    }
+
+    public void setPricing(Pricing pricing) {
+        this.pricing = pricing;
+    }
+
+    @SerializedName("pricing")
+    @Expose
+    Pricing pricing;
+
     Players players;
 
     private AppCMSSignedURLResult appCMSSignedURLResult;

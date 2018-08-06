@@ -1,4 +1,4 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/app_cms_more_layout_parent"
@@ -29,6 +29,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="64dp"
         android:alpha="1.0"
+        android:layout_below="@+id/app_cms_close_button"
         android:contentDescription="df"
         android:gravity="center"
         android:padding="@dimen/app_cms_account_padding"
@@ -45,20 +46,23 @@
         android:layout_marginTop="48dp"
         android:alpha="1.0"
         android:paddingEnd="16dp"
+        android:layout_below="@+id/app_cms_more_title_text"
         android:paddingStart="16dp"
         android:text="Title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/app_cms_more_title_text" />
 
-   <!-- <Button
-        android:id="@+id/app_cms_nav_free_trial_button"
+   <Button
+        android:id="@+id/app_cms_back_to_desc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/app_cms_subscribe_now"
+        android:text= "@string/back_to_description"
         android:textSize="@dimen/nav_item_text_size"
-
+       android:gravity="center_horizontal"
+        android:layout_alignParentBottom="true"
         android:layout_marginTop="8dp"
         android:paddingTop="8dp"
-        android:paddingBottom="8dp"/>-->
+       android:layout_margin="15dp"
+        android:paddingBottom="8dp"/>
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

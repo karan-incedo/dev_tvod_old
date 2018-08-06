@@ -523,6 +523,41 @@ public class CollectionGridItemView extends BaseView {
                         } catch (Exception e) {
                             //
                         }
+                    }else if (childViewHeight > 0 &&
+                            childViewWidth > 0 && data != null && data.getGist() != null && data.getGist().getImages() != null &&
+                            data.getGist().getImages().get_16x9Image() != null && data.getGist().getImages().get_16x9Image().getUrl() != null &&
+                            !TextUtils.isEmpty(data.getGist().getImages().get_16x9Image().getUrl()) &&
+                            (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
+                                    componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY)) {
+                        bringToFront = false;
+                        ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+
+                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                data.getGist().getImages().get_16x9Image().getUrl(),
+                                childViewWidth,
+                                childViewHeight);
+
+                        if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
+                            if (data.getGist().getVideoImageUrl() != null) {
+                                imageUrl = data.getGist().getVideoImageUrl();
+                            }
+                        }
+                        try {
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
+                                RequestOptions requestOptions = new RequestOptions()
+                                        .override(childViewWidth, childViewHeight).placeholder(placeholder)
+                                        .fitCenter();
+//                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
+                                Glide.with(context)
+                                        .load(imageUrl)
+                                        .apply(requestOptions)
+                                        .into((ImageView) view);
+                            } else {
+                                ((ImageView) view).setBackgroundResource(placeholder);
+                            }
+                        } catch (Exception e) {
+                            //
+                        }
                     } else if (childViewHeight > 0 &&
                             childViewWidth > 0 &&
                             data != null &&
@@ -965,11 +1000,15 @@ public class CollectionGridItemView extends BaseView {
 
                         }
                     }
+
+                    if(data.getGist().getContentType().equalsIgnoreCase(getResources().getString(R.string.season))){
+                        ((ImageButton) view).setVisibility(View.GONE);
+                    }
                 } /*else if (componentKey == AppCMSUIKeyType.PAGE_AUDIO_DOWNLOAD_BUTTON_KEY) {
                  *//*view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
                             childComponent, data, position));*//*
                     if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
-                        ((ImageButton) view).setImageResource(R.drawable.ic_downloaded_big);
+                        ((ImageButton) view). (R.drawable.ic_downloaded_big);
                         view.setOnClickListener(null);
                     } else if (appCMSPresenter.isVideoDownloading(data.getGist().getId())) {
                         int radiusDifference = 5;
@@ -1516,12 +1555,17 @@ public class CollectionGridItemView extends BaseView {
 //                            ((TextView) view).setBackground(context.getResources().getDrawable(R.drawable.rectangle_with_round_corners,null));
 //                            ((TextView) view).setTextColor(R.color.color_white);
                         }
-                    }  else if (componentKey == AppCMSUIKeyType.PAGE_EXPIRE_TIME_TITLE) {
-                    if (data.getGist() != null && data.getGist().getTransactionDateEpoch() > 0) {
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_EXPIRE_TIME_TITLE) {
+                    if (data.getGist() != null && (data.getGist().getTransactionDateEpoch() > 0|| data.getGist().getTransactionEndDate()>0)) {
                         ((TextView) view).setSingleLine(true);
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                         ((TextView) view).setVisibility(View.VISIBLE);
-                        long eventDate = data.getGist().getTransactionDateEpoch();
+                        long eventDate=0;
+                        if(data.getGist().getTransactionEndDate()>0){
+                            eventDate= data.getGist().getTransactionEndDate();
+                        }else{
+                            eventDate= data.getGist().getTransactionDateEpoch();
+                        }
 
                         long remainingTime = appCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L, "EEE MMM dd HH:mm:ss");
 
@@ -2113,7 +2157,7 @@ public class CollectionGridItemView extends BaseView {
         if (data != null &&
                 data.getGist() != null &&
                 data.getGist().getContentType() != null &&
-                data.getGist().getContentType().equalsIgnoreCase("SERIES")) {
+                (data.getGist().getContentType().equalsIgnoreCase("SERIES") || data.getGist().getContentType().equalsIgnoreCase("SEASON"))) {
             view.setVisibility(GONE);
         } /*else {
             view.setVisibility(VISIBLE);

@@ -37,4 +37,16 @@ public class Images implements Serializable {
     @Expose
     Image_16x9 _16x9;
 
+    public Image_16x9 get_16x9Image() {
+        return _16x9Image;
+    }
+
+    public void set_16x9Image(Image_16x9 _16x9Image) {
+        this._16x9Image = _16x9Image;
+    }
+
+    @SerializedName("_16x9Image")
+    @Expose
+    Image_16x9 _16x9Image;
+
 }

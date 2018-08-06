@@ -53,6 +53,23 @@ public class AppCMSVideoDetailCall {
     }
 
     @WorkerThread
+    public String callRentalApiData(String url, String authToken,String xApi) throws IOException {
+        try {
+
+            authHeaders.clear();
+            authHeaders.put("Authorization", authToken);
+//            authHeaders.put("x-api-key", xApi);
+            return appCMSVideoDetailRest.getRentalVideoRespose(url, authHeaders).execute().body();
+        } catch (JsonSyntaxException e) {
+            Log.e(TAG, "DialogType parsing input JSON - " + url + ": " + e.toString());
+        } catch (Exception e) {
+            // e.printStackTrace();
+            Log.e(TAG, "Network error retrieving site data - " + url + ": " + e.toString());
+        }
+        return null;
+    }
+
+    @WorkerThread
     public AppCMSEntitlementResponse callEntitlementVideo(String url, String authToken, String xApi) throws IOException {
         try {
             //Log.d(TAG, "Attempting to read Video Detail JSON: " + url);

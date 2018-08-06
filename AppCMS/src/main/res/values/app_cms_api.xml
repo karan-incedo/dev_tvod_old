@@ -650,7 +650,15 @@
     <string name="profile_label">Profile</string>
     <string name="app_cms_team_label">Team</string>
 
+
+    <!--AppCMS TVOD  API -->
+
+    <string name="app_cms_getrental_api_url">%1$s/transaction/changeStatus?userId=%2$s&amp;videoId=%3$s</string>
+
+
     <!--AppCMS AnonymousAuthToken API -->
+
+
     <string name="app_cms_anonymous_auth_token_api_url">%1$s/identity/anonymous-token?site=%2$s</string>
 
     <!-- AppCMS Image with Resize Query -->

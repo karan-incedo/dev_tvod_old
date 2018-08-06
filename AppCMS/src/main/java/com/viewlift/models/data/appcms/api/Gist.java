@@ -22,6 +22,20 @@ public class Gist implements Serializable {
     private String contentId;
 
 
+    public String getSeriesPermalink() {
+        return seriesPermalink;
+    }
+
+    public void setSeriesPermalink(String seriesPermalink) {
+        this.seriesPermalink = seriesPermalink;
+    }
+
+    @SerializedName("seriesPermalink")
+    @Expose
+    private String seriesPermalink;
+
+
+
     public long getTransactionDateEpoch() {
         return transactionDateEpoch;
     }
@@ -33,6 +47,29 @@ public class Gist implements Serializable {
     @SerializedName("transactionDateEpoch")
     @Expose
     private long transactionDateEpoch;
+
+    public long getTransactionEndDate() {
+        return transactionEndDate;
+    }
+
+    public void setTransactionEndDate(long transactionEndDate) {
+        this.transactionEndDate = transactionEndDate;
+    }
+
+    @SerializedName("transactionEndDate")
+    @Expose
+    private long transactionEndDate;
+
+    public String getTransactionType() {
+        return transactionType;
+    }
+
+    public void setTransactionType(String transactionType) {
+        this.transactionType = transactionType;
+    }
+
+    private String transactionType;
+
 
     @SerializedName("userId")
     @Expose
@@ -63,6 +100,28 @@ public class Gist implements Serializable {
     @SerializedName("site")
     @Expose
     private String site;
+
+
+    public long getScheduleStartDate() {
+        return scheduleStartDate;
+    }
+
+    public void setScheduleStartDate(long scheduleStartDate) {
+        this.scheduleStartDate = scheduleStartDate;
+    }
+
+    public long getScheduleEndDate() {
+        return scheduleEndDate;
+    }
+
+    public void setScheduleEndDate(long scheduleEndDate) {
+        this.scheduleEndDate = scheduleEndDate;
+    }
+
+    private long scheduleStartDate    ;
+
+    private long scheduleEndDate    ;
+
 
     public String getPurchaseStatus() {
         return purchaseStatus;
@@ -388,6 +447,18 @@ public class Gist implements Serializable {
     @Expose
     BadgeImages badgeImages;
 
+    public Images getImages() {
+        return images;
+    }
+
+    public void setImages(Images images) {
+        this.images = images;
+    }
+
+    @SerializedName("images")
+    @Expose
+    Images images;
+
     @SerializedName("addedDate")
     @Expose
     String addedDate;
@@ -527,6 +598,35 @@ public class Gist implements Serializable {
     @SerializedName("metadata")
     @Expose
     List<MetaData> metadata = null;
+
+    @SerializedName("seasonTitle")
+    @Expose
+    String seasonTitle;
+
+    @SerializedName("pricing")
+    @Expose
+    Pricing pricing;
+
+    public String getSeasonTitle() {
+        return seasonTitle;
+    }
+
+    public void setSeasonTitle(String seasonTitle) {
+        this.seasonTitle = seasonTitle;
+    }
+
+    public String getSeriesTitle() {
+        return seriesTitle;
+    }
+
+    public void setSeriesTitle(String seriesTitle) {
+        this.seriesTitle = seriesTitle;
+    }
+
+    @SerializedName("seriesTitle")
+    @Expose
+    String seriesTitle;
+
 
     String artistName;
     String directorName;

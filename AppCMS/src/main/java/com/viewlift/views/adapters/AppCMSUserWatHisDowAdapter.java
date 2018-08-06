@@ -788,6 +788,9 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                     data.getGist().getContentType() != null &&
                                     (data.getGist().getContentType().equalsIgnoreCase("SERIES") || data.getGist().getContentType().equalsIgnoreCase(mContext.getResources().getString(R.string.app_cms_episodic_season_prefix)))) {
                                 action = mContext.getString(R.string.app_cms_action_showvideopage_key);
+                                if(data.getGist().getSeriesPermalink()!=null) {
+                                    permalink = data.getGist().getSeriesPermalink();
+                                }
                             }
 
                             if (action.contains(videoAction)) {

@@ -87,12 +87,12 @@ public class DownloadVideoRealm extends RealmObject {
         this.seasonNum = seasonNum;
     }
 
-    public long getEndDate() {
-        return endDate;
+    public long getExpirationTime() {
+        return expirationTime;
     }
 
-    public void setEndDate(long endDate) {
-        this.endDate = endDate;
+    public void setExpirationTime(long expirationTime) {
+        this.expirationTime = expirationTime;
     }
 
     public String getSubscriptionType() {
@@ -103,7 +103,7 @@ public class DownloadVideoRealm extends RealmObject {
         this.subscriptionType = subscriptionType;
     }
 
-    private long endDate;
+    private long expirationTime;
     private String subscriptionType;
 
 
@@ -421,7 +421,7 @@ public class DownloadVideoRealm extends RealmObject {
         gist.setPermalink(getPermalink());
         gist.setDownloadStatus(getDownloadStatus());
         gist.setRuntime(getVideoDuration());
-        gist.setEndDate(getEndDate());
+        gist.setEndDate(getExpirationTime());
         gist.setSubscriptionType(getSubscriptionType());
         gist.setWatchedTime(getWatchedTime());
 
@@ -449,7 +449,7 @@ public class DownloadVideoRealm extends RealmObject {
         /**
          * added to check rent expire time
          */
-        downloadVideoRealm.setEndDate(getEndDate());
+        downloadVideoRealm.setExpirationTime(getExpirationTime());
         downloadVideoRealm.setSubscriptionType(getSubscriptionType());
         downloadVideoRealm.setVideo_Downloaded_so_far(getVideo_Downloaded_so_far());
         downloadVideoRealm.setVideoFileURL(getVideoFileURL());
