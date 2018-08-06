@@ -457,7 +457,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
                 if (!isVideoLoaded) {
                     videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
-                    if (!isTrailer) {
+                    if (!isTrailer && !isLiveStreaming) {
                         appCMSPresenter.updateWatchedTime(filmId,
                                 videoPlayerView.getCurrentPosition() / 1000);
                     }
@@ -539,7 +539,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     onClosePlayerEvent.onMovieFinished();
                 }
 
-                if (!isTrailer && 30 <= (videoPlayerView.getCurrentPosition() / 1000)) {
+                if (!isTrailer && 30 <= (videoPlayerView.getCurrentPosition() / 1000) && !isLiveStreaming) {
                     appCMSPresenter.updateWatchedTime(filmId,
                             videoPlayerView.getCurrentPosition() / 1000);
                 }
