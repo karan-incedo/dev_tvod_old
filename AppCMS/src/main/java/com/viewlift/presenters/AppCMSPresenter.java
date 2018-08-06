@@ -13763,7 +13763,7 @@ public class AppCMSPresenter {
                         }
                     });
         } catch (Exception e) {
-            //Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
+            Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
             //Log.e(TAG, "Caught exception when attempting to refresh subscription data: " + e.getMessage());
             if (onRefreshReadyAction != null) {
                 onRefreshReadyAction.call();

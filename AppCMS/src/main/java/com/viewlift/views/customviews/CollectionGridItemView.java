@@ -1714,9 +1714,12 @@ public class CollectionGridItemView extends BaseView {
                                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                                 text.setSpan(new RelativeSizeSpan(durationFont), pay.length() + planAmt.toString().length() + 1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                                 ((TextView) view).setText(text, TextView.BufferType.SPANNABLE);
-                                FrameLayout.LayoutParams layPar = (FrameLayout.LayoutParams) ((TextView) view).getLayoutParams();
-                                layPar.gravity = Gravity.TOP;
-                                view.setLayoutParams(layPar);
+
+                                if (!appCMSPresenter.isSinglePlanFeatureAvailable()) {
+                                    FrameLayout.LayoutParams layPar = (FrameLayout.LayoutParams) ((TextView) view).getLayoutParams();
+                                    layPar.gravity = Gravity.TOP;
+                                    view.setLayoutParams(layPar);
+                                }
                             } else {
                                 StringBuilder plan = new StringBuilder();
                                 plan.append(planAmt.toString());

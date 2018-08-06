@@ -70,7 +70,9 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
                         .append(context.getString(R.string.runtime_seconds_abbreviation)).toString());
             } else if (runtimeAsInteger == 0 || runtimeAsInteger / 60 == 0) {
                 // FIXME: Display number of episodes.
-                if(!mediaType.equalsIgnoreCase(context.getString(R.string.content_type_event)))
+                if(!mediaType.equalsIgnoreCase(context.getString(R.string.content_type_event))
+                        && episodeCount != null
+                        && Integer.parseInt(episodeCount) > 0)
                     runtime.setText(episodeCount + " " + new StringBuilder().append(context.getString(R.string.runtime_episodes_abbreviation)).toString());
             } else if (runtimeAsInteger / 60 < 2) {
                 runtime.setText(new StringBuilder().append(Integer.valueOf(cursor.getString(2)) / 60)
@@ -89,10 +91,7 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
                 && mediaType.toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase()) && !TextUtils.isEmpty(songYear)){
             runtime.append(" | "+songYear);
         }
-        if (mediaType == null
-                || mediaType.equalsIgnoreCase("null")){
-            runtime.setText("");
-        } else if (mediaType.toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())) {
+       if (mediaType.toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())) {
             runtime.setText("");
         }else if (mediaType.toLowerCase().contains(context.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())) {
             runtime.setText("");
