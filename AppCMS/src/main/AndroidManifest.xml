@@ -4,6 +4,8 @@
     package="com.viewlift">
 
 
+
+
     <application
         android:name=".AppCMSApplication"
         android:allowBackup="true"
@@ -120,7 +122,7 @@
             android:label="@string/app_name"
             android:theme="@style/Translucent"
             tools:replace="android:theme" />
-        <activity android:name=".ccavenue.screens.EnterMobileNumberActivity"></activity>
+        <activity android:name=".ccavenue.screens.EnterMobileNumberActivity"/>
         <!-- This activity declaration should be in the AppCMS/src/tv/AndroidManifest.xml
         <activity android:name=".tv.views.activity.AppCMSTVAutoplayActivity" />
         -->
@@ -138,7 +140,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
 
     </application>
 

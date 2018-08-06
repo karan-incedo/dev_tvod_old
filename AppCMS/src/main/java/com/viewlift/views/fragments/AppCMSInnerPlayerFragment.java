@@ -37,6 +37,7 @@ import com.google.ads.interactivemedia.v3.api.AdsManager;
 import com.google.ads.interactivemedia.v3.api.AdsRequest;
 import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 import com.google.ads.interactivemedia.v3.api.player.VideoProgressUpdate;
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -1172,6 +1173,11 @@ public class AppCMSInnerPlayerFragment extends Fragment
         if (!TextUtils.isEmpty(message)) {
             Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public void playerError(ExoPlaybackException ex) {
+
     }
 
     private void initViewForCRW(View rootView) {

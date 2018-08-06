@@ -1,5 +1,6 @@
 package com.viewlift.views.activity;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.BuildConfig;
 import com.viewlift.R;
 import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
@@ -33,10 +35,12 @@ import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Mpeg;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
+import com.viewlift.models.data.playersettings.HLSStreamingQuality;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.VideoPlayerView;
+import com.viewlift.views.customviews.VideoPlayerView.VideoPlayerSettingsEvent;
 import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
 import com.viewlift.views.fragments.OnResumeVideo;
 
@@ -58,6 +62,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         AppCMSPlayVideoFragment.OnUpdateContentDatumEvent,
         VideoPlayerView.StreamingQualitySelector,
         VideoPlayerView.ClosedCaptionSelector,
+      //  VideoPlayerSettingsEvent,
         AppCMSPlayVideoFragment.RegisterOnResumeVideo {
     private static final String TAG = "VideoPlayerActivity";
 
@@ -87,8 +92,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setFullScreenFocus();
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
-                WindowManager.LayoutParams.FLAG_SECURE);
+        if (!BuildConfig.DEBUG) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
+                    WindowManager.LayoutParams.FLAG_SECURE);
+        }
         setContentView(R.layout.activity_video_player_page);
 
         appCMSPresenter = ((AppCMSApplication) getApplication()).
@@ -122,7 +129,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         Bundle bundleExtra = intent.getBundleExtra(getString(R.string.app_cms_video_player_bundle_binder_key));
         String[] extra = intent.getStringArrayExtra(getString(R.string.video_player_hls_url_key));
 
-        boolean useHls = !Utils.isHLS()?getResources().getBoolean(R.bool.use_hls):Utils.isHLS();
+        boolean useHls = !Utils.isHLS() ? getResources().getBoolean(R.bool.use_hls) : Utils.isHLS();
         String defaultVideoResolution = getString(R.string.default_video_resolution);
 
         try {
@@ -192,7 +199,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                                 this::finish,
                                                 null);
                                     }
-                                },null,false);
+                                }, null, false);
                     } else {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.VIDEO_NOT_AVAILABLE,
                                 getString(R.string.app_cms_video_not_available_error_message),
@@ -354,7 +361,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             for (ClosedCaptions cc : binder.getContentData().getContentDetails().getClosedCaptions()) {
                 if (cc.getUrl() != null) {
                     if ((cc.getFormat() != null &&
-                            cc.getFormat().equalsIgnoreCase("srt")) ||
+                            "srt".equalsIgnoreCase(cc.getFormat())) ||
                             cc.getUrl().toLowerCase().contains("srt")) {
                         closedCaptionUrl = cc.getUrl();
                     }
@@ -533,6 +540,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 //                .beginTransaction().
 //                remove(getSupportFragmentManager().findFragmentById(R.id.app_cms_play_video_page_container)).commit();
 
+        appCMSPresenter.sendCastEvent(binder.getContentData());
         if (castingModeChromecast == CastingUtils.CASTING_MODE_CHROMECAST && !binder.isTrailer()) {
             CastHelper.getInstance(getApplicationContext()).launchRemoteMedia(appCMSPresenter,
                     relateVideoIds,
@@ -769,4 +777,5 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         }
         return language;
     }
+
 }

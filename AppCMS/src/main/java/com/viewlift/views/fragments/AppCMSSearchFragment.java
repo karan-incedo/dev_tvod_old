@@ -131,6 +131,7 @@ public class AppCMSSearchFragment extends DialogFragment {
                 appCMSPresenter.showEmptySearchToast();
                 return;
             }
+            appCMSPresenter.sendSearchEvent(appCMSSearchView.getQuery().toString());
             appCMSPresenter.launchSearchResultsPage(appCMSSearchView.getQuery().toString());
         });
 

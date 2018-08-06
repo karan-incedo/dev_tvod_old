@@ -17,6 +17,10 @@ public class PlanDetail {
     @Expose
     double recurringPaymentAmount;
 
+    @SerializedName("strikeThroughPrice")
+    @Expose
+    double strikeThroughPrice;
+
     @SerializedName("recurringPaymentCurrencyCode")
     @Expose
     String recurringPaymentCurrencyCode;
@@ -167,5 +171,9 @@ public class PlanDetail {
 
     public void setNumberOfAllowedDevices(long numberOfAllowedDevices) {
         this.numberOfAllowedDevices = numberOfAllowedDevices;
+    }
+
+    public double getStrikeThroughPrice() {
+        return strikeThroughPrice;
     }
 }

@@ -131,6 +131,11 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         this.hideRemoveAllButtonEvent = new InternalEvent<>(View.GONE);
         this.showRemoveAllButtonEvent = new InternalEvent<>(View.VISIBLE);
 
+//        for(int i=0;i<moduleAPI.getContentData().size();i++){
+//            if(moduleAPI.getContentData().get(i).getGist().getSubscriptionType()!=null && moduleAPI.getContentData().get(i).getGist().getSubscriptionType().equalsIgnoreCase("test")){
+//                moduleAPI.getContentData().remove(i);
+//            }
+//        }
         if (moduleAPI != null && moduleAPI.getContentData() != null) {
             this.adapterData = moduleAPI.getContentData();
         } else {
@@ -709,6 +714,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             if (relatedVideoIds == null) {
                                 currentPlayingIndex = 0;
                             }
+
                             /*navigate to article detail page*/
                             if (data.getGist() != null && data.getGist().getMediaType() != null
                                     && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.app_cms_article_key_type).toLowerCase())) {
@@ -722,6 +728,21 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                 deleteDownloadVideo(data, position);
                                 return;
                             }
+                            if (action.contains(videoAction)) {
+                                appCMSPresenter.setPlaySource("");
+                                appCMSPresenter.setPlaySource(moduleAPI.getTitle());
+                                appCMSPresenter.setPlaySource(appCMSPresenter.getPlaySource() + "_Video Detail");
+                            }
+
+
+                            if (action.contains("watchVideo") || (data.getGist() != null &&
+                                    data.getGist().getMediaType() != null &&
+                                    data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
+                                    data.getGist().getContentType() != null &&
+                                    data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase()))) {
+                                appCMSPresenter.setPlaySource("");
+                                appCMSPresenter.setPlaySource(appCMSPresenter.getPlaySource() + "_" + moduleAPI.getTitle());
+                            }
                             if (action.contains(deleteSingleItemWatchlistAction)) {
                                 /*delete video from user watchlist*/
                                 appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_WATCHLIST_ITEM,
@@ -729,6 +750,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                         true, () ->
                                                 appCMSPresenter.editWatchlist(data,
                                                         addToWatchlistResult -> {
+                                                            appCMSPresenter.sendRemoveWatchlistEvent(data);
                                                             adapterData.remove(data);
 
                                                             if (adapterData.size() == 0) {
@@ -764,7 +786,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             if (action != null && !TextUtils.isEmpty(action) &&
                                     data.getGist() != null &&
                                     data.getGist().getContentType() != null &&
-                                    data.getGist().getContentType().equalsIgnoreCase("SERIES")) {
+                                    (data.getGist().getContentType().equalsIgnoreCase("SERIES") || data.getGist().getContentType().equalsIgnoreCase(mContext.getResources().getString(R.string.app_cms_episodic_season_prefix)))) {
                                 action = mContext.getString(R.string.app_cms_action_showvideopage_key);
                             }
 

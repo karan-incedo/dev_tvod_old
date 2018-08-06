@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -611,8 +612,9 @@ public class AppCmsNavigationFragment extends Fragment {
                         }
                     }
                     //This code is for SubNavigation items like Teams in MSE. So we are treating here that if primary.getItems() is not null then its a subnavigation.
-                    else if (appCmsPresenter.getPageType(primary.getPageId()).contains("Sub Navigation")
-                                && primary.getItems() != null && primary.getItems().size() > 0) {
+                    else if (!TextUtils.isEmpty(primary.getPageId())
+                            && appCmsPresenter.getPageType(primary.getPageId()).contains("Sub Navigation")
+                            && primary.getItems() != null && primary.getItems().size() > 0) {
                        // navigationVisibilityListener.showNavigation(false);
 //                        subNavigationVisibilityListener.showSubNavigation(true, true);
                         appCmsPresenter.sendGaScreen(primary.getTitle() + " Navigation Page");

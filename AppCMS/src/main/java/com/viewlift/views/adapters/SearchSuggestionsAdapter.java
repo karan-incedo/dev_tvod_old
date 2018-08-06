@@ -13,7 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.presenters.AppCMSPresenter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,11 +35,14 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
     TextView runtime;
 
     private SearchableInfo searchableInfo;
-
+    AppCMSPresenter appCMSPresenter;
     public SearchSuggestionsAdapter(Context context, Cursor c, SearchableInfo searchableInfo,
                                     boolean autoRequery) {
         super(context, c, autoRequery);
         this.searchableInfo = searchableInfo;
+        AppCMSApplication mApplication = ((AppCMSApplication)context.getApplicationContext());
+        appCMSPresenter = ((AppCMSApplication) mApplication).
+                getAppCMSPresenterComponent().appCMSPresenter();
     }
 
     @Override
@@ -83,15 +88,15 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
             }
 
         if (mediaType != null
-                && mediaType.toLowerCase().contains(context.getString(R.string.media_type_playlist).toLowerCase())){
-            runtime.setText(songCount+" "+context.getString(R.string.songs_abbreviation));
-        }else if (mediaType != null
-                && mediaType.toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase()) && !TextUtils.isEmpty(songYear)){
-            runtime.append(" | "+songYear);
+                && mediaType.toLowerCase().contains(context.getString(R.string.media_type_playlist).toLowerCase())) {
+            runtime.setText(songCount + " " + context.getString(R.string.songs_abbreviation));
+        } else if (mediaType != null
+                && mediaType.toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase()) && !TextUtils.isEmpty(songYear)) {
+            runtime.append(" | " + songYear);
         }
         if (mediaType.toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())) {
             runtime.setText("");
-        }else if (mediaType.toLowerCase().contains(context.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())) {
+        } else if (mediaType.toLowerCase().contains(context.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())) {
             runtime.setText("");
         }
     }
@@ -100,7 +105,8 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
     public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
         Cursor cursor;
         String query = ((constraint == null) ? "" : constraint.toString());
-
+        if (query != null && query.length() != 0)
+            appCMSPresenter.sendSearchEvent(query);
         try {
             cursor = getSearchManagerSuggestions(searchableInfo, query, 5);
             if (cursor != null) {

@@ -4,9 +4,11 @@ import android.os.Binder;
 
 import com.google.android.exoplayer2.Player;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
+import com.viewlift.models.data.playersettings.HLSStreamingQuality;
 
 import java.util.List;
 import java.util.Map;
@@ -44,6 +46,17 @@ public class AppCMSVideoPageBinder extends Binder {
     private String currentMovieImageUrl;
     private int playerState;
     private boolean autoplayCancelled;
+
+
+    List<HLSStreamingQuality> availableStreamingQualitiesHLS;
+    List<String> availableStreamingQualities;
+    List<ClosedCaptions> availableClosedCaptions;
+
+    int ccSelectedIndex = 0;
+    int hlsVideoQualitySelectedIndex = 0;
+    int videoQualitySelectedIndex = 0;
+
+
 
     public AppCMSVideoPageBinder(
             AppCMSPageUI appCMSPageUI,
@@ -303,5 +316,53 @@ public class AppCMSVideoPageBinder extends Binder {
 
     public void setAutoplayCancelled(boolean autoplayCancelled) {
         this.autoplayCancelled = autoplayCancelled;
+    }
+
+    public List<HLSStreamingQuality> getAvailableStreamingQualitiesHLS() {
+        return availableStreamingQualitiesHLS;
+    }
+
+    public void setAvailableStreamingQualitiesHLS(List<HLSStreamingQuality> availableStreamingQualitiesHLS) {
+        this.availableStreamingQualitiesHLS = availableStreamingQualitiesHLS;
+    }
+
+    public List<String> getAvailableStreamingQualities() {
+        return availableStreamingQualities;
+    }
+
+    public void setAvailableStreamingQualities(List<String> availableStreamingQualities) {
+        this.availableStreamingQualities = availableStreamingQualities;
+    }
+
+    public List<ClosedCaptions> getAvailableClosedCaptions() {
+        return availableClosedCaptions;
+    }
+
+    public void setAvailableClosedCaptions(List<ClosedCaptions> availableClosedCaptions) {
+        this.availableClosedCaptions = availableClosedCaptions;
+    }
+
+    public int getCcSelectedIndex() {
+        return ccSelectedIndex;
+    }
+
+    public void setCcSelectedIndex(int ccSelectedIndex) {
+        this.ccSelectedIndex = ccSelectedIndex;
+    }
+
+    public int getHlsVideoQualitySelectedIndex() {
+        return hlsVideoQualitySelectedIndex;
+    }
+
+    public void setHlsVideoQualitySelectedIndex(int hlsVideoQualitySelectedIndex) {
+        this.hlsVideoQualitySelectedIndex = hlsVideoQualitySelectedIndex;
+    }
+
+    public int getVideoQualitySelectedIndex() {
+        return videoQualitySelectedIndex;
+    }
+
+    public void setVideoQualitySelectedIndex(int videoQualitySelectedIndex) {
+        this.videoQualitySelectedIndex = videoQualitySelectedIndex;
     }
 }

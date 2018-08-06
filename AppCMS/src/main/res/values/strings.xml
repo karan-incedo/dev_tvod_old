@@ -107,6 +107,7 @@
     <string name="app_cms_watchlist_navigation_title">Watchlist</string>
     <string name="app_cms_download_page_title">Downloads</string>
     <string name="app_cms_history_navigation_title">History</string>
+    <string name="app_cms_library_navigation_title">Library</string>
 
     <string name="more_page_action">MorePage</string>
 
@@ -479,6 +480,7 @@
     
     
     <string name="no_fight_records">No fight records found</string>
+    <string name="no_settings_available">Player settings are not available for now!</string>
 
     <string name="rupee_symbol">\u20B9</string>
 </resources>

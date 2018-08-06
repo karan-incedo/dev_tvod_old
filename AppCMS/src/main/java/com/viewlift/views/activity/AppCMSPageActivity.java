@@ -84,7 +84,9 @@ import com.viewlift.R;
 import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
+import com.viewlift.models.data.appcms.api.AppCMSLibraryResult;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.AppCMSRosterResult;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -375,11 +377,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                     Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
                     try {
+                        String previousPage=updatedAppCMSBinder.getPageName();
                         updatedAppCMSBinder =
                                 (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
                         if (updatedAppCMSBinder != null) {
                             mergeInputData(updatedAppCMSBinder, updatedAppCMSBinder.getPageId());
                         }
+                        appCMSPresenter.sendPageViewEvent(previousPage,updatedAppCMSBinder.getPageName());
                         if (isActive) {
                             try {
                                 handleLaunchPageAction(updatedAppCMSBinder,
@@ -971,6 +975,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             set.setInterpolator(new AccelerateDecelerateInterpolator());
             set.start();
         });
+        appCMSPresenter.initializeCleverTap();
     }
 
     private boolean shouldReadNavItemsFromAppCMS() {
@@ -2868,12 +2873,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (appCMSPlaylistResultAction != null) {
                     AppCMSPageAPI pageAPI =
                             appCMSPresenter.convertToMonthlyData(appCMSPlaylistResultAction);
-//                    watchlistAPI.getModules().get(0).setId(appCMSBinder.getPageId());
-//                    appCMSPresenter.mergeData(watchlistAPI, appCMSBinder.getAppCMSPageAPI());
                     appCMSBinder.updateAppCMSPageAPI(pageAPI);
-
-                    //Log.d(TAG, "Updated watched history for loaded displays");
-
                     if (readyAction != null) {
                         readyAction.call();
                     }
@@ -2885,6 +2885,20 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.getRosterRefreshData(appCMSPlaylistResultAction -> {
                 if (appCMSPlaylistResultAction != null) {
                     AppCMSPageAPI pageAPI = appCMSPresenter.convertRosterDataToAppCMSPageAPI(appCMSBinder.getPageId(), appCMSPlaylistResultAction);
+
+                    appCMSBinder.updateAppCMSPageAPI(pageAPI);
+
+                    if (readyAction != null) {
+                        readyAction.call();
+                    }
+                } else if (readyAction != null) {
+                    readyAction.call();
+                }
+            });
+        } else if (appCMSPresenter.isLibraryPage(appCMSBinder.getPageId())) {
+            appCMSPresenter.getLibraryRefreshData((AppCMSLibraryResult appCMSPlaylistResultAction) -> {
+                if (appCMSPlaylistResultAction != null) {
+                    AppCMSPageAPI pageAPI = appCMSPlaylistResultAction.convertToAppCMSPageAPI(appCMSBinder.getPageId());
 
                     appCMSBinder.updateAppCMSPageAPI(pageAPI);
 
@@ -3372,9 +3386,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() != null &&
                         appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText() != null) {
 
-                    SpannableString content = new SpannableString(appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() +
+                    SpannableString content = new SpannableString(appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText().trim() +" "+
                             appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText());
-                    content.setSpan(new UnderlineSpan(), appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText().length(),
+
+                    content.setSpan(new UnderlineSpan(), appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText().trim().length()+2,
                             content.length(), 0);
                     appCMSNavFreeTrialTool.setText(content);
                 }
