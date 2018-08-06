@@ -1,5 +1,6 @@
 package com.viewlift.views.activity;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.BuildConfig;
 import com.viewlift.R;
 import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
@@ -33,10 +35,12 @@ import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Mpeg;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
+import com.viewlift.models.data.playersettings.HLSStreamingQuality;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.VideoPlayerView;
+import com.viewlift.views.customviews.VideoPlayerView.VideoPlayerSettingsEvent;
 import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
 import com.viewlift.views.fragments.OnResumeVideo;
 
@@ -49,7 +53,7 @@ import java.util.Map;
 import rx.functions.Action1;
 
 /**
- * Created by viewlift on 6/14/17.st
+ * Created by viewlift on 6/14/17.
  * Owned by ViewLift, NYC
  */
 
@@ -58,6 +62,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         AppCMSPlayVideoFragment.OnUpdateContentDatumEvent,
         VideoPlayerView.StreamingQualitySelector,
         VideoPlayerView.ClosedCaptionSelector,
+      //  VideoPlayerSettingsEvent,
         AppCMSPlayVideoFragment.RegisterOnResumeVideo {
     private static final String TAG = "VideoPlayerActivity";
 
@@ -87,8 +92,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setFullScreenFocus();
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
-                WindowManager.LayoutParams.FLAG_SECURE);
+        if (!BuildConfig.DEBUG) {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
+                    WindowManager.LayoutParams.FLAG_SECURE);
+        }
         setContentView(R.layout.activity_video_player_page);
 
         appCMSPresenter = ((AppCMSApplication) getApplication()).
@@ -354,7 +361,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             for (ClosedCaptions cc : binder.getContentData().getContentDetails().getClosedCaptions()) {
                 if (cc.getUrl() != null) {
                     if ((cc.getFormat() != null &&
-                            cc.getFormat().equalsIgnoreCase("srt")) ||
+                            "srt".equalsIgnoreCase(cc.getFormat())) ||
                             cc.getUrl().toLowerCase().contains("srt")) {
                         closedCaptionUrl = cc.getUrl();
                     }
@@ -735,7 +742,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
             if (closedCaptions != null) {
                 for (ClosedCaptions captions : closedCaptions) {
-                    if (captions != null && captions.getFormat() != null && captions.getFormat().equalsIgnoreCase("SRT")) {
+                    if ("SRT".equalsIgnoreCase(captions.getFormat())) {
                         closedCaptionsList.add(captions);
                     }
                 }
@@ -758,7 +765,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
             if (closedCaptions != null) {
                 for (ClosedCaptions captions : closedCaptions) {
-                    if (captions.getFormat().equalsIgnoreCase("SRT")) {
+                    if ("SRT".equalsIgnoreCase(captions.getFormat())) {
                         closedCaptionsList.add(captions);
                     }
                 }
@@ -770,4 +777,5 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         }
         return language;
     }
+
 }

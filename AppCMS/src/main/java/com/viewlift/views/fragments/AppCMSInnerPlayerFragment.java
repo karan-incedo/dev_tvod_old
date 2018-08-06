@@ -75,11 +75,6 @@ public class AppCMSInnerPlayerFragment extends Fragment
         AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = "PlayVideoFragment";
 
-    @Override
-    public void playerError(ExoPlaybackException ex) {
-
-    }
-
     private static final long SECS_TO_MSECS = 1000L;
     private static final String PLAYER_SCREEN_NAME = "Player Screen";
     private static double ttfirstframe = 0d;
@@ -1178,6 +1173,11 @@ public class AppCMSInnerPlayerFragment extends Fragment
         if (!TextUtils.isEmpty(message)) {
             Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public void playerError(ExoPlaybackException ex) {
+
     }
 
     private void initViewForCRW(View rootView) {

@@ -42,6 +42,7 @@ import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSHistoryRest;
 import com.viewlift.models.network.rest.AppCMSIPGeoLocatorCall;
 import com.viewlift.models.network.rest.AppCMSIPGeoLocatorRest;
+import com.viewlift.models.network.rest.AppCMSLibraryRest;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSMainUIRest;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
@@ -233,6 +234,11 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_WATCHLIST_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_my_watchlistscreen_key),
                 AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_my_library_screen_key),
+                AppCMSUIKeyType.ANDROID_LIBRARY_SCREEN_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_library_navigation_title),
+                AppCMSUIKeyType.ANDROID_LIBRARY_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_watchlistscreen_key),
                 AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY);
 
@@ -695,6 +701,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_module_key),
                 AppCMSUIKeyType.PAGE_WATCHLIST_01_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_mylibrary_module_key),
+                AppCMSUIKeyType.PAGE_MYLIBRARY_01_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_history_module_key2),
                 AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_module_key2),
@@ -951,6 +959,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_SHOW_WATCH_TRAILER_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_title_key),
                 AppCMSUIKeyType.PAGE_API_TITLE);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_expire_time_key),
+                AppCMSUIKeyType.PAGE_EXPIRE_TIME_TITLE);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_title_key),
                 AppCMSUIKeyType.PAGE_API_TITLE);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_show_title_key),
@@ -1192,12 +1202,16 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.CODE_SYNC_TEXT_LINE_HEADER);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tabs_type),
                 AppCMSUIKeyType.PAGE_TABLAYOUT_KEY);
-
         jsonValueKeyMap.put(context.getString(R.string.manageLanguageBtnKey),
                 AppCMSUIKeyType.MANAGE_LANGUAGE_KEY);
-
         jsonValueKeyMap.put(context.getString(R.string.changeLanguageLabel),
                 AppCMSUIKeyType.LANGUAGE_LABEL_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_change_language_key),
+                AppCMSUIKeyType.LANGUAGE_SCREEN_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_link_change_language_action),
+                AppCMSUIKeyType.CHANGE_LANGUAGE_KEY);
     }
 
     private void createPageNameToActionMap(Context context) {
@@ -1232,6 +1246,8 @@ public class AppCMSUIModule {
                 context.getString(R.string.app_cms_action_forgotpassword_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_link_your_account_key),
                 context.getString(R.string.app_cms_link_your_account_action));
+        this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_change_language_key),
+                context.getString(R.string.app_cms_link_change_language_action));
     }
 
     private void createActionToPageMap(Context context) {
@@ -1249,6 +1265,7 @@ public class AppCMSUIModule {
         //this.actionToPageMap.put(context.getString(R.string.app_cms_action_musicHub_page_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_forgotpassword_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_link_your_account_action), null);
+        this.actionToPageMap.put(context.getString(R.string.app_cms_link_change_language_action), null);
     }
 
     private void createActionToPageAPIMap(Context context) {
@@ -1556,6 +1573,12 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSRosterRest providesAppCMSRostRest(Retrofit retrofit) {
         return retrofit.create(AppCMSRosterRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSLibraryRest providesAppCMSLibraryRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSLibraryRest.class);
     }
     @Provides
     @Singleton

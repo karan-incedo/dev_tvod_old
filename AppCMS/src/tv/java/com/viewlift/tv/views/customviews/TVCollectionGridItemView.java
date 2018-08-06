@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.text.Html;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,6 +64,7 @@ public class TVCollectionGridItemView extends TVBaseView {
     private boolean selectable;
     private CardView childrenContainer;
     private static int mPosition = 0;
+    private int selectedLanguageIndex = 0;
 
     @Inject
     public TVCollectionGridItemView(Context context,
@@ -167,7 +169,7 @@ public class TVCollectionGridItemView extends TVBaseView {
                           Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                           final OnClickHandler onClickHandler,
                           final AppCMSUIKeyType viewTypeKey,
-                          int position) {
+                          int position, int currentSelectedLanguageIndex) {
         AppCMSPresenter appCMSPresenter =
                 ((AppCMSApplication) context.getApplicationContext())
                         .getAppCMSPresenterComponent().appCMSPresenter();
@@ -295,6 +297,8 @@ public class TVCollectionGridItemView extends TVBaseView {
                     }else if(!TextUtils.isEmpty(data.getGist().getVideoImageUrl())){
                         view.setPadding(0, 0, 0, 0);
                         ((ImageView) view).setImageResource(Utils.getIcon(data.getGist().getVideoImageUrl(),context));
+                    } else {
+                        ((ImageView) view).setImageResource(android.R.color.transparent);
                     }
                     try {
                         ((ImageView) view).getDrawable().setTint(Utils.getComplimentColor(appCMSPresenter.getGeneralBackgroundColor()));
@@ -507,10 +511,27 @@ public class TVCollectionGridItemView extends TVBaseView {
                         }
                     });
 
+                }else if (componentKey == AppCMSUIKeyType.CHANGE_LANGUAGE_KEY) {
+                    //view.setNextFocusUpId(R.id.appcms_removeall);
+                    view.setOnClickListener(v -> onClickHandler.changeLanguage(childComponent, data));
+                    view.setFocusable(true);
+                    if(position == currentSelectedLanguageIndex){
+                        view.requestFocus();
+                    }
                 }
 
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
-                if (componentKey == AppCMSUIKeyType.PAGE_ICON_LABEL_KEY) {
+                if (componentKey == AppCMSUIKeyType.PAGE_EXPIRE_TIME_TITLE) {
+                    if (data.getGist() != null && data.getGist().getTitle() != null) {
+                        ((TextView) view).setSingleLine(true);
+                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        ((TextView) view).setVisibility(View.VISIBLE);
+                        ((TextView) view).setBackground(context.getResources().getDrawable(R.drawable.rectangle_with_round_corners,null));
+                        ((TextView) view).setText(data.getGist().getTitle());
+                        ((TextView) view).setGravity(Gravity.CENTER);
+
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_ICON_LABEL_KEY) {
                     if (childComponent.getNumberOfLines() != 0) {
                         ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
                     }
@@ -641,6 +662,8 @@ public class TVCollectionGridItemView extends TVBaseView {
         void play(Component childComponent, ContentDatum data);
 
         void delete(Component childComponent, ContentDatum data);
+
+        void changeLanguage(Component childComponent, ContentDatum data);
 
         void notifyData();
     }
