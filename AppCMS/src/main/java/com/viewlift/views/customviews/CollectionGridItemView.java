@@ -1536,7 +1536,7 @@ public class CollectionGridItemView extends BaseView {
                     }
                     ((TextView) view).setVisibility(View.VISIBLE);
                 }else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_FEATURE_TEXT_KEY) {
-                    if (data != null && data.getPlanDetails() != null && data.getPlanDetails().get(0) != null &&
+                    /*if (data != null && data.getPlanDetails() != null && data.getPlanDetails().get(0) != null &&
                             data.getPlanDetails().get(0).getFeatureDetails() != null &&
                             data.getPlanDetails().get(0).getFeatureDetails().size() != 0 &&
                             data.getPlanDetails().get(0).getFeatureDetails().get(0) != null &&
@@ -1545,7 +1545,44 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                         ((TextView) view).setText(data.getPlanDetails().get(0).getFeatureDetails().get(0).getTextToDisplay().toUpperCase());
+
+                    }*/
+
+                    StringBuilder planDuration = new StringBuilder();
+                    if (data.getRenewalCycleType().contains(context.getString(R.string.app_cms_plan_renewal_cycle_type_monthly))) {
+                        if (data.getRenewalCyclePeriodMultiplier() == 1) {
+                            planDuration.append(context.getString(R.string.plan_type_month));
+                        } else {
+                            planDuration.append(data.getRenewalCyclePeriodMultiplier());
+                            planDuration.append(" ");
+                            planDuration.append(context.getString(R.string.plan_type_month));
+                            if (data.getRenewalCyclePeriodMultiplier() > 1)
+                                planDuration.append("s");
+                        }
                     }
+                    if (data.getRenewalCycleType().contains(context.getString(R.string.app_cms_plan_renewal_cycle_type_yearly))) {
+                        if (data.getRenewalCyclePeriodMultiplier() == 1) {
+                            planDuration.append(context.getString(R.string.plan_type_yearly));
+                        } else {
+                            planDuration.append(data.getRenewalCyclePeriodMultiplier());
+                            planDuration.append(" ");
+                            planDuration.append(context.getString(R.string.plan_type_yearly));
+                            if (data.getRenewalCyclePeriodMultiplier() > 1)
+                                planDuration.append("s");
+                        }
+                    }
+                    if (data.getRenewalCycleType().contains(context.getString(R.string.app_cms_plan_renewal_cycle_type_daily))) {
+                        if (data.getRenewalCyclePeriodMultiplier() == 1) {
+                            planDuration.append(context.getString(R.string.plan_type_day));
+                        } else {
+                            planDuration.append(data.getRenewalCyclePeriodMultiplier());
+                            planDuration.append(" ");
+                            planDuration.append(context.getString(R.string.plan_type_day));
+                            if (data.getRenewalCyclePeriodMultiplier() > 1)
+                                planDuration.append("s");
+                        }
+                    }
+                    ((TextView) view).setText(planDuration.toString().toUpperCase());
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY) {
                     ((TextView) view).setText(data.getName());
                     if (componentType.equals(AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_03_KEY) ||
@@ -1693,26 +1730,26 @@ public class CollectionGridItemView extends BaseView {
                             }
                             if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
                                 StringBuilder plan = new StringBuilder();
-                                String pay = "PAY";
-                                plan.append(pay);
-                                plan.append(" ");
+//                                String pay = "PAY";
+//                                plan.append(pay);
+//                                plan.append(" ");
                                 plan.append(planAmt.toString());
-                                plan.append(planDuration.toString());
+//                                plan.append(planDuration.toString());
                                 Spannable text = new SpannableString(plan.toString());
                                 float payFont = 1.0f;
                                 float durationFont = 1.0f;
-                                float priceFont = 1.5f;
+                                float priceFont = 1.3f;
                                 if (BaseView.isTablet(context)) {
                                     payFont = 1.1f;
                                     durationFont = 1.1f;
-                                    priceFont = 2.0f;
+                                    priceFont = 1.5f;
                                 }
-                                text.setSpan(new RelativeSizeSpan(payFont), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                text.setSpan(new StyleSpan(Typeface.BOLD), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                text.setSpan(new RelativeSizeSpan(priceFont), pay.length(), pay.length() + planAmt.toString().length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                text.setSpan(new StyleSpan(Typeface.BOLD), pay.length(), pay.length() + planAmt.toString().length() + 1,
+//                                text.setSpan(new RelativeSizeSpan(payFont), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                                text.setSpan(new StyleSpan(Typeface.BOLD), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                text.setSpan(new RelativeSizeSpan(priceFont), 0, planAmt.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                text.setSpan(new StyleSpan(Typeface.BOLD), 0, planAmt.toString().length(),
                                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                text.setSpan(new RelativeSizeSpan(durationFont), pay.length() + planAmt.toString().length() + 1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                                text.setSpan(new RelativeSizeSpan(durationFont), planAmt.toString().length() + 1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                                 ((TextView) view).setText(text, TextView.BufferType.SPANNABLE);
                             } else {
                                 StringBuilder plan = new StringBuilder();

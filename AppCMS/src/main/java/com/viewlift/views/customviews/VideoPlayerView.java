@@ -278,6 +278,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     int streamingQualityIndex = streamingQualitySelector.getMpegResolutionIndexFromUrl(videoUri.toString());
                     if (0 <= streamingQualityIndex) {
                         currentStreamingQualitySelector.setText(availableStreamingQualities.get(streamingQualityIndex));
+                        appCMSPresenter.setCurrentVideoStreamingQuality(currentStreamingQualitySelector.getText().toString());
                         setSelectedStreamingQualityIndex();
                     }
                 }
@@ -808,6 +809,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                         listViewAdapter.setSelectedIndex(listViewAdapter.getDownloadQualityPosition());
                         streamingQualitySelectorDialog.dismiss();
                         appCMSPresenter.sendPlayerBitrateEvent(currentStreamingQualitySelector.getText().toString());
+                        appCMSPresenter.setCurrentVideoStreamingQuality(currentStreamingQualitySelector.getText().toString());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -946,6 +948,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                                 trackSelector.setSelectionOverride(mVideoRendererIndex, trackGroups, override);
                             }
                             currentStreamingQualitySelector.setText(availableStreamingQualities.get(selectedIndex).getValue());
+                            appCMSPresenter.setCurrentVideoStreamingQuality(currentStreamingQualitySelector.getText().toString());
                             hlsListViewAdapter.setSelectedIndex(selectedIndex);
                         }
                         dialog.hide();

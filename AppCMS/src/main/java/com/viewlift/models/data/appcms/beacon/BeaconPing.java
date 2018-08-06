@@ -24,6 +24,9 @@ public class BeaconPing extends Thread {
     int bufferCount;
     int bufferTime;
     private String lastPlayType = "";
+    boolean sent2MinEvent, sent25pctEvent, sent50pctEvent, sent75pctEvent, sent80pctEvent, sent30secMusicEvent;
+    long lastEventStreamTime;
+    long lastEventStreamTimeMusic;
 
     public BeaconPing(long beaconMsgTimeoutMsec,
                       AppCMSPresenter appCMSPresenter,
@@ -44,6 +47,12 @@ public class BeaconPing extends Thread {
         this.streamId = streamId;
         this.contentDatum = contentDatum;
         this.liveSeekCounter = MILLISECONDS_PER_SECOND;
+        sent2MinEvent = false;
+        sent25pctEvent = false;
+        sent50pctEvent = false;
+        sent75pctEvent = false;
+        sent80pctEvent = false;
+        lastEventStreamTime = 0;
     }
 
     @Override
@@ -54,6 +63,8 @@ public class BeaconPing extends Thread {
                 Thread.sleep(beaconMsgTimeoutMsec);
                 if (sendBeaconPing) {
                     long currentTime = 0;
+                    if (videoPlayerView != null)
+                        currentTime = videoPlayerView.getCurrentPosition() / 1000;
                     if (videoPlayerView != null && contentDatum != null &&
                             contentDatum.getStreamingInfo() != null &&
                             !contentDatum.getStreamingInfo().getIsLiveStream()) {
@@ -97,25 +108,72 @@ public class BeaconPing extends Thread {
                                         videoPlayerView.getCurrentPosition() / 1000);
                             }
                         }
+                        if (currentTime == 120) {
+                            lastEventStreamTime = currentTime;
+                            appCMSPresenter.sendWatchedEvent(contentDatum, lastEventStreamTime, "2mins", bufferCount, bufferTime);
+                            sent2MinEvent = true;
+                        }
                         if (currentTime == (int) ((videoPlayerView.getDuration() / 1000) * 0.25)) {
-                            appCMSPresenter.sendWatchedEvent(contentDatum, currentTime, "25", bufferCount, bufferTime);
+                            lastEventStreamTime = currentTime - lastEventStreamTime;
+                            appCMSPresenter.sendWatchedEvent(contentDatum, lastEventStreamTime, "25", bufferCount, bufferTime);
                             bufferCount = 0;
                             bufferTime = 0;
+                            sent2MinEvent = true;
+                            sent25pctEvent = true;
                         }
                         if (currentTime == (int) ((videoPlayerView.getDuration() / 1000) * 0.5)) {
-                            appCMSPresenter.sendWatchedEvent(contentDatum, currentTime, "50", bufferCount, bufferTime);
+                            lastEventStreamTime = currentTime - lastEventStreamTime;
+                            appCMSPresenter.sendWatchedEvent(contentDatum, lastEventStreamTime, "50", bufferCount, bufferTime);
                             bufferCount = 0;
                             bufferTime = 0;
+                            sent25pctEvent = true;
+                            sent50pctEvent = true;
                         }
                         if (currentTime == (int) ((videoPlayerView.getDuration() / 1000) * 0.75)) {
-                            appCMSPresenter.sendWatchedEvent(contentDatum, currentTime, "75", bufferCount, bufferTime);
+                            lastEventStreamTime = currentTime - lastEventStreamTime;
+                            appCMSPresenter.sendWatchedEvent(contentDatum, lastEventStreamTime, "75", bufferCount, bufferTime);
                             bufferCount = 0;
                             bufferTime = 0;
+                            sent50pctEvent = true;
+                            sent75pctEvent = true;
                         }
-                        if (currentTime == (int) ((videoPlayerView.getDuration() / 1000) * 0.8))
-                            appCMSPresenter.sendWatchedEvent(contentDatum, currentTime, "80", bufferCount, bufferTime);
-                        if (currentTime == 120)
-                            appCMSPresenter.sendWatchedEvent(contentDatum, currentTime, "2mins", bufferCount, bufferTime);
+                        if (currentTime == (int) ((videoPlayerView.getDuration() / 1000) * 0.8)) {
+                            lastEventStreamTime = currentTime - lastEventStreamTime;
+                            appCMSPresenter.sendWatchedEvent(contentDatum, lastEventStreamTime, "80", bufferCount, bufferTime);
+                            sent75pctEvent = true;
+                            sent80pctEvent = true;
+                        }
+
+                        if (!sent2MinEvent && currentTime > 120 && currentTime < (int) ((videoPlayerView.getDuration() / 1000) * 0.25)) {
+                            lastEventStreamTime = currentTime - lastEventStreamTime;
+                            appCMSPresenter.sendWatchedEvent(contentDatum, lastEventStreamTime, "2mins", bufferCount, bufferTime);
+                            sent2MinEvent = true;
+                        }
+                        if (!sent25pctEvent && currentTime > (int) ((videoPlayerView.getDuration() / 1000) * 0.25) && currentTime < (int) ((videoPlayerView.getDuration() / 1000) * 0.5)) {
+                            lastEventStreamTime = currentTime - lastEventStreamTime;
+                            appCMSPresenter.sendWatchedEvent(contentDatum, lastEventStreamTime, "25", bufferCount, bufferTime);
+                            sent2MinEvent = true;
+                            sent25pctEvent = true;
+                        }
+                        if (!sent50pctEvent && currentTime > (int) ((videoPlayerView.getDuration() / 1000) * 0.5) && currentTime < (int) ((videoPlayerView.getDuration() / 1000) * 0.5)) {
+                            lastEventStreamTime = currentTime - lastEventStreamTime;
+                            appCMSPresenter.sendWatchedEvent(contentDatum, lastEventStreamTime, "50", bufferCount, bufferTime);
+                            sent25pctEvent = true;
+                            sent50pctEvent = true;
+                        }
+                        if (!sent75pctEvent && currentTime > (int) ((videoPlayerView.getDuration() / 1000) * 0.75) && currentTime < (int) ((videoPlayerView.getDuration() / 1000) * 0.8)) {
+                            lastEventStreamTime = currentTime - lastEventStreamTime;
+                            appCMSPresenter.sendWatchedEvent(contentDatum, lastEventStreamTime, "75", bufferCount, bufferTime);
+                            sent50pctEvent = true;
+                            sent75pctEvent = true;
+                        }
+                        if (!sent80pctEvent && currentTime > (int) ((videoPlayerView.getDuration() / 1000) * 0.8)) {
+                            lastEventStreamTime = currentTime - lastEventStreamTime;
+                            appCMSPresenter.sendWatchedEvent(contentDatum, lastEventStreamTime, "80", bufferCount, bufferTime);
+                            sent75pctEvent = true;
+                            sent80pctEvent = true;
+                        }
+
                     }
                     if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null && contentDatum != null &&
                             contentDatum.getGist() != null && contentDatum.getGist().getMediaType() != null &&
@@ -141,25 +199,15 @@ public class BeaconPing extends Thread {
                                     appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId()));
                         }
 
-                        if (currentTime == (int) (contentDatum.getGist().getRuntime() * 0.25)) {
-                            appCMSPresenter.sendWatchedEvent(contentDatum, currentTime, "25", bufferCount, bufferTime);
-                            bufferCount = 0;
-                            bufferTime = 0;
+                        if (currentTime == 30) {
+                            appCMSPresenter.sendWatchedEvent(contentDatum, currentTime, "30", bufferCount, bufferTime);
+                            sent30secMusicEvent = true;
                         }
-                        if (currentTime == (int) (contentDatum.getGist().getRuntime() * 0.5)) {
-                            appCMSPresenter.sendWatchedEvent(contentDatum, currentTime, "50", bufferCount, bufferTime);
-                            bufferCount = 0;
-                            bufferTime = 0;
+
+                        if (!sent30secMusicEvent && currentTime > 30) {
+                            appCMSPresenter.sendWatchedEvent(contentDatum, currentTime, "30", bufferCount, bufferTime);
+                            sent30secMusicEvent = true;
                         }
-                        if (currentTime == (int) (contentDatum.getGist().getRuntime() * 0.75)) {
-                            appCMSPresenter.sendWatchedEvent(contentDatum, currentTime, "75", bufferCount, bufferTime);
-                            bufferCount = 0;
-                            bufferTime = 0;
-                        }
-                        if (currentTime == (int) (contentDatum.getGist().getRuntime() * 0.8))
-                            appCMSPresenter.sendWatchedEvent(contentDatum, currentTime, "80", bufferCount, bufferTime);
-                        if (currentTime == 120)
-                            appCMSPresenter.sendWatchedEvent(contentDatum, currentTime, "2mins", bufferCount, bufferTime);
 
                     }
                 }

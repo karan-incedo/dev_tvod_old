@@ -773,7 +773,7 @@
     <string name="plan_type_monthly">monthly</string>
     <string name="app_cms_plan_renewal_cycle_type_yearly">YEAR</string>
     <string name="plan_type_year">year</string>
-    <string name="plan_type_yearly">annually</string>
+    <string name="plan_type_yearly">annual</string>
     <string name="app_cms_plan_renewal_cycle_type_daily">DAY</string>
     <string name="plan_type_day">day</string>
     <string name="plan_type_daily">daily</string>
@@ -1083,7 +1083,6 @@
     <string name="app_cms_download_setting_bundle_key">app_cms_download_setting_bundle_key</string>
     <string name="app_cms_download_setting_binder_key">app_cms_download_setting_binder_key</string>
     <string name="default_app_name">@string/app_name</string>
-
 
     <!--FireTV Keys.-->
     <string name="title_activity_app_cms_tv_error">AppCmsTvErrorActivity</string>

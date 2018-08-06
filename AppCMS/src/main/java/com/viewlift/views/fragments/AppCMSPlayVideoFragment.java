@@ -64,6 +64,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import rx.functions.Action1;
 
 /*
@@ -380,7 +382,6 @@ public class AppCMSPlayVideoFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_video_player, container, false);
-
         videoPlayerMainContainer =
                 rootView.findViewById(R.id.app_cms_video_player_main_container);
 

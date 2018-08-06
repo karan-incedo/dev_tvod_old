@@ -2110,7 +2110,7 @@ public class AppCMSPresenter {
                     }
                 } else {
                     if (platformType == PlatformType.ANDROID) {
-                        getAppCMSAndroid(tryCount + 1);
+                        getAppCMSAndroid(tryCount + 1,null);
                     } else if (platformType == PlatformType.TV) {
                         getAppCMSTV(tryCount + 1);
                     }
@@ -5576,7 +5576,8 @@ public class AppCMSPresenter {
             downloadVideoRealm.setVideoThumbId_DM(thumbEnqueueId);
             downloadVideoRealm.setPosterThumbId_DM(posterEnqueueId);
             downloadVideoRealm.setVideoId_DM(enqueueId);
-
+            if (contentDatum.getGist().getPrimaryCategory() != null && contentDatum.getGist().getPrimaryCategory().getTitle() != null)
+                downloadVideoRealm.setGenre(contentDatum.getGist().getPrimaryCategory().getTitle());
             if (contentDatum.getGist().getId() != null) {
                 downloadVideoRealm.setVideoId(contentDatum.getGist().getId());
 //                downloadVideoRealm.setVideoImageUrl(getPngPosterPath(contentDatum.getGist().getId()));
@@ -5587,6 +5588,7 @@ public class AppCMSPresenter {
             if (contentDatum.getGist().getTitle() != null) {
                 downloadVideoRealm.setVideoTitle(contentDatum.getGist().getTitle());
             }
+
 
             if (contentDatum.getCreditBlocks() != null && contentDatum.getCreditBlocks().size() > 0) {
 
@@ -6016,6 +6018,8 @@ public class AppCMSPresenter {
             if (updateContentDatum != null &&
                     updateContentDatum.getGist() != null &&
                     updateContentDatum.getGist().getId() != null) {
+                if (updateContentDatum.getGist().getGenre() == null)
+                    updateContentDatum.getGist().setPrimaryCategory(contentDatum.getGist().getPrimaryCategory());
                 if (contentDatum.getSeriesName() != null)
                     updateContentDatum.setSeriesName(contentDatum.getSeriesName());
                 if (updateContentDatum.getCreditBlocks() == null)
@@ -9192,6 +9196,7 @@ public class AppCMSPresenter {
                                     }
                                     sendRefreshPageAction();
                                     userIdentityAction.call(userIdentityResult);
+                                    senduserProfileEvent();
                                 } catch (Exception e) {
                                     //Log.e(TAG, "Error get user identity data: " + e.getMessage());
                                 }
@@ -11330,7 +11335,7 @@ public class AppCMSPresenter {
                               final String siteId,
                               final Uri searchQuery,
                               final PlatformType platformType,
-                              boolean bustCache) {
+                              boolean bustCache,Action1<Boolean> launchSuccessfull) {
         Log.w(TAG, "Attempting to retrieve main.json");
         //createlanguageArray();
         defaultLanguage = new Language();
@@ -11363,7 +11368,7 @@ public class AppCMSPresenter {
                                             siteId,
                                             searchQuery,
                                             platformType,
-                                            bustCache));
+                                            bustCache,launchSuccessfull));
                         } else {
                             launchBlankPage();
                         }
@@ -11402,11 +11407,12 @@ public class AppCMSPresenter {
                         if (null != defaultLanguage && null != appCMSMain.getLanguages()) {
                             ArrayList<Language> languageList = (ArrayList) appCMSMain.getLanguages().getLanguageList();
                             System.out.println("TESTS Default language = " + defaultLanguage.getLanguageCode());
+                            if(languageList!=null){
                             boolean isLanguageExistinMain = languageList.contains(defaultLanguage);
                             if (!isLanguageExistinMain) {
                                 defaultLanguage = appCMSMain.getLanguages().getDefaultlanguage();
                             }
-                            System.out.println("TESTS Default language after update = " + defaultLanguage.getLanguageCode());
+                            System.out.println("TESTS Default language after update = " + defaultLanguage.getLanguageCode());}
                         }
                         LocaleUtils.setLocale(currentContext, defaultLanguage.getLanguageCode());
                         setLanguage(defaultLanguage);
@@ -11424,7 +11430,7 @@ public class AppCMSPresenter {
                         }
                         Utils.setHls(appCMSMain.isHls());
 
-                        getAppCMSSite(platformType);
+                        getAppCMSSite(platformType,launchSuccessfull);
                     }
                 } catch (Exception e) {
                     //Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
@@ -12957,7 +12963,8 @@ public class AppCMSPresenter {
         String contentType = searchResultClick[5];
         String gistId = searchResultClick[6];
         //Log.d(TAG, "Launching " + permalink + ":" + action);
-
+        setPlaySource("");
+        setPlaySource("Search List");
         /*get audio details on tray click item and play song*/
         if (mediaType.toLowerCase().contains(currentContext.getString(R.string.app_cms_article_key_type).toLowerCase())) {
             setCurrentArticleIndex(-1);
@@ -12987,6 +12994,7 @@ public class AppCMSPresenter {
         /*Get playlist data and open playlist page*/
         if (mediaType != null
                 && mediaType.toLowerCase().contains(currentContext.getString(R.string.media_type_playlist).toLowerCase())) {
+            setPlaySource(getPlaySource() + "_Playlist Screen - " + title);
             navigateToPlaylistPage(gistId, title, false);
             return;
         }
@@ -13218,6 +13226,7 @@ public class AppCMSPresenter {
             if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
                 setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
             }
+            senduserProfileEvent();
 
 /*
             if (currentContext != null && currentContext instanceof AppCMSApplication) {
@@ -13425,6 +13434,7 @@ public class AppCMSPresenter {
             //Log.e(TAG, "Failed to update user subscription status");
             stopLoader();
         }
+        senduserProfileEvent();
     }
 
     public List<SubscriptionPlan> availablePlans() {
@@ -14806,7 +14816,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private void getAppCMSSite(final PlatformType platformType) {
+    private void getAppCMSSite(final PlatformType platformType,Action1<Boolean> launchSuccessfull) {
         Log.w(TAG, "Attempting to retrieve site.json");
         if (currentActivity != null) {
             //Log.d(TAG, "Retrieving site.json");
@@ -14827,7 +14837,7 @@ public class AppCMSPresenter {
                                         .build();
                                 switch (platformType) {
                                     case ANDROID:
-                                        getAppCMSAndroid(0);
+                                        getAppCMSAndroid(0,launchSuccessfull);
                                         break;
 
                                     case TV:
@@ -15067,7 +15077,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private void getAppCMSAndroid(int tryCount) {
+    private void getAppCMSAndroid(int tryCount,Action1<Boolean> launchSuccessfull) {
         //Log.d(TAG, "Attempting to retrieve android.json");
         try {
             GetAppCMSAndroidUIAsyncTask.Params params =
@@ -15085,7 +15095,7 @@ public class AppCMSPresenter {
                             appCMSAndroidUI.getMetaPages().isEmpty()) {
                         //Log.e(TAG, "AppCMS keys for pages for appCMSAndroid not found");
                         if (tryCount < 2) {
-                            getAppCMSAndroid(tryCount + 1);
+                            getAppCMSAndroid(tryCount + 1,launchSuccessfull);
                         } else {
                             launchBlankPage();
                         }
@@ -15109,7 +15119,7 @@ public class AppCMSPresenter {
                                     this.appCMSAndroidModules = appCMSAndroidModules;
                                     this.processedUIModules = true;
                                     if (processedUIModules && processedUIPages) {
-                                        finalizeLaunch(tryCount);
+                                        finalizeLaunch(tryCount,launchSuccessfull);
                                     }
                                 });
 
@@ -15135,7 +15145,7 @@ public class AppCMSPresenter {
                                         processedUIPages = true;
 
                                         if (processedUIModules && processedUIPages) {
-                                            finalizeLaunch(tryCount);
+                                            finalizeLaunch(tryCount,launchSuccessfull);
                                         }
                                     },
                                     loadFromFile,
@@ -15150,7 +15160,7 @@ public class AppCMSPresenter {
                                     () -> {
                                         this.processedUIPages = true;
                                         if (processedUIModules && processedUIPages) {
-                                            finalizeLaunch(tryCount);
+                                            finalizeLaunch(tryCount,launchSuccessfull);
                                         }
                                     });
                         }
@@ -15166,12 +15176,12 @@ public class AppCMSPresenter {
         }
     }
 
-    private void finalizeLaunch(int tryCount) {
+    private void finalizeLaunch(int tryCount,Action1<Boolean> launchSuccessfull) {
         Log.w(TAG, "Finalizing launch");
         if (!isNetworkConnected()) {
             if (getPlatformType() == PlatformType.ANDROID) {
                 openDownloadScreenForNetworkError(true,
-                        () -> getAppCMSAndroid(tryCount));
+                        () -> getAppCMSAndroid(tryCount,launchSuccessfull));
             } else {
                 launchBlankPage();
             }
@@ -15273,6 +15283,7 @@ public class AppCMSPresenter {
                             true,
                             false,
                             deeplinkSearchQuery);
+                    launchSuccessfull.call(true);
                     if (!launchSuccess) {
                         launchBlankPage();
                     }
@@ -16061,7 +16072,7 @@ public class AppCMSPresenter {
                             this.processedUIModules = true;
                             if (processedUIModules && processedUIPages) {
                                 processedUIModules = false;
-                                finalizeLaunch(tryCount);
+                                finalizeLaunch(tryCount,null);
                             }
 
                         });
@@ -16091,7 +16102,7 @@ public class AppCMSPresenter {
                                 processedUIPages = true;
                                 if (processedUIModules && processedUIPages) {
                                     processedUIPages = false;
-                                    finalizeLaunch(tryCount);
+                                    finalizeLaunch(tryCount,null);
                                 }
                             },
                             loadFromFile,
@@ -16104,7 +16115,7 @@ public class AppCMSPresenter {
                     processMetaPagesList(loadFromFile,
                             appCMSAndroidUI.getMetaPages(),
                             () -> {
-                                finalizeLaunch(tryCount);
+                                finalizeLaunch(tryCount,null);
                             });
                 }
             }
@@ -17452,7 +17463,8 @@ public class AppCMSPresenter {
             navigateToPhotoGalleryPage(gistId, title, null, false);
             return;
         }
-
+        if (action.contains(currentContext.getString(R.string.app_cms_action_detailvideopage_key)))
+            setPlaySource(getPlaySource() + "_Video Detail");
 
         if (!launchButtonSelectedAction(permalink,
                 action,
@@ -20405,8 +20417,10 @@ public class AppCMSPresenter {
 
     public void initializeCleverTap() {
         checkCleverTapAvailability();
-        if (isCleverTapAvailable)
+        if (isCleverTapAvailable) {
             cleverTapSDK.initializeSDK(this);
+            senduserProfileEvent();
+        }
     }
 
     public void senduserProfileEvent() {
@@ -20419,23 +20433,45 @@ public class AppCMSPresenter {
                             String userStatus = "Subscribed";
                             if (!isUserSubscribed())
                                 userStatus = "Not Subscribed";
-                            String subscriptionStartDate = getUserSubscriptionInfo().getSubscriptionStartDate();
-                            String subscriptionEndDate = getUserSubscriptionInfo().getSubscriptionEndDate();
-                            String transId = getUserSubscriptionInfo().getVlTransactionId();
-                            String country = getUserSubscriptionInfo().getCountryCode();
-                            double discountPrice = getUserSubscriptionInfo().getTotalAmount();
+                            if (!isUserLoggedIn())
+                                userStatus = "Anonymous";
+                            if (isUserLoggedIn() && getUserSubscriptionInfo() == null)
+                                userStatus = "Never subscribed";
+                            String subscriptionStartDate = "";
+                            String subscriptionEndDate = "";
+                            String transId = "";
+                            String country = "";
+                            double discountPrice = 0;
+                            String planName = "";
+                            String paymentHandler = "";
+                            String paymentMode = "";
+                            boolean freeTrial = false;
+                            if (getUserSubscriptionInfo() != null) {
+                                subscriptionStartDate = getUserSubscriptionInfo().getSubscriptionStartDate();
+                                subscriptionEndDate = getUserSubscriptionInfo().getSubscriptionEndDate();
+                                transId = getUserSubscriptionInfo().getVlTransactionId();
+                                country = getUserSubscriptionInfo().getCountryCode();
+                                Locale loc = new Locale("", country);
+                                country = loc.getDisplayCountry();
+                                discountPrice = planToPurchaseDiscountedPrice;
+                                planName = getUserSubscriptionInfo().getIdentifier();
+                                paymentHandler = getUserSubscriptionInfo().getPaymentHandler();
+                                if (paymentHandler.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ccavenue_payment_processor))) {
+                                    paymentHandler = currentActivity.getString(R.string.subscription_ccavenue_payment_processor_friendly);
+                                }
+                                freeTrial = getUserSubscriptionInfo().getFreeTrial();
+                                paymentMode = getUserSubscriptionInfo().getBrand();
+                            }
                             double planPrice = planToPurchasePrice;
                             String currency = currencyCode;
-                            String planName = getUserSubscriptionInfo().getIdentifier();
-                            String paymentHandler = getUserSubscriptionInfo().getPaymentHandler();
-                            boolean freeTrial = getUserSubscriptionInfo().getFreeTrial();
-                            String mobile = userIdentity.getPhone().getNumber();
+                            String mobile = "";
+                            if (userIdentity != null && userIdentity.getPhone() != null && userIdentity.getPhone().getNumber() != null)
+                                mobile = userIdentity.getPhone().getNumber();
 
                             cleverTapSDK.sendUserProfile(getLoggedInUser(), getLoggedInUserName(), getLoggedInUserEmail(),
                                     userStatus, subscriptionStartDate, subscriptionEndDate, transId, country, discountPrice,
-                                    planPrice, currency, planName, paymentHandler, freeTrial, mobile);
+                                    planPrice, currency, planName, paymentHandler, freeTrial, mobile, paymentMode,userIdentity.getProvider());
                         } catch (Exception e) {
-                            //
                         }
                     });
 
@@ -20496,6 +20532,8 @@ public class AppCMSPresenter {
             if (useCCAvenue())
                 paymentHandler = "CCAvenue";
             String country = countryCode;
+            Locale loc = new Locale("", country);
+            country = loc.getDisplayCountry();
             double discountPrice = planToPurchaseDiscountedPrice;
             double planPrice = planToPurchasePrice;
             String currency = currencyCode;
@@ -20539,12 +20577,23 @@ public class AppCMSPresenter {
     }
 
     public void sendSearchEvent(String keyword) {
-        if (isCleverTapAvailable)
+        if (isCleverTapAvailable) {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             cleverTapSDK.sendEventSearch(keyword);
+        }
     }
 
     public void sendDownloadCompleteEvent(long downloadId) {
         if (isCleverTapAvailable) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             DownloadVideoRealm videoDownloaded = getVideoDownloadedByDMID(downloadId);
             if (videoDownloaded != null) {
                 ContentDatum contentDatum = videoDownloaded.convertToContentDatum(getLoggedInUser());
@@ -20593,7 +20642,7 @@ public class AppCMSPresenter {
 
     String playSource = "";
 
-    boolean isCleverTapAvailable = false;
+   public boolean isCleverTapAvailable = false;
 
     private void checkCleverTapAvailability() {
         if (getCurrentActivity().getString(R.string.app_cms_clevertap_acc_id) != null &&
@@ -20603,5 +20652,13 @@ public class AppCMSPresenter {
             isCleverTapAvailable = true;
     }
 
+    public String getCurrentVideoStreamingQuality() {
+        return currentVideoStreamingQuality;
+    }
 
+    public void setCurrentVideoStreamingQuality(String currentVideoStreamingQuality) {
+        this.currentVideoStreamingQuality = currentVideoStreamingQuality;
+    }
+
+    String currentVideoStreamingQuality;
 }

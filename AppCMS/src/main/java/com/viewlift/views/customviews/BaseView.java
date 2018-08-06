@@ -1252,6 +1252,11 @@ public abstract class BaseView extends FrameLayout {
                 case PAGE_PLAN_FEATURE_TEXT_KEY:
                     if (componentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
                         gravity = Gravity.RIGHT | Gravity.CENTER_VERTICAL;
+                        if (isTablet(getContext())) {
+                            if (isLandscape(getContext())) {
+                                rm = Math.round(DEVICE_WIDTH * (layout.getTabletLandscape().getRightMargin() / STANDARD_TABLET_WIDTH_PX));
+                            }
+                        }
                     }
                     break;
 
