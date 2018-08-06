@@ -43,13 +43,4 @@ public class Language implements Serializable,BaseInterface {
         }
         return isEqual;
     }
-
-    public ContentDatum convertToContentDatum(){
-        ContentDatum contentDatum = new ContentDatum();
-        Gist gist = new Gist();
-        gist.setTitle(languageName);
-        gist.setDataId(languageCode);
-        contentDatum.setGist(gist);
-        return contentDatum;
-    }
 }
