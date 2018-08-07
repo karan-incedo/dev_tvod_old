@@ -1398,13 +1398,14 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     }
 
     private void openChangeLanguageScreen(Intent intent){
-        Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
-        AppCMSBinder appCMSBinder = (AppCMSBinder) bundle.get(getString(R.string.app_cms_binder_key));
+       /* Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
+        AppCMSBinder appCMSBinder = (AppCMSBinder) bundle.get(getString(R.string.app_cms_binder_key));*/
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        AppCmsChangelanguageFragment appCmsChangelanguageFragment = AppCmsChangelanguageFragment.newInstance(appCMSBinder
-        );
+        AppCmsChangelanguageFragment appCmsChangelanguageFragment = AppCmsChangelanguageFragment.newInstance(
+                );
         appCmsChangelanguageFragment.show(ft, DIALOG_FRAGMENT_TAG);
         Utils.pageLoading(false, this);
+
     }
 
     public void shouldShowLeftNavigation(boolean shouldShowLeftnav) {

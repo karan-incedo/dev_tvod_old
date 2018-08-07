@@ -223,7 +223,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                             data.getContentDetails().getClosedCaptions() != null) {
                         for (ClosedCaptions closedCaption :
                                 data.getContentDetails().getClosedCaptions()) {
-                            if ("SRT".equalsIgnoreCase(closedCaption.getFormat())) {
+                            if (closedCaption.getFormat().equalsIgnoreCase("SRT")) {
                                 extraData[3] = closedCaption.getUrl();
                                 break;
                             }
