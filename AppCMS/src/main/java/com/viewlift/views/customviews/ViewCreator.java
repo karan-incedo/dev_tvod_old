@@ -1908,8 +1908,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "show_detail.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } else
-                if (moduleInfo.getBlockName().contains("gameDetail01")) {
+                } else if (moduleInfo.getBlockName().contains("gameDetail01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "game_detail.json"),
                             AppCMSPageUI.class);
@@ -1924,7 +1923,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "roster.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                }*/else if (moduleInfo.getBlockName().contains("articleTray01")) {
+                }*/ else if (moduleInfo.getBlockName().contains("articleTray01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
@@ -2069,6 +2068,12 @@ public class ViewCreator {
                     }
                 }
 
+                /**
+                 * Code block for handling Remove Download/AutoPlay Option from Screen
+                 */
+                if (module.getBlockName().contains("userManagement") && (!appCMSPresenter.isDownloadEnable() || !appCMSPresenter.isAutoPlayEnable())) {
+                 //   module = updateModuleForUserManagment(module, appCMSPresenter, jsonValueKeyMap);
+                }
                 View childView = createModuleView(context, module, moduleAPI,
                         appCMSAndroidModules,
                         pageView,
@@ -2219,6 +2224,7 @@ public class ViewCreator {
                                     false,
                                     module.getView(),
                                     module.getId());
+
                         } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
@@ -5507,9 +5513,9 @@ public class ViewCreator {
                                     if (moduleAPI.getContentData().get(0).getGist().getPublishDate() != null) {
                                         publishDateMillseconds = Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate());
                                         String publishDate = context.getResources().getString(R.string.published_on) + " " + AppCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd, yyyy");
-                                        if (runtime ==0 ){
-                                            builder.replace(0,secondsToTime.length(),publishDate);
-                                        }else {
+                                        if (runtime == 0) {
+                                            builder.replace(0, secondsToTime.length(), publishDate);
+                                        } else {
                                             builder.append(" | ");
                                             builder.append(publishDate);
                                         }
@@ -6441,6 +6447,7 @@ public class ViewCreator {
 
             case PAGE_SETTINGS_KEY:
                 if (moduleAPI != null) {
+
                     componentViewResult.componentView = createModuleView(context,
                             component,
                             moduleAPI,
@@ -6448,6 +6455,7 @@ public class ViewCreator {
                             pageView,
                             jsonValueKeyMap,
                             appCMSPresenter);
+
                 }
                 break;
 
@@ -6547,7 +6555,7 @@ public class ViewCreator {
                                 .getDownloadOverCellularEnabled());
                         componentViewResult.componentView.setEnabled(true);
                         ((Switch) componentViewResult.componentView).setChecked(appCMSPresenter.getDownloadOverCellularEnabled());
-                    }else {
+                    } else {
                         componentViewResult.componentView.setEnabled(false);
                         ((Switch) componentViewResult.componentView).setChecked(false);
                     }
@@ -7605,8 +7613,8 @@ public class ViewCreator {
                                         imageButton.setOnClickListener(addClickListener);
                                 }
                             });
-                        } else if( appCMSPresenter.getAppCMSMain() != null
-                                && appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()){
+                        } else if (appCMSPresenter.getAppCMSMain() != null
+                                && appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()) {
                             appCMSPresenter.showDownloadQualityScreen(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this);
                         }
                     }
@@ -8037,6 +8045,41 @@ public class ViewCreator {
         public void updateMeasureState(TextPaint paint) {
             paint.baselineShift += (int) (paint.ascent() * ratio);
         }
+    }
+
+
+    public ModuleList updateModuleForUserManagment(final ModuleList moduleList, AppCMSPresenter appCMSPresenter, Map<String, AppCMSUIKeyType> jsonAppKeyMapUI) {
+        ArrayList<Component> components = moduleList.getComponents();
+        for (Component component : components) {
+            if (component.getKey() != null
+                    && (jsonAppKeyMapUI.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_DOWNLOADS_MODULE_KEY
+                    || component.getKey().equalsIgnoreCase("Manage App Settings")
+                    || component.getKey().equalsIgnoreCase("settings"))
+                    &&(!appCMSPresenter.isAutoPlayEnable() || !appCMSPresenter.isDownloadEnable())
+                    ) {
+                if (jsonAppKeyMapUI.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_DOWNLOADS_MODULE_KEY
+                        && !appCMSPresenter.isDownloadEnable()) {
+                    components.remove(component);
+                } else {
+                    ArrayList<Component> childComponetList = component.getComponents();
+                    for (Component childComponet : childComponetList) {
+                        if (childComponet.getKey() != null
+                                && childComponet.getKey().contains("autoplay")
+                                && !appCMSPresenter.isAutoPlayEnable()) {
+                            childComponetList.remove(childComponet);
+                        }else if (childComponet.getKey() != null
+                                && childComponet.getKey().contains("Downloads")
+                                &&  !appCMSPresenter.isDownloadEnable()){
+                            childComponetList.remove(childComponet);
+                        }
+
+                    }
+                    component.setComponents(childComponetList);
+                }
+            }
+        }
+        moduleList.setComponents(components);
+        return moduleList;
     }
 }
 

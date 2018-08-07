@@ -25,7 +25,7 @@
         <activity
             android:name=".views.activity.AppCMSPageActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden|adjustPan">
             <meta-data
                 android:name="android.app.default_searchable"

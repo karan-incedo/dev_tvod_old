@@ -2057,6 +2057,14 @@ public class AppCMSPresenter {
         }
         return false;
     }
+    public boolean isAutoPlayEnable() {
+        if (getAppCMSMain() != null &&
+                getAppCMSMain().getFeatures() != null &&
+                getAppCMSMain().getFeatures().isAutoPlay()) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * This will make a call to the anonymous user API to retrieve an anonymous user token.
