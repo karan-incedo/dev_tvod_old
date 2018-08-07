@@ -53,7 +53,7 @@ import java.util.Map;
 import rx.functions.Action1;
 
 /**
- * Created by viewlift on 6/14/17.st
+ * Created by viewlift on 6/14/17.
  * Owned by ViewLift, NYC
  */
 
@@ -361,7 +361,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             for (ClosedCaptions cc : binder.getContentData().getContentDetails().getClosedCaptions()) {
                 if (cc.getUrl() != null) {
                     if ((cc.getFormat() != null &&
-                            cc.getFormat().equalsIgnoreCase("srt")) ||
+                            "srt".equalsIgnoreCase(cc.getFormat())) ||
                             cc.getUrl().toLowerCase().contains("srt")) {
                         closedCaptionUrl = cc.getUrl();
                     }
@@ -742,7 +742,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
             if (closedCaptions != null) {
                 for (ClosedCaptions captions : closedCaptions) {
-                    if (captions != null && captions.getFormat() != null && captions.getFormat().equalsIgnoreCase("SRT")) {
+                    if ("SRT".equalsIgnoreCase(captions.getFormat())) {
                         closedCaptionsList.add(captions);
                     }
                 }
@@ -765,7 +765,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
             if (closedCaptions != null) {
                 for (ClosedCaptions captions : closedCaptions) {
-                    if (captions.getFormat().equalsIgnoreCase("SRT")) {
+                    if ("SRT".equalsIgnoreCase(captions.getFormat())) {
                         closedCaptionsList.add(captions);
                     }
                 }

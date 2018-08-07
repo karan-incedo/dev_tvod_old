@@ -31,7 +31,7 @@ public class AppCMSEntitlementResponse {
 
     @SerializedName("dfp")
     @Expose
-    private Object dfp;
+    private List<DfpAds> dfp;
 
     @SerializedName("errorMessage")
     @Expose
@@ -76,11 +76,11 @@ public class AppCMSEntitlementResponse {
         this.playable = playable;
     }
 
-    public Object getDfp() {
+    public List<DfpAds> getDfp() {
         return dfp;
     }
 
-    public void setDfp(Object dfp) {
+    public void setDfp(List<DfpAds> dfp) {
         this.dfp = dfp;
     }
 
