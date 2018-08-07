@@ -636,7 +636,39 @@ public class CollectionGridItemView extends BaseView {
                         } catch (IllegalArgumentException e) {
                             //Log.e(TAG, "Failed to load image with Glide: " + e.toString());
                         }
-                    } else if (data != null && data.getGist() != null &&
+                    } /*else if (data != null && data.getGist() != null &&
+                                data.getGist().getImageGist() != null &&
+                            componentKey == AppCMSUIKeyType.PAGE_MYLIBRARY_01_MODULE_KEY &&
+                            0 < childViewWidth &&
+                            0 < childViewHeight) {
+                        if (childViewWidth < childViewHeight &&
+                                data.getGist().getImageGist().get_3x4() != null &&
+                                data.getGist().getBadgeImages().get_3x4() != null &&
+                                componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY &&
+                                0 < childViewWidth &&
+                                0 < childViewHeight) {
+                            ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
+
+                            String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getBadgeImages().get_3x4(),
+                                    childViewWidth,
+                                    childViewHeight);
+
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
+                                RequestOptions requestOptions = new RequestOptions()
+                                        .override(childViewWidth, childViewHeight)
+                                        .fitCenter()
+                                        .placeholder(placeholder);
+//                                        .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL);
+                                Glide.with(context)
+                                        .load(imageUrl)
+                                        .apply(requestOptions)
+                                        .into((ImageView) view);
+                            }
+                        }
+                        view.setVisibility(VISIBLE);
+                        bringToFront = true;
+                    }*/else if (data != null && data.getGist() != null &&
                             data.getGist().getImageGist() != null &&
                             data.getGist().getBadgeImages() != null &&
                             componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY &&
@@ -750,7 +782,7 @@ public class CollectionGridItemView extends BaseView {
                                 .apply(requestOptions)
                                 .into(imageView);
                         ((ImageView) view).setScaleType(ImageView.ScaleType.FIT_XY);
-                    } else if (data.getGist().getLandscapeImageUrl() != null) {
+                    } else if (data!=null && data.getGist()!=null && data.getGist().getLandscapeImageUrl() != null) {
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getLandscapeImageUrl(),
                                 childViewWidth,
@@ -1481,8 +1513,24 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setSingleLine(true);
                             ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                             ((TextView) view).setVisibility(View.VISIBLE);
+//                            ((TextView) view).setBackground(context.getResources().getDrawable(R.drawable.rectangle_with_round_corners,null));
+//                            ((TextView) view).setTextColor(R.color.color_white);
                         }
-                    } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_DESCRIPTION_KEY ||
+                    }  else if (componentKey == AppCMSUIKeyType.PAGE_EXPIRE_TIME_TITLE) {
+                    if (data.getGist() != null && data.getGist().getTransactionDateEpoch() > 0) {
+                        ((TextView) view).setSingleLine(true);
+                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        ((TextView) view).setVisibility(View.VISIBLE);
+                        long eventDate = data.getGist().getTransactionDateEpoch();
+
+                        long remainingTime = appCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L, "EEE MMM dd HH:mm:ss");
+
+                        String expirationTime=appCMSPresenter.getRentExpirationFormat(remainingTime);
+                        ((TextView) view).setBackground(context.getResources().getDrawable(R.drawable.rectangle_with_round_corners,null));
+                        ((TextView) view).setText(expirationTime);
+
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_DESCRIPTION_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_DESCRIPTION_KEY) {
                         if (data != null && data.getGist() != null && data.getGist().getDescription() != null) {

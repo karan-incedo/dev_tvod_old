@@ -4,6 +4,8 @@
     package="com.viewlift">
 
 
+
+
     <application
         android:name=".AppCMSApplication"
         android:allowBackup="true"
@@ -138,6 +140,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

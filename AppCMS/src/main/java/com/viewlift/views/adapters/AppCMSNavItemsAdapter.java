@@ -217,7 +217,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     && (i - indexOffset) < navigation.getNavigationUser().size()) {
                 final NavigationUser navigationUser = navigation.getNavigationUser().get(i - indexOffset);
 
-                if (navigationUser.getAccessLevels() != null) {
+    if (navigationUser!=null && navigationUser.getAccessLevels() != null && navigationUser.getTitle()!=null) {
                     if (userLoggedIn && navigationUser.getAccessLevels().getLoggedIn() ||
                             !userLoggedIn && navigationUser.getAccessLevels().getLoggedOut()) {
                         viewHolder.navItemLabel.setText(navigationUser.getTitle().toUpperCase());
@@ -280,6 +280,30 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                     appCMSPresenter.navigateToWatchlistPage(navigationUser.getPageId(),
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;
+
+                                case ANDROID_LIBRARY_NAV_KEY:
+                                case ANDROID_LIBRARY_SCREEN_KEY:
+                                    if (!appCMSPresenter.isNetworkConnected()) {
+                                        if (!appCMSPresenter.isUserLoggedIn()) {
+                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
+                                                    appCMSPresenter::launchBlankPage,
+                                                    null);
+                                            return;
+                                        }
+                                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                                                appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
+                                                true,
+                                                () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
+                                                        null, null, false),
+                                                null);
+                                        return;
+                                    }
+                                    appCMSPresenter.showLoadingDialog(true);
+                                    appCMSPresenter.navigateToLibraryPage(navigationUser.getPageId(),
+                                            navigationUser.getTitle(), false);
+                                    break;
+
+
 
                                 case ANDROID_HISTORY_NAV_KEY:
                                 case ANDROID_HISTORY_SCREEN_KEY:

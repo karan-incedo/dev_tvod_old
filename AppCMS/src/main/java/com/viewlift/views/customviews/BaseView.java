@@ -1113,6 +1113,8 @@ public abstract class BaseView extends FrameLayout {
                             AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY != jsonValueKeyMap.get(viewType)
                             && AppCMSUIKeyType.PAGE_DOWNLOAD_01_MODULE_KEY != jsonValueKeyMap.get(viewType)
                             && AppCMSUIKeyType.PAGE_DOWNLOAD_02_MODULE_KEY != jsonValueKeyMap.get(viewType)
+                            && AppCMSUIKeyType.PAGE_MYLIBRARY_01_MODULE_KEY != jsonValueKeyMap.get(viewType)
+
                             && AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY != jsonValueKeyMap.get(viewType)
                             && componentViewType != AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
                         gravity = Gravity.CENTER;
@@ -1340,13 +1342,16 @@ public abstract class BaseView extends FrameLayout {
                 case PAGE_DOWNLOAD_DURATION_KEY:
                 case PAGE_GRID_THUMBNAIL_INFO:
                 case PAGE_GRID_PHOTO_GALLERY_THUMBNAIL_INFO:
+                case PAGE_MYLIBRARY_01_MODULE_KEY:
+
                     int padding = childComponent.getPadding();
                     view.setPadding(padding, 0, padding, 0);
                     if (jsonValueKeyMap.get(viewType) != null &&
                             (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_ARTICLE_TRAY_KEY ||
                                     jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_02_MODULE_KEY ||
                                     jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_03_MODULE_KEY ||
-                                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
+
+                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
                         int thumbnailWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
                         int thumbnailHeight = (int) getThumbnailHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
                         if (thumbnailHeight < thumbnailWidth) {
@@ -1362,6 +1367,8 @@ public abstract class BaseView extends FrameLayout {
                             jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_DOWNLOAD_01_MODULE_KEY ||
                             jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_DOWNLOAD_02_MODULE_KEY ||
                             jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY ||
+                            jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_MYLIBRARY_01_MODULE_KEY ||
+
                             jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY) {
                         int thumbnailWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
                         int thumbnailHeight = (int) getThumbnailHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
