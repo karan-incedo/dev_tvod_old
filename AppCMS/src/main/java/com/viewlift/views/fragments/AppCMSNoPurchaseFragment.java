@@ -1,13 +1,21 @@
 package com.viewlift.views.fragments;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -19,10 +27,13 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.viewlift.AppCMSApplication;
@@ -32,9 +43,6 @@ import com.viewlift.presenters.AppCMSPresenter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * Created by viewlift on 7/17/17.
- */
 
 public class AppCMSNoPurchaseFragment extends DialogFragment {
     private static final String TAG = "MoreFragment";
@@ -48,8 +56,13 @@ public class AppCMSNoPurchaseFragment extends DialogFragment {
         return fragment;
     }
 
-    @BindView(R.id.app_cms_close_button)
-    ImageButton appCMSCloseButton;
+//    @BindView(R.id.app_cms_close_button)
+//    ImageButton appCMSCloseButton;
+
+
+
+    @BindView(R.id.app_cms_container_layout_parent)
+    ImageView app_cms_container_layout_parent;
 
     @BindView(R.id.app_cms_more_text)
     TextView appCMSMoreText;
@@ -69,10 +82,6 @@ public class AppCMSNoPurchaseFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_no_purchase, container, false);
 
 
-//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-//        params.setMargins(3, 100, 3, 0);
-//        view.setLayoutParams(params);
-
         ButterKnife.bind(this, view);
 
         Bundle args = getArguments();
@@ -82,6 +91,7 @@ public class AppCMSNoPurchaseFragment extends DialogFragment {
                 .appCMSPresenter();
 
         app_cms_back_to_desc.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
+        app_cms_back_to_desc.setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
 
         String textColor = "#ffffffff";
         try {
@@ -90,7 +100,16 @@ public class AppCMSNoPurchaseFragment extends DialogFragment {
             //Log.e(TAG, "Could not retrieve text color from AppCMS Brand: " + e.getMessage());
         }
 
-        appCMSCloseButton.setOnClickListener((v) -> {
+//        appCMSCloseButton.setOnClickListener((v) -> {
+//            dismiss();
+//            if (appCMSPresenter != null) {
+//                appCMSPresenter.popActionInternalEvents();
+//                appCMSPresenter.setNavItemToCurrentAction(getActivity());
+//                appCMSPresenter.showMainFragmentView(true);
+//            }
+//        });
+
+        app_cms_back_to_desc.setOnClickListener((v) -> {
             dismiss();
             if (appCMSPresenter != null) {
                 appCMSPresenter.popActionInternalEvents();
@@ -125,6 +144,23 @@ public class AppCMSNoPurchaseFragment extends DialogFragment {
         } catch (Exception e) {
             setBgColor(ContextCompat.getColor(getContext(), android.R.color.black));
         }
+        WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
+
+        app_cms_container_layout_parent.setAlpha(0.96f);
+        final Activity activity = getActivity();
+        final View content = activity.findViewById(android.R.id.content).getRootView();
+        if (app_cms_container_layout_parent.getWidth() > 0 && app_cms_container_layout_parent.getHeight()>0) {
+            Bitmap image = new BlurBuilder().blur(app_cms_container_layout_parent);
+            app_cms_container_layout_parent.setBackgroundDrawable(new BitmapDrawable(activity.getResources(), image));
+        } /*else {
+            content.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    Bitmap image = new BlurBuilder().blur(app_cms_container_layout_parent);
+                    app_cms_container_layout_parent.setBackgroundDrawable(new BitmapDrawable(activity.getResources(), image));
+                }
+            });
+        }*/
 
         return view;
     }
@@ -165,51 +201,83 @@ public class AppCMSNoPurchaseFragment extends DialogFragment {
 //            window.setLayout(width, height);
             window.setGravity(Gravity.BOTTOM);
             WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
-            params.gravity=Gravity.CENTER;
+            params.gravity = Gravity.CENTER;
             params.y = 150;
 //            params.verticalMargin=200;
             dialog.getWindow().setAttributes(params);
             Context context = dialog.getContext();
 
-            Point displaySize = getDisplayDimensions( context );
+            Point displaySize = getDisplayDimensions(context);
             int width = displaySize.x - 0 - 0;
             int height = displaySize.y - 150 - 0;
-            window.setLayout( width, height );
+            window.setLayout(width, height);
         }
-
 
 
     }
 
     @NonNull
-    public static Point getDisplayDimensions(Context context )
-    {
-        WindowManager wm = ( WindowManager ) context.getSystemService( Context.WINDOW_SERVICE );
+    public static Point getDisplayDimensions(Context context) {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
 
         DisplayMetrics metrics = new DisplayMetrics();
-        display.getMetrics( metrics );
+        display.getMetrics(metrics);
         int screenWidth = metrics.widthPixels;
         int screenHeight = metrics.heightPixels;
 
         // find out if status bar has already been subtracted from screenHeight
-        display.getRealMetrics( metrics );
+        display.getRealMetrics(metrics);
         int physicalHeight = metrics.heightPixels;
-        int statusBarHeight = getStatusBarHeight( context );
+        int statusBarHeight = getStatusBarHeight(context);
         int navigationBarHeight = 100;//dpToPx(100);//getNavigationBarHeight( context );
         int heightDelta = physicalHeight - screenHeight;
-        if ( heightDelta == 0 || heightDelta == navigationBarHeight )
-        {
+        if (heightDelta == 0 || heightDelta == navigationBarHeight) {
             screenHeight -= statusBarHeight;
         }
 
-        return new Point( screenWidth, screenHeight );
+        return new Point(screenWidth, screenHeight);
     }
-    public static int getStatusBarHeight( Context context )
-    {
+
+    public class BlurBuilder {
+        private static final float BITMAP_SCALE = 0.4f;
+        private static final float BLUR_RADIUS = 7.5f;
+
+        public  Bitmap blur(View v) {
+            return blur(v.getContext(), getScreenshot(v));
+        }
+
+        public Bitmap blur(Context ctx, Bitmap image) {
+            int width = Math.round(image.getWidth() * BITMAP_SCALE);
+            int height = Math.round(image.getHeight() * BITMAP_SCALE);
+
+            Bitmap inputBitmap = Bitmap.createScaledBitmap(image, width, height, false);
+            Bitmap outputBitmap = Bitmap.createBitmap(inputBitmap);
+
+            RenderScript rs = RenderScript.create(ctx);
+            ScriptIntrinsicBlur theIntrinsic = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
+            Allocation tmpIn = Allocation.createFromBitmap(rs, inputBitmap);
+            Allocation tmpOut = Allocation.createFromBitmap(rs, outputBitmap);
+            theIntrinsic.setRadius(BLUR_RADIUS);
+            theIntrinsic.setInput(tmpIn);
+            theIntrinsic.forEach(tmpOut);
+            tmpOut.copyTo(outputBitmap);
+
+            return outputBitmap;
+        }
+
+        private Bitmap getScreenshot(View v) {
+            Bitmap b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas c = new Canvas(b);
+            v.draw(c);
+            return b;
+        }
+    }
+
+    public static int getStatusBarHeight(Context context) {
         Resources resources = context.getResources();
-        int resourceId = resources.getIdentifier( "status_bar_height", "dimen", "android" );
-        return ( resourceId > 0 ) ? resources.getDimensionPixelSize( resourceId ) : 0;
+        int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
+        return (resourceId > 0) ? resources.getDimensionPixelSize(resourceId) : 0;
     }
 //    public static int dpToPx(int dp) {
 //        DisplayMetrics metrics = getActivity().getResources().getDisplayMetrics();

@@ -85,9 +85,6 @@ import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.apptentive.android.sdk.Apptentive;
-import com.clevertap.android.sdk.CleverTapAPI;
-import com.clevertap.android.sdk.exceptions.CleverTapMetaDataNotFoundException;
-import com.clevertap.android.sdk.exceptions.CleverTapPermissionsNotSatisfied;
 import com.facebook.AccessToken;
 import com.facebook.FacebookRequestError;
 import com.facebook.GraphRequest;
@@ -131,15 +128,16 @@ import com.viewlift.models.billing.appcms.subscriptions.SkuDetails;
 import com.viewlift.models.billing.utils.IabHelper;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSEventArchieveResult;
-import com.viewlift.models.data.appcms.api.AppCMSContentDetail;
 import com.viewlift.models.data.appcms.api.AppCMSLibraryResult;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.AppCMSRentalResponse;
 import com.viewlift.models.data.appcms.api.AppCMSRosterResult;
 import com.viewlift.models.data.appcms.api.AppCMSScheduleResult;
 import com.viewlift.models.data.appcms.api.AppCMSShowDetail;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.AppCMSStandingResult;
 import com.viewlift.models.data.appcms.api.AppCMSTeamRoasterResult;
+import com.viewlift.models.data.appcms.api.AppCMSTransactionDataValue;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
@@ -220,6 +218,7 @@ import com.viewlift.models.network.background.tasks.GetAppCMSShowDetailAsyncTask
 import com.viewlift.models.network.background.tasks.GetAppCMSSignedURLAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSTransactionlDataAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSVideoDetailAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSVideoEntitlementAsyncTask;
 import com.viewlift.models.network.background.tasks.PostAppCMSLoginRequestAsyncTask;
@@ -1205,7 +1204,7 @@ public class AppCMSPresenter {
     }
 
     public static long getTimeIntervalForEvent(long timeMilliSecondsEvent, String dateFormat) {
-        long timeDifference = 0,timeDifferenceEvent=0;
+        long timeDifference = 0, timeDifferenceEvent = 0;
         SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
         // Create a calendar object that will convert the date and time value in milliseconds to date.
         Calendar calendar = Calendar.getInstance();
@@ -1231,7 +1230,7 @@ public class AppCMSPresenter {
         ZonedDateTime nowTime = ZonedDateTime.now(UTC_ZONE_ID);
         nowTime.toEpochSecond();
         timeDifference = eventTimeInMs - currentTimeInMs;
-        timeDifferenceEvent=calendar.getTimeInMillis()-calendarCurrent.getTimeInMillis();
+        timeDifferenceEvent = calendar.getTimeInMillis() - calendarCurrent.getTimeInMillis();
         return timeDifferenceEvent;
     }
 
@@ -1252,32 +1251,26 @@ public class AppCMSPresenter {
         difference = difference % minutesInMilli;
 
         long elapsedSeconds = difference / secondsInMilli;
-        String differenceFormat="";
-        if(elapsedDays>1){
-            differenceFormat=String.format("%02d", elapsedDays)+" Days";
-        }else if(elapsedDays>0){
-            differenceFormat=String.format("%02d", elapsedDays)+" Day";
+        String differenceFormat = "";
+        if (elapsedDays > 1) {
+            differenceFormat = String.format("%02d", elapsedDays) + " Days";
+        } else if (elapsedDays > 0) {
+            differenceFormat = String.format("%02d", elapsedDays) + " Day";
+        } else if (elapsedHours > 1) {
+            differenceFormat = String.format("%02d", elapsedHours) + " Hours";
+        } else if (elapsedHours > 0) {
+            differenceFormat = String.format("%02d", elapsedHours) + " Hour";
+        } else if (elapsedMinutes > 1) {
+            differenceFormat = String.format("%02d", elapsedMinutes) + " Mins";
+        } else if (elapsedMinutes > 0) {
+            differenceFormat = String.format("%02d", elapsedMinutes) + " Min";
+        } else if (elapsedSeconds > 1) {
+            differenceFormat = String.format("%02d", elapsedSeconds) + " Secs";
+        } else if (elapsedSeconds > 0) {
+            differenceFormat = String.format("%02d", elapsedSeconds) + " Sec";
         }
 
-        else if(elapsedHours>1){
-            differenceFormat=String.format("%02d", elapsedHours)+" Hours";
-        }else if(elapsedHours>0){
-            differenceFormat=String.format("%02d", elapsedHours)+" Hour";
-        }
-
-        else if(elapsedMinutes>1){
-            differenceFormat=String.format("%02d", elapsedMinutes)+" Mins";
-        }else if(elapsedMinutes>0){
-            differenceFormat=String.format("%02d", elapsedMinutes)+" Min";
-        }
-
-        else if(elapsedSeconds>1){
-            differenceFormat=String.format("%02d", elapsedSeconds)+" Secs";
-        }else if(elapsedSeconds>0){
-            differenceFormat=String.format("%02d", elapsedSeconds)+" Sec";
-        }
-
-        differenceFormat =differenceFormat+" Remaining";
+        differenceFormat = differenceFormat + " Remaining";
         return differenceFormat;
     }
 
@@ -1702,12 +1695,12 @@ public class AppCMSPresenter {
                             if (appCMSEntitlementResponse.getAppCMSSignedURLResult() != null) {
                                 currentContentDatum.setAppCMSSignedURLResult(appCMSEntitlementResponse.getAppCMSSignedURLResult());
                             }
-                            if(appCMSEntitlementResponse.getDfp() != null && appCMSEntitlementResponse.getDfp().size()>0){
-                                for (DfpAds dfpAds:appCMSEntitlementResponse.getDfp()){
-                                    if (dfpAds.getDeviceType().contains("android") && getPlatformType()== PlatformType.ANDROID &&
-                                            appCMSAndroid.getAdvertising() != null){
+                            if (appCMSEntitlementResponse.getDfp() != null && appCMSEntitlementResponse.getDfp().size() > 0) {
+                                for (DfpAds dfpAds : appCMSEntitlementResponse.getDfp()) {
+                                    if (dfpAds.getDeviceType().contains("android") && getPlatformType() == PlatformType.ANDROID &&
+                                            appCMSAndroid.getAdvertising() != null) {
                                         appCMSAndroid.getAdvertising().setVideoTag(dfpAds.getDfpAdTag());
-                                    } else if (dfpAds.getDeviceType().contains("fir_tv") && getPlatformType()== PlatformType.TV && appCMSAndroid.getAdvertising()!=null){
+                                    } else if (dfpAds.getDeviceType().contains("fir_tv") && getPlatformType() == PlatformType.TV && appCMSAndroid.getAdvertising() != null) {
                                         appCMSAndroid.getAdvertising().setVideoTag(dfpAds.getDfpAdTag());
                                     }
                                 }
@@ -1776,30 +1769,66 @@ public class AppCMSPresenter {
     }
 
 
-    public void getRentalData( String id, Action1<String> readyAction, Action1<Boolean> downloadNotProcessedAction,
-                                 Boolean isDownload) {
+    public void getRentalData(String id, Action1<AppCMSRentalResponse> readyAction, Action1<Boolean> downloadNotProcessedAction,
+                              Boolean isDownload) {
         if (currentActivity != null) {
-                String url = "";
-                int endPoint = R.string.app_cms_getrental_api_url;
-            id="cb89adef-b261-4d20-8875-b7f0848849b3";
-                url = currentActivity.getString(endPoint,
-                        appCMSMain.getApiBaseUrl(),getLoggedInUser(),
-                        id);
-                GetAppCMSRentalVideoAsyncTask.Params params =
-                        new GetAppCMSRentalVideoAsyncTask.Params.Builder().url(url)
-                                .authToken(getAuthToken())
-                                .apiKey(apikey)
-                                .build();
+            String url = "";
+            int endPoint = R.string.app_cms_getrental_api_url;
+//            id="cb89adef-b261-4d20-8875-b7f0848849b3";"e94c0540-942e-11e8-9176-2de6c1a4d094"
+            url = currentActivity.getString(endPoint,
+                    appCMSMain.getApiBaseUrl(), getLoggedInUser(),
+                    id);
+            GetAppCMSRentalVideoAsyncTask.Params params =
+                    new GetAppCMSRentalVideoAsyncTask.Params.Builder().url(url)
+                            .authToken(getAuthToken())
+                            .apiKey(apikey)
+                            .build();
+            showLoader();
 
-                new GetAppCMSRentalVideoAsyncTask(appCMSVideoDetailCall, appCMSEntitlementResponse -> {
-                    try {
-                        Observable.just(appCMSEntitlementResponse).subscribe(readyAction);
+            new GetAppCMSRentalVideoAsyncTask(appCMSVideoDetailCall, appCMSEntitlementResponse -> {
+                try {
+                    Observable.just(appCMSEntitlementResponse).subscribe(readyAction);
+                    stopLoader();
+//                        System.out.println("Rental Response-"+appCMSEntitlementResponse);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).execute(params);
 
-                        System.out.println("Rental Response-"+appCMSEntitlementResponse);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }).execute(params);
+        }
+    }
+    public void getTransactionData(String id, Action1<List<Map<String,AppCMSTransactionDataValue>> > readyAction, Action1<Boolean> downloadNotProcessedAction,
+                                   Boolean isDownload) {
+        if (currentActivity != null) {
+            String url = "";
+            int endPoint = R.string.app_cms_gettransactiondata_api_url;
+
+            //dynamic url
+            url = currentActivity.getString(endPoint,
+                    appCMSMain.getApiBaseUrl(), getLoggedInUser(),
+                    id,"VIDEO","false",appCMSSite.getGist().getSiteInternalName());
+
+
+//            url = currentActivity.getString(endPoint,
+//                    appCMSMain.getApiBaseUrl(), "sarathTestUserHoichoi1",
+//                    "f35748db-e27c-405f-a10a-7b2970b0a225","VIDEO","false",appCMSSite.getGist().getSiteInternalName());
+
+            GetAppCMSTransactionlDataAsyncTask.Params params =
+                    new GetAppCMSTransactionlDataAsyncTask.Params.Builder().url(url)
+                            .authToken(getAuthToken())
+                            .apiKey(apikey)
+                            .build();
+            showLoader();
+
+            new GetAppCMSTransactionlDataAsyncTask(appCMSVideoDetailCall, appCMSEntitlementResponse -> {
+                try {
+                    Observable.just(appCMSEntitlementResponse).subscribe(readyAction);
+                    stopLoader();
+//                        System.out.println("Rental Response-"+appCMSEntitlementResponse);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).execute(params);
 
         }
     }
@@ -1853,7 +1882,8 @@ public class AppCMSPresenter {
 
             refreshVideoData(filmId,
                     updatedContentDatum -> {
-                        if (updatedContentDatum != null) {String updatedAction = expectedAction;
+                        if (updatedContentDatum != null) {
+                            String updatedAction = expectedAction;
 
                             if (!TextUtils.isEmpty(expectedAction) &&
                                     !expectedAction.equals(currentContext.getString(R.string.app_cms_action_videopage_key)) &&
@@ -1884,7 +1914,7 @@ public class AppCMSPresenter {
                             }
 
                             Log.d(TAG, "Existing watched time: " + contentDatum.getGist().getWatchedTime());
-                            Log.d(TAG, "Updated watched time: " +updatedContentDatum.getGist().getWatchedTime());
+                            Log.d(TAG, "Updated watched time: " + updatedContentDatum.getGist().getWatchedTime());
 
                             updatedContentDatum.getGist().setWatchedTime(contentDatum.getGist().getWatchedTime());
                             updatedContentDatum.getGist().setWatchedPercentage(contentDatum.getGist().getWatchedPercentage());
@@ -2135,7 +2165,7 @@ public class AppCMSPresenter {
      * for retrieving the current user's watchlist again.
      */
     private void populateFilmsInUserWatchlist() {
-        if(watchlistPage==null){
+        if (watchlistPage == null) {
             return;
         }
         AppCMSPageUI appCMSPageUI = navigationPages.get(watchlistPage.getPageId());
@@ -2941,32 +2971,36 @@ public class AppCMSPresenter {
                                                 } else if (appCMSPageAPI.getTitle().equalsIgnoreCase(currentActivity.getString(R.string.app_cms_pagename_articlescreen_key))) {
                                                     processRelatedArticleDeepLink(appCMSPageAPI);
                                                 }
-                                                Bundle args = getPageActivityBundle(currentActivity,
-                                                        this.appCMSPageUI,
-                                                        appCMSPageAPI,
-                                                        this.pageId,
-                                                        appCMSPageAPI.getTitle(),
-                                                        this.pagePath,
-                                                        screenName.toString(),
-                                                        loadFromFile,
-                                                        this.appbarPresent,
-                                                        this.fullscreenEnabled,
-                                                        this.navbarPresent,
-                                                        this.sendCloseAction,
-                                                        this.searchQuery,
-                                                        screenType);
-                                                if (args != null) {
-                                                    Intent updatePageIntent =
-                                                            new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                                    updatePageIntent.putExtra(
-                                                            currentActivity.getString(R.string.app_cms_bundle_key),
-                                                            args);
-                                                    updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
-                                                    currentActivity.sendBroadcast(updatePageIntent);
 
-                                                    stopLoader();
+
+                                                for (int i = 0; i < appCMSPageAPI.getModules().size(); i++) {
+                                                    if (appCMSPageAPI.getModules().get(i) != null &&
+                                                            appCMSPageAPI.getModules().get(i).getModuleType() != null ) {
+
+                                                        if(appCMSPageAPI.getModules().get(i).getModuleType().equalsIgnoreCase("VideoDetailModule") ){
+                                                            int position = i;
+
+                                                            if ((appCMSPageAPI.getModules().get(i).getContentData().get(0).getPricing() != null &&
+                                                                    appCMSPageAPI.getModules().get(i).getContentData().get(0).getPricing().getType() != null )){
+                                                                getTransactionData(appCMSPageAPI.getModules().get(i).getContentData().get(0).getGist().getId(), updatedContentDatum -> {
+
+                                                                    appCMSPageAPI.getModules().get(position).getContentData().get(0).getGist().setObjTransactionDataValue(updatedContentDatum);
+                                                                    launchNavigationPageWithBundleData(appCMSPageAPIAction,appCMSPageAPI,screenType,screenName);
+                                                                }, null, false);
+                                                            }else{
+                                                                launchNavigationPageWithBundleData(appCMSPageAPIAction,appCMSPageAPI,screenType,screenName);
+
+                                                            }
+
+
+                                                            break;
+                                                        }else{
+                                                            launchNavigationPageWithBundleData(appCMSPageAPIAction,appCMSPageAPI,screenType,screenName);
+
+                                                        }
+                                                    }
                                                 }
-                                                launched = true;
+
                                             } else {
                                                 if (launched) {
                                                     sendStopLoadingPageAction(true,
@@ -2989,6 +3023,35 @@ public class AppCMSPresenter {
         return result;
     }
 
+
+    public void launchNavigationPageWithBundleData(AppCMSPageAPIAction appCMSPageAPIAction, AppCMSPageAPI appCMSPageAPI, ExtraScreenType screenType, StringBuffer screenName){
+        Bundle args = getPageActivityBundle(currentActivity,
+                appCMSPageAPIAction.appCMSPageUI,
+                appCMSPageAPI,
+                appCMSPageAPIAction.pageId,
+                appCMSPageAPI.getTitle(),
+                appCMSPageAPIAction.pagePath,
+                screenName.toString(),
+                loadFromFile,
+                appCMSPageAPIAction.appbarPresent,
+                appCMSPageAPIAction.fullscreenEnabled,
+                appCMSPageAPIAction.navbarPresent,
+                appCMSPageAPIAction.sendCloseAction,
+                appCMSPageAPIAction.searchQuery,
+                screenType);
+        if (args != null) {
+            Intent updatePageIntent =
+                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+            updatePageIntent.putExtra(
+                    currentActivity.getString(R.string.app_cms_bundle_key),
+                    args);
+            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+            currentActivity.sendBroadcast(updatePageIntent);
+
+            stopLoader();
+        }
+        launched = true;
+    }
     public void navigateToEventDetailPage(String permaLink) {
         String pagePath = permaLink;
 
@@ -3916,7 +3979,7 @@ public class AppCMSPresenter {
      * @param appCMSPageUI
      * @param action
      */
-    private void showChangeLanguageTVDialog(AppCMSPageUI appCMSPageUI, String action){
+    private void showChangeLanguageTVDialog(AppCMSPageUI appCMSPageUI, String action) {
         if (currentActivity != null) {
             if (appCMSPageUI == null) {
                 showLoader();
@@ -3958,8 +4021,8 @@ public class AppCMSPresenter {
             ArrayList<Module> moduleList = new ArrayList<>();
             moduleList.add(module);
             appCMSPageAPI.setModules(moduleList);
-           // appCMSPageAPI.setId();
-           // appCMSPageAPI.setTitle(title);
+            // appCMSPageAPI.setId();
+            // appCMSPageAPI.setTitle(title);
             ArrayList<ContentDatum> data = new ArrayList<>();
             for (Language navigationPrimary : languageArrayList) {
                 data.add(navigationPrimary.convertToContentDatum());
@@ -5878,7 +5941,16 @@ public class AppCMSPresenter {
             downloadVideoRealm.setWatchedTime(contentDatum.getGist().getWatchedTime());
             downloadVideoRealm.setContentType(contentDatum.getGist().getContentType());
             downloadVideoRealm.setMediaType(contentDatum.getGist().getMediaType());
-            downloadVideoRealm.setExpirationTime(contentDatum.getGist().getTransactionEndDate());
+            downloadVideoRealm.setExpirationTime(1535816891000L);
+
+            if (contentDatum.getGist().getTransactionEndDate() > 0) {
+                downloadVideoRealm.setExpirationTime(contentDatum.getGist().getTransactionEndDate());
+
+            } else if (contentDatum.getGist().getTransactionDateEpoch() > 0) {
+                downloadVideoRealm.setExpirationTime(contentDatum.getGist().getTransactionDateEpoch());
+
+            }
+
             downloadVideoRealm.setSubscriptionType(contentDatum.getGist().getPurchaseType());
 
             downloadVideoRealm.setPermalink(contentDatum.getGist().getPermalink());
@@ -6262,6 +6334,13 @@ public class AppCMSPresenter {
             if (updateContentDatum != null &&
                     updateContentDatum.getGist() != null &&
                     updateContentDatum.getGist().getId() != null) {
+
+                if(contentDatum!=null && contentDatum.getGist()!=null && contentDatum.getGist().getTransactionDateEpoch()>0){
+                    updateContentDatum.getGist().setTransactionEndDate(contentDatum.getGist().getTransactionDateEpoch());
+                }else if(contentDatum!=null && contentDatum.getGist()!=null && contentDatum.getGist().getTransactionEndDate()>0){
+                    updateContentDatum.getGist().setTransactionEndDate(contentDatum.getGist().getTransactionEndDate());
+                }
+
                 if (contentDatum.getSeriesName() != null)
                     updateContentDatum.setSeriesName(contentDatum.getSeriesName());
                 if (updateContentDatum.getCreditBlocks() == null)
@@ -6803,17 +6882,39 @@ public class AppCMSPresenter {
                 settings.setLazyLoad(false);
 
                 List<ContentDatum> contentData = new ArrayList<>();
+                List<ContentDatum> contentDataFilter = new ArrayList<>();
+
                 try {
                     for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloadesByUserId(getLoggedInUser())) {
                         contentData.add(downloadVideoRealm.convertToContentDatum(getLoggedInUser()));
+                        contentDataFilter.add(downloadVideoRealm.convertToContentDatum(getLoggedInUser()));
+
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
+
+                /**
+                 * remove downloaded items which are expired
+                 */
+//                for (int i = 0; i < contentDataFilter.size(); i++) {
+//
+//                    int position = i;
+//                    long expirationDate = contentDataFilter.get(i).getGist().getrentPerioedendDate();
+//                    long remainingTime = getTimeIntervalForEvent(expirationDate, "EEE MMM dd HH:mm:ss");
+//                    if (expirationDate > 0 && remainingTime > 0) {
+//                        removeDownloadedFile(contentDataFilter.get(i).getGist().getId(),
+//                                userVideoDownloadStatus -> {
+//                                });
+//                        contentData.remove(0);
+//
+//                    }
+//                }
                 module.setContentData(contentData);
                 module.setTitle(currentActivity.getString(R.string.app_cms_page_download_title));
                 moduleList.add(module);
                 appCMSPageAPI.setModules(moduleList);
+
 
                 cancelInternalEvents();
                 pushActionInternalEvents(pageId
@@ -8334,7 +8435,7 @@ public class AppCMSPresenter {
     }
 
     public void navigateToLibraryPage(String pageId, String pageTitle,
-                                     boolean launchActivity) {
+                                      boolean launchActivity) {
         if (!isNetworkConnected()) {
             openDownloadScreenForNetworkError(launchActivity,
                     () -> navigateToLibraryPage(pageId, pageTitle, launchActivity));
@@ -11793,11 +11894,11 @@ public class AppCMSPresenter {
 
                         //check default language
 
-                        if(null != defaultLanguage && null != appCMSMain.getLanguages()){
-                            ArrayList<Language> languageList = (ArrayList)appCMSMain.getLanguages().getLanguageList();
-                            System.out.println("TESTS Default language = "+defaultLanguage.getLanguageCode());
-                            boolean isLanguageExistinMain = languageList != null  && languageList.contains(defaultLanguage);
-                            if(!isLanguageExistinMain){
+                        if (null != defaultLanguage && null != appCMSMain.getLanguages()) {
+                            ArrayList<Language> languageList = (ArrayList) appCMSMain.getLanguages().getLanguageList();
+                            System.out.println("TESTS Default language = " + defaultLanguage.getLanguageCode());
+                            boolean isLanguageExistinMain = languageList != null && languageList.contains(defaultLanguage);
+                            if (!isLanguageExistinMain) {
                                 defaultLanguage = appCMSMain.getLanguages().getDefaultlanguage();
 
                             }
@@ -12169,7 +12270,7 @@ public class AppCMSPresenter {
                 transaction.add(R.id.app_cms_addon_fragment,
                         appCMSMoreFragment,
                         currentActivity.getString(R.string.app_cms_more_page_tag)).commit();
-                showAddOnFragment(true, 0.2f);
+                showAddOnFragment(true, 1.0f);
                 setNavItemToCurrentAction(currentActivity);
             }
         }
@@ -18710,7 +18811,7 @@ public class AppCMSPresenter {
                 && appCMSAndroid.getAdvertising().getVideoTag() != null) {
             videoTag = appCMSAndroid.getAdvertising().getVideoTag();
         }
-       if (videoTag == null) {
+        if (videoTag == null) {
             return null;
         }
         Date now = new Date();
@@ -20569,10 +20670,11 @@ public class AppCMSPresenter {
             }
         }
     }
+
     private void getLibraryPage(final String apiBaseUrl,
-                               final String siteId,
-                               String pageId,
-                               final AppCMSLibraryAPIAction rosterAPIAction) {
+                                final String siteId,
+                                String pageId,
+                                final AppCMSLibraryAPIAction rosterAPIAction) {
         if (currentActivity != null) {
             try {
                 String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
@@ -20584,9 +20686,9 @@ public class AppCMSPresenter {
                     try {
                         appCMSLibraryCall.call(
                                 currentActivity.getString(R.string.app_cms_library_data_page_api_url,
-                                        apiBaseUrl,siteId,getLoggedInUser()
+                                        apiBaseUrl, siteId, "c0a7b4c0-4dd1-11e8-a7b9-018cd7572a0"
 //
-                                ),getAuthToken(), apikey,
+                                ), getAuthToken(), apikey,
                                 rosterAPIAction);
 
                     } catch (IOException e) {
@@ -20646,15 +20748,15 @@ public class AppCMSPresenter {
         final Uri searchQuery;
 
         AppCMSLibraryAPIAction(boolean appbarPresent,
-                        boolean fullscreenEnabled,
-                        boolean navbarPresent,
-                        AppCMSPageUI appCMSPageUI,
-                        String action,
-                        String pageId,
-                        String pageTitle,
-                        String pagePath,
-                        boolean launchActivity,
-                        Uri searchQuery) {
+                               boolean fullscreenEnabled,
+                               boolean navbarPresent,
+                               AppCMSPageUI appCMSPageUI,
+                               String action,
+                               String pageId,
+                               String pageTitle,
+                               String pagePath,
+                               boolean launchActivity,
+                               Uri searchQuery) {
             this.appbarPresent = appbarPresent;
             this.fullscreenEnabled = fullscreenEnabled;
             this.navbarPresent = navbarPresent;

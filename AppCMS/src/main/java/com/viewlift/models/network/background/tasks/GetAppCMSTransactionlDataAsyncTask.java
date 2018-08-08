@@ -2,9 +2,13 @@ package com.viewlift.models.network.background.tasks;
 
 import android.util.Log;
 
-import com.viewlift.models.data.appcms.api.AppCMSEntitlementResponse;
 import com.viewlift.models.data.appcms.api.AppCMSRentalResponse;
+import com.viewlift.models.data.appcms.api.AppCMSTransactionDataResponse;
+import com.viewlift.models.data.appcms.api.AppCMSTransactionDataValue;
 import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
+
+import java.util.List;
+import java.util.Map;
 
 import hu.akarnokd.rxjava.interop.RxJavaInterop;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -13,15 +17,14 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 
-
-public class GetAppCMSRentalVideoAsyncTask {
+public class GetAppCMSTransactionlDataAsyncTask {
     private static final String TAG = "VideoDetailAsyncTask";
 
     private final AppCMSVideoDetailCall call;
-    private final Action1<AppCMSRentalResponse> readyAction;
+    private final Action1<List<Map<String,AppCMSTransactionDataValue>>> readyAction;
 
-    public GetAppCMSRentalVideoAsyncTask(AppCMSVideoDetailCall call,
-                                         Action1<AppCMSRentalResponse> readyAction) {
+    public GetAppCMSTransactionlDataAsyncTask(AppCMSVideoDetailCall call,
+                                              Action1<List<Map<String,AppCMSTransactionDataValue>>> readyAction) {
         this.call = call;
         this.readyAction = readyAction;
     }
@@ -31,7 +34,7 @@ public class GetAppCMSRentalVideoAsyncTask {
                 .fromCallable(() -> {
                     if (params != null) {
                         try {
-                            return call.callRentalApiData(params.url, params.authToken, params.apiKey);
+                            return call.callTransactionalData(params.url, params.authToken, params.apiKey);
                         } catch (Exception e) {
                             Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }

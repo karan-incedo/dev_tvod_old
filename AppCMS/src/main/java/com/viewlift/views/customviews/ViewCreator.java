@@ -16,6 +16,7 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -3535,13 +3536,18 @@ public class ViewCreator {
                     }
 
 
-                } else if ((moduleAPI != null && moduleAPI.getContentData() != null &&
+                }
+                /**
+                 * if transaction response as data and pricing is not null and schedule start date is greater than show the timer
+                 */
+                else if (moduleAPI != null && moduleAPI.getContentData() != null &&
                         moduleAPI.getContentData().get(0) != null &&
                         moduleAPI.getContentData().get(0).getPricing() != null &&
-//                        moduleAPI.getContentData().get(0).getPricing().getType() != null &&
-//                        moduleAPI.getContentData().get(0).getPricing().getType().equalsIgnoreCase("PPV") &&
                         moduleAPI.getContentData().get(0).getGist() != null &&
-                        moduleAPI.getContentData().get(0).getGist().getScheduleStartDate() > 0)) {
+                        moduleAPI.getContentData().get(0).getGist().getScheduleStartDate() > 0 &&
+                        moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue()!=null &&
+                        moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().size()>0
+                        ) {
                     componentViewResult.componentView = new LinearLayout(context);
                     ((LinearLayout) componentViewResult.componentView).setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                     ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
@@ -3582,7 +3588,6 @@ public class ViewCreator {
                             appCMSPresenter.getRentalData(moduleAPI.getContentData().get(0).getGist().getId(), updatedContentDatum -> {
 
 
-                                System.out.println("response ");
                             }, null, false);
 
 //                            appCMSPresenter.showNoPurchaseDialog("Uh Oh", "Unfortunately you can not purchase on this platform.Content you have already purchased" +
@@ -4313,7 +4318,44 @@ public class ViewCreator {
                     case PAGE_VIDEO_PLAY_BUTTON_KEY:
                         ((Button) componentViewResult.componentView).setId(R.id.video_play_icon);
 
+
                         componentViewResult.componentView.setVisibility(View.VISIBLE);
+
+                        if ((moduleAPI.getContentData().get(0).getPricing() != null &&
+                                moduleAPI.getContentData().get(0).getPricing().getType() != null &&
+                                (moduleAPI.getContentData().get(0).getPricing().getType().equalsIgnoreCase("TVOD") || moduleAPI.getContentData().get(0).getPricing().getType().equalsIgnoreCase("PPV")))) {
+
+
+                                if(moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue()!=null &&
+                                        moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().size()>0) {
+                                    if(moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().get(0).size()==0){
+
+                                        componentViewResult.componentView.setVisibility(View.GONE);
+//                                        final Handler handler = new Handler();
+//                                        handler.postDelayed(new Runnable() {
+//                                            @Override
+//                                            public void run() {
+//                                                appCMSPresenter.showNoPurchaseDialog(context.getString(R.string.rental_title), context.getString(R.string.rental_description));
+//                                            }
+//                                        }, 500);
+
+                                        appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                final Handler handler = new Handler();
+                                                handler.postDelayed(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        appCMSPresenter.showNoPurchaseDialog(context.getString(R.string.rental_title), context.getString(R.string.rental_description));
+                                                    }
+                                                }, 500);
+                                            }
+                                        });
+                                    }
+                                }
+
+                        }
+
                         componentViewResult.componentView.setOnClickListener(v -> {
                             if (moduleAPI != null &&
                                     moduleAPI.getContentData() != null &&
@@ -4353,12 +4395,24 @@ public class ViewCreator {
                                             moduleAPI.getContentData().get(0).getPricing().getType().equalsIgnoreCase("TVOD"))) {
                                         int finalCurrentPlayingIndex = currentPlayingIndex;
                                         List<String> finalRelatedVideoIds = relatedVideoIds;
-                                        appCMSPresenter.getRentalData(moduleAPI.getContentData().get(0).getGist().getId(), updatedContentDatum -> {
 
+
+
+                                        appCMSPresenter.getRentalData(moduleAPI.getContentData().get(0).getGist().getId(), updatedContentDatum -> {
                                             boolean isPlayable = false;
+
+                                            /**
+                                             * get the transaction end date and compare with current time if end date is less than current date
+                                             * playable will be false
+                                             */
+                                            long expirationDate = moduleAPI.getContentData().get(0).getGist().getrentPerioedendDate();
+                                            long remainingTime = appCMSPresenter.getTimeIntervalForEvent(expirationDate, "EEE MMM dd HH:mm:ss");
+
+                                            if(remainingTime<0){
+                                                isPlayable=false;
+                                            }
                                             if (!isPlayable) {
-                                                appCMSPresenter.showNoPurchaseDialog("Uh Oh", "Unfortunately you can not purchase on this platform.Content you have already purchased" +
-                                                        "will become available here automatically");
+                                                appCMSPresenter.showNoPurchaseDialog(context.getString(R.string.rental_title), context.getString(R.string.rental_description));
                                             } else {
                                                 appCMSPresenter.launchVideoPlayer(moduleAPI.getContentData().get(0),
                                                         moduleAPI.getContentData().get(0).getGist().getId(),
@@ -7665,17 +7719,27 @@ public class ViewCreator {
                     appCMSPresenter.getRentalData(contentDatum.getGist().getId(), updatedContentDatum -> {
 
                         boolean isPlayable = false;
-                        if (isPlayable) {
-                            appCMSPresenter.showNoPurchaseDialog("Uh Oh", "Unfortunately you can not purchase on this platform.Content you have already purchased" +
-                                    "will become available here automatically");
+
+                        /**
+                         * get the transaction end date and compare with current time if end date is less than current date
+                         * playable will be false
+                         */
+                        long expirationDate = contentDatum.getGist().getrentPerioedendDate();
+                        long remainingTime = appCMSPresenter.getTimeIntervalForEvent(expirationDate, "EEE MMM dd HH:mm:ss");
+
+                        if(remainingTime<0){
+                            isPlayable=false;
+                        }
+                        if (!isPlayable) {
+                            appCMSPresenter.showNoPurchaseDialog(appCMSPresenter.getCurrentContext().getString(R.string.rental_title), appCMSPresenter.getCurrentContext().getString(R.string.rental_description));
+
                         } else {
-                            updateForDownload(contentDatum,appCMSPresenter,imageButton,this,addClickListener);
+                            updateForDownload(contentDatum, appCMSPresenter, imageButton, this, addClickListener);
 
                         }
-                        System.out.println("response ");
                     }, null, false);
-                }else{
-                    updateForDownload(contentDatum,appCMSPresenter,imageButton,this,addClickListener);
+                } else {
+                    updateForDownload(contentDatum, appCMSPresenter, imageButton, this, addClickListener);
 
                 }
 
@@ -7788,7 +7852,7 @@ public class ViewCreator {
         }
     }
 
-    public static void updateForDownload(ContentDatum contentDatum, AppCMSPresenter appCMSPresenter, ImageButton imageButton, UpdateDownloadImageIconAction updateDownloadImageIconAction, View.OnClickListener addClickListener){
+    public static void updateForDownload(ContentDatum contentDatum, AppCMSPresenter appCMSPresenter, ImageButton imageButton, UpdateDownloadImageIconAction updateDownloadImageIconAction, View.OnClickListener addClickListener) {
         if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
                 !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
             imageButton.setOnClickListener(null);
@@ -8055,10 +8119,10 @@ public class ViewCreator {
             public void onTick(long millisUntilFinished) {
                 long different = appCMSPresenter.getTimeIntervalForEvent(eventDate, "EEE MMM dd HH:mm:ss");
 
-                if (different < 0) {
+                if (different < 0 && countDownTimer != null) {
 
                     onFinish();
-                } else {
+                } else if (different > 0) {
                     String[] scheduleTime = AppCMSPresenter.geTimeFormat(different).split(":");
                     String[] timerText = context.getResources().getStringArray(R.array.timer_text);
                     if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off) != null) {

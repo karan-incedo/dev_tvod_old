@@ -6,11 +6,15 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.viewlift.models.data.appcms.api.AppCMSEntitlementResponse;
+import com.viewlift.models.data.appcms.api.AppCMSRentalResponse;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
+import com.viewlift.models.data.appcms.api.AppCMSTransactionDataResponse;
+import com.viewlift.models.data.appcms.api.AppCMSTransactionDataValue;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -53,13 +57,30 @@ public class AppCMSVideoDetailCall {
     }
 
     @WorkerThread
-    public String callRentalApiData(String url, String authToken,String xApi) throws IOException {
+    public AppCMSRentalResponse callRentalApiData(String url, String authToken, String xApi) throws IOException {
         try {
 
             authHeaders.clear();
             authHeaders.put("Authorization", authToken);
 //            authHeaders.put("x-api-key", xApi);
             return appCMSVideoDetailRest.getRentalVideoRespose(url, authHeaders).execute().body();
+        } catch (JsonSyntaxException e) {
+            Log.e(TAG, "DialogType parsing input JSON - " + url + ": " + e.toString());
+        } catch (Exception e) {
+            // e.printStackTrace();
+            Log.e(TAG, "Network error retrieving site data - " + url + ": " + e.toString());
+        }
+        return null;
+    }
+
+    @WorkerThread
+    public List<Map<String,AppCMSTransactionDataValue>> callTransactionalData(String url, String authToken, String xApi) throws IOException {
+        try {
+
+            authHeaders.clear();
+            authHeaders.put("Authorization", authToken);
+//            authHeaders.put("x-api-key", xApi);
+            return appCMSVideoDetailRest.getTransactionDataResponse(url, authHeaders).execute().body();
         } catch (JsonSyntaxException e) {
             Log.e(TAG, "DialogType parsing input JSON - " + url + ": " + e.toString());
         } catch (Exception e) {

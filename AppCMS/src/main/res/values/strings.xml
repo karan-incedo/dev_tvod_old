@@ -479,9 +479,11 @@
     <string name="terms_of_service">Terms of Service</string>
     <string name="privacy_policy">privacy policy</string>
     <string name="season">Season</string>
-    
-    
-    
+
+    <string name="rental_title">Uh Oh</string>
+    <string name="rental_description">Unfortunately you can not purchase on this platform.Content you have already purchased will become available here automatically</string>
+
+
     <string name="no_fight_records">No fight records found</string>
 
     <string name="rupee_symbol">\u20B9</string>

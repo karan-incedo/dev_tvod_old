@@ -6,8 +6,15 @@
     android:layout_height="match_parent"
     tools:layout_editor_absoluteX="0dp"
     tools:layout_editor_absoluteY="25dp">
+    <ImageView
+        android:id="@+id/app_cms_container_layout_parent"
 
-    <ImageButton
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="45dp"
+        android:background="#000000">
+    </ImageView>
+    <!--<ImageButton
         android:id="@+id/app_cms_close_button"
         android:layout_width="@dimen/close_button_size"
         android:layout_height="@dimen/close_button_size"
@@ -20,21 +27,22 @@
         android:scaleType="fitCenter"
         android:src="@drawable/cancel"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />-->
 
     <TextView
         android:id="@+id/app_cms_more_title_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_below="@+id/app_cms_close_button"
         android:layout_marginTop="64dp"
         android:alpha="1.0"
-        android:layout_below="@+id/app_cms_close_button"
         android:contentDescription="df"
         android:gravity="center"
         android:padding="@dimen/app_cms_account_padding"
         android:textSize="@dimen/app_cms_more_title_text_size"
-        android:textStyle="bold"
+        android:text="hjh"
+        android:textColor="@color/apptentive_brand_red"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -43,26 +51,30 @@
         android:id="@+id/app_cms_more_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/app_cms_more_title_text"
         android:layout_marginTop="48dp"
         android:alpha="1.0"
+        android:gravity="center"
         android:paddingEnd="16dp"
-        android:layout_below="@+id/app_cms_more_title_text"
         android:paddingStart="16dp"
         android:text="Title"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/app_cms_more_title_text" />
 
-   <Button
+    <Button
         android:id="@+id/app_cms_back_to_desc"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text= "@string/back_to_description"
-        android:textSize="@dimen/nav_item_text_size"
-       android:gravity="center_horizontal"
         android:layout_alignParentBottom="true"
+        android:layout_margin="15dp"
+        android:paddingRight="@dimen/mssg_btn_margin"
+        android:paddingLeft="@dimen/mssg_btn_margin"
         android:layout_marginTop="8dp"
-        android:paddingTop="8dp"
-       android:layout_margin="15dp"
-        android:paddingBottom="8dp"/>
-
+        android:gravity="center"
+        android:paddingBottom="10dp"
+android:layout_centerHorizontal="true"
+        android:paddingTop="10dp"
+        android:text="@string/back_to_description"
+        android:textSize="@dimen/button_text_size" />
 </RelativeLayout>

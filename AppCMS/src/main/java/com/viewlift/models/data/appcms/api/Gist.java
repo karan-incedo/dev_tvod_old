@@ -7,6 +7,7 @@ import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 @UseStag
 public class Gist implements Serializable {
@@ -636,12 +637,12 @@ public class Gist implements Serializable {
     long currentPlayingPosition;
     Boolean isCastingConnected;
 
-    public long getEndDate() {
-        return endDate;
+    public long getrentPerioedendDate() {
+        return rentPerioedendDate;
     }
 
-    public void setEndDate(long endDate) {
-        this.endDate = endDate;
+    public void setrentPerioedendDate(long endDate) {
+        this.rentPerioedendDate = endDate;
     }
 
     public String getSubscriptionType() {
@@ -652,7 +653,7 @@ public class Gist implements Serializable {
         this.subscriptionType = subscriptionType;
     }
 
-    long endDate;
+    long rentPerioedendDate;
     String subscriptionType;
 
 
@@ -1139,5 +1140,15 @@ public class Gist implements Serializable {
     public void setSeasonNum(String seasonNum) {
         this.seasonNum = seasonNum;
     }
+
+    public List<Map<String,AppCMSTransactionDataValue>> getObjTransactionDataValue() {
+        return objTransactionDataValue;
+    }
+
+    public void setObjTransactionDataValue(List<Map<String,AppCMSTransactionDataValue>> objTransactionDataValue) {
+        this.objTransactionDataValue = objTransactionDataValue;
+    }
+
+    List<Map<String,AppCMSTransactionDataValue>> objTransactionDataValue;
 }
 

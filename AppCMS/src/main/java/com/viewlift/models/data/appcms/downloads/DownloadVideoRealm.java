@@ -421,7 +421,7 @@ public class DownloadVideoRealm extends RealmObject {
         gist.setPermalink(getPermalink());
         gist.setDownloadStatus(getDownloadStatus());
         gist.setRuntime(getVideoDuration());
-        gist.setEndDate(getExpirationTime());
+        gist.setrentPerioedendDate(getExpirationTime());
         gist.setSubscriptionType(getSubscriptionType());
         gist.setWatchedTime(getWatchedTime());
 

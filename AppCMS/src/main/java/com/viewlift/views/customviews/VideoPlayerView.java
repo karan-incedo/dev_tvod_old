@@ -1083,7 +1083,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         // Plays the video with the side-loaded subtitle.
         return new MergingMediaSource(videoSource, subtitleSource);
     }
-
+    Uri offlineVideoUri;
+    public void setOfflineUri(Uri videoUri, Uri closedCaptionUri) {
+        this.offlineVideoUri = videoUri;
+    }
 
     /**
      * Queries video urls and subtitle urls from the hosting Activities which have implemented the
@@ -1124,6 +1127,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     mediaSourceList.add(buildMediaSource(Uri.parse(streamingQualityUrl), ""));
                 }
             }
+            if (offlineVideoUri != null)
+                mediaSourceList.add(buildMediaSource(offlineVideoUri, ""));
         } else { /* this is for HLS, getVideoUrl() returns the HLS url from the hosting activity*/
             mediaSourceList.add(buildMediaSource(Uri.parse(streamingQualitySelector.getVideoUrl()), ""));
         }

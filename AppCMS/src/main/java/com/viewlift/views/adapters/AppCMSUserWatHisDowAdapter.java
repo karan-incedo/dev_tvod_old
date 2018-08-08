@@ -105,6 +105,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
     private boolean isHistoryPage;
     private boolean isDonwloadPage;
     private boolean isWatchlistPage;
+    private boolean isLibraryPage;
     private Map<String, Boolean> filmDownloadIconUpdatedMap;
 
     public AppCMSUserWatHisDowAdapter(Context context,
@@ -131,11 +132,6 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         this.hideRemoveAllButtonEvent = new InternalEvent<>(View.GONE);
         this.showRemoveAllButtonEvent = new InternalEvent<>(View.VISIBLE);
 
-//        for(int i=0;i<moduleAPI.getContentData().size();i++){
-//            if(moduleAPI.getContentData().get(i).getGist().getSubscriptionType()!=null && moduleAPI.getContentData().get(i).getGist().getSubscriptionType().equalsIgnoreCase("test")){
-//                moduleAPI.getContentData().remove(i);
-//            }
-//        }
         if (moduleAPI != null && moduleAPI.getContentData() != null) {
             this.adapterData = moduleAPI.getContentData();
         } else {
@@ -224,6 +220,10 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
             case PAGE_WATCHLIST_02_MODULE_KEY:
                 this.isWatchlistPage = true;
                 break;
+
+            case PAGE_MYLIBRARY_01_MODULE_KEY:
+                this.isLibraryPage = true;
+
 
             default:
                 break;
@@ -788,7 +788,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                     data.getGist().getContentType() != null &&
                                     (data.getGist().getContentType().equalsIgnoreCase("SERIES") || data.getGist().getContentType().equalsIgnoreCase(mContext.getResources().getString(R.string.app_cms_episodic_season_prefix)))) {
                                 action = mContext.getString(R.string.app_cms_action_showvideopage_key);
-                                if(data.getGist().getSeriesPermalink()!=null) {
+                                if (data.getGist().getSeriesPermalink() != null) {
                                     permalink = data.getGist().getSeriesPermalink();
                                 }
                             }
@@ -811,6 +811,28 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                         return;
                                     }
                                 } else {
+
+                                    if (isLibraryPage) {
+                                        appCMSPresenter.getRentalData(data.getGist().getId(), updatedContentDatum -> {
+
+                                            boolean isPlayable = false;
+
+                                            /**
+                                             * get the transaction end date and compare with current time if end date is less than current date
+                                             * playable will be false
+                                             */
+                                            long expirationDate = data.getGist().getrentPerioedendDate();
+                                            long remainingTime = appCMSPresenter.getTimeIntervalForEvent(expirationDate, "EEE MMM dd HH:mm:ss");
+
+                                            if (remainingTime < 0) {
+                                                isPlayable = false;
+                                            }
+                                            if (!isPlayable) {
+                                                appCMSPresenter.showNoPurchaseDialog(appCMSPresenter.getCurrentContext().getString(R.string.rental_title), appCMSPresenter.getCurrentContext().getString(R.string.rental_description));
+                                                return;
+                                            }
+                                        }, null, false);
+                                    }
                                     /*play movie from web URL*/
                                     appCMSPresenter.launchVideoPlayer(data,
                                             data.getGist().getId(),

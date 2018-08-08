@@ -86,7 +86,7 @@ public class Record {
          * In library reponse for season content type ,added title and description from show and season title .To show title and description.
          *
          */
-        if(contentResponse.getGist().getContentType().equalsIgnoreCase("Season") && contentResponse.getGist().getSeriesTitle()!=null
+        if(contentResponse!=null && contentResponse.getGist() !=null && contentResponse.getGist().getContentType()!=null && contentResponse.getGist().getContentType().equalsIgnoreCase("Season") && contentResponse.getGist().getSeriesTitle()!=null
                 && contentResponse.getGist().getSeasonTitle()!=null){
             contentResponse.getGist().setTitle(contentResponse.getGist().getSeriesTitle());
             contentResponse.getGist().setDescription(contentResponse.getGist().getSeasonTitle());

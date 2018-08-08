@@ -654,6 +654,7 @@
     <!--AppCMS TVOD  API -->
 
     <string name="app_cms_getrental_api_url">%1$s/transaction/changeStatus?userId=%2$s&amp;videoId=%3$s</string>
+    <string name="app_cms_gettransactiondata_api_url">%1$s/transaction/getData?userId=%2$s&amp;contentId=%3$s&amp;type=%4$s&amp;contentMeta=%5$s&amp;site=%6$s</string>
 
 
     <!--AppCMS AnonymousAuthToken API -->
