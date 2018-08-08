@@ -1863,46 +1863,7 @@ public class ViewCreator {
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
             try {
-               /* if (moduleInfo.getBlockName().contains("articleTray01")) {
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "article_hub.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(5);
-                }  else if (moduleInfo.getBlockName().contains("photoGalleryDetail01")) {
 
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "photo_galery_grid.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(1);
-                } else if (moduleInfo.getBlockName().contains("carousel01")) {
-
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "video_hub.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(1);
-                }else if (moduleInfo.getBlockName().equalsIgnoreCase("articleFeed01")) {
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "article_hub.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(6);
-                }else */
-                /*if (moduleInfo.getBlockName().contains("videoPlayerInfo02")) {
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "video_detail_new.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(1);
-                } else*/
-                /*if (moduleInfo.getBlockName().contains("imageTextRow02")) {
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "benefit_plan_page.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(1);
-                } else if (moduleInfo.getBlockName().contains("selectPlan02")) {
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "benefit_plan_page.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(2);
-                }  else*/
                 if (moduleInfo.getBlockName().contains("showDetail01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "show_detail.json"),
@@ -1992,11 +1953,9 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "schedule_page_module.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                }*/ /*else if (moduleInfo.getBlockName().contains("personDetail02")) {
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "person_detail.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(1);
+                }*/ /*else if (moduleInfo.getBlockName().contains("userManagement01")) {
+
+                    module = appCMSAndroidModules.getModuleListMap().get("userManagement01");
                 }*/ else if (moduleInfo.getSettings() != null &&
                         moduleInfo.getSettings().isHidden()) { // Done for Tampabay Top Module
                     if (isTopModuleCreated) {
@@ -2068,12 +2027,6 @@ public class ViewCreator {
                     }
                 }
 
-                /**
-                 * Code block for handling Remove Download/AutoPlay Option from Screen
-                 */
-                if (module.getBlockName().contains("userManagement") && (!appCMSPresenter.isDownloadEnable() || !appCMSPresenter.isAutoPlayEnable())) {
-                 //   module = updateModuleForUserManagment(module, appCMSPresenter, jsonValueKeyMap);
-                }
                 View childView = createModuleView(context, module, moduleAPI,
                         appCMSAndroidModules,
                         pageView,
@@ -2239,8 +2192,8 @@ public class ViewCreator {
                                 componentViewResult.componentView.setVisibility(View.GONE);
                             }
                             adjustOthers = AdjustOtherState.INITIATED;
-                        } else if (/*!appCMSPresenter.isAppSVOD() &&*/ jsonValueKeyMap.get(component.getKey()) != null &&
-                                jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_DOWNLOADS_MODULE_KEY
+                        } else if (/*!appCMSPresenter.isAppSVOD() &&*/ jsonValueKeyMap.get(component.getKey()) != null
+                                && jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_DOWNLOADS_MODULE_KEY
                                 && appCMSPresenter.getAppCMSMain().getFeatures() != null &&
                                 !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads() && componentViewResult.componentView != null) {
                             componentViewResult.shouldHideComponent = true;
@@ -8048,39 +8001,6 @@ public class ViewCreator {
     }
 
 
-    public ModuleList updateModuleForUserManagment(final ModuleList moduleList, AppCMSPresenter appCMSPresenter, Map<String, AppCMSUIKeyType> jsonAppKeyMapUI) {
-        ArrayList<Component> components = moduleList.getComponents();
-        for (Component component : components) {
-            if (component.getKey() != null
-                    && (jsonAppKeyMapUI.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_DOWNLOADS_MODULE_KEY
-                    || component.getKey().equalsIgnoreCase("Manage App Settings")
-                    || component.getKey().equalsIgnoreCase("settings"))
-                    &&(!appCMSPresenter.isAutoPlayEnable() || !appCMSPresenter.isDownloadEnable())
-                    ) {
-                if (jsonAppKeyMapUI.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_DOWNLOADS_MODULE_KEY
-                        && !appCMSPresenter.isDownloadEnable()) {
-                    components.remove(component);
-                } else {
-                    ArrayList<Component> childComponetList = component.getComponents();
-                    for (Component childComponet : childComponetList) {
-                        if (childComponet.getKey() != null
-                                && childComponet.getKey().contains("autoplay")
-                                && !appCMSPresenter.isAutoPlayEnable()) {
-                            childComponetList.remove(childComponet);
-                        }else if (childComponet.getKey() != null
-                                && childComponet.getKey().contains("Downloads")
-                                &&  !appCMSPresenter.isDownloadEnable()){
-                            childComponetList.remove(childComponet);
-                        }
-
-                    }
-                    component.setComponents(childComponetList);
-                }
-            }
-        }
-        moduleList.setComponents(components);
-        return moduleList;
-    }
 }
 
 

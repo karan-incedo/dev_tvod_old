@@ -1053,31 +1053,34 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 AudioPlaylistHelper.getInstance().setCurrentPlaylistData(null);
                 AudioPlaylistHelper.getInstance().setCurrentPlaylistId(appCMSAudioDetailResult.getGist().getId());
                 AudioPlaylistHelper.getInstance().setPlaylist(audioPlaylistId);
+                try {
+                    GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+                    int resultCode = apiAvailability.isGooglePlayServicesAvailable(mContext);
+                    if (resultCode == ConnectionResult.SUCCESS) {
 
-                GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-                int resultCode = apiAvailability.isGooglePlayServicesAvailable(mContext);
-                if (resultCode == ConnectionResult.SUCCESS) {
-
-                    Intent intent = new Intent(mContext, AppCMSPlayAudioActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                    MediaControllerCompat controller = MediaControllerCompat.getMediaController(appCMSPresenter.getCurrentActivity());
-                    if (controller != null) {
-                        MediaMetadataCompat metadata = controller.getMetadata();
-                        if (metadata != null) {
-                            intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
-                                    metadata);
+                        Intent intent = new Intent(mContext, AppCMSPlayAudioActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        MediaControllerCompat controller = MediaControllerCompat.getMediaController(appCMSPresenter.getCurrentActivity());
+                        if (controller != null) {
+                            MediaMetadataCompat metadata = controller.getMetadata();
+                            if (metadata != null) {
+                                intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
+                                        metadata);
+                            }
                         }
-                    }
-                    mContext.startActivity(intent);
-                } else {
-                    int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
-                    if (apiAvailability.isUserResolvableError(resultCode)) {
-                        apiAvailability.getErrorDialog((Activity) mContext, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-                                .show();
-                    } /*else {
+                        mContext.startActivity(intent);
+                    } else {
+                        int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
+                        if (apiAvailability.isUserResolvableError(resultCode)) {
+                            apiAvailability.getErrorDialog((Activity) mContext, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                                    .show();
+                        } /*else {
                         Log.i(TAG, "This device is not supported.");
                         Toast.makeText(mContext, "This device is not supported.", Toast.LENGTH_SHORT).show();
                     }*/
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         } catch (Exception e) {

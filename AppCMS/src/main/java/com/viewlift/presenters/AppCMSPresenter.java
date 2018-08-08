@@ -7790,8 +7790,8 @@ public class AppCMSPresenter {
                                 }
                             }
                             if (isPlayerScreenOpen && currentActivity != null) {
-
-                                GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+                                try{
+                                    GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
                                 int resultCode = apiAvailability.isGooglePlayServicesAvailable(currentActivity);
                                 if (resultCode == ConnectionResult.SUCCESS) {
 
@@ -7817,6 +7817,7 @@ public class AppCMSPresenter {
                                         Toast.makeText(currentActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
                                     }*/
                                 }
+                                }catch (Exception e){e.printStackTrace();}
                             }
 
                         } else {
@@ -7841,7 +7842,7 @@ public class AppCMSPresenter {
                                AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper
             , boolean isPlayerScreenOpen, Boolean playAudio, int tryCount,
                                AppCMSAudioDetailAPIAction appCMSAudioDetailAPIAction) {
-
+        try{
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(getCurrentActiveContext());
         if (resultCode != ConnectionResult.SUCCESS) {
@@ -7856,6 +7857,7 @@ public class AppCMSPresenter {
             }*/
             return;
         }
+        }catch (Exception e){e.printStackTrace(); return;}
 
         if (!isNetworkConnected()) {
             int count = tryCount;
@@ -7905,7 +7907,7 @@ public class AppCMSPresenter {
                                 }
                             }
                             if (isPlayerScreenOpen && currentActivity != null) {
-
+                                try{
                                 GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
                                 int resultCode = apiAvailability.isGooglePlayServicesAvailable(currentActivity);
                                 if (resultCode == ConnectionResult.SUCCESS) {
@@ -7930,6 +7932,7 @@ public class AppCMSPresenter {
                                         Toast.makeText(currentActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
                                     }*/
                                 }
+                                }catch (Exception e){e.printStackTrace();}
                             }
 
                         } else {

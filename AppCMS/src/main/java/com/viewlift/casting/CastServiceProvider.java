@@ -309,46 +309,51 @@ public class CastServiceProvider {
     }
 
     public void onActivityResume() {
+        try {
+            GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+            int resultCode = apiAvailability.isGooglePlayServicesAvailable(mActivity);
+            if (resultCode == ConnectionResult.SUCCESS) {
 
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(mActivity);
-        if (resultCode == ConnectionResult.SUCCESS) {
+                refreshCastMediaIcon();
+                if (mCastSession == null) {
+                    mCastSession = CastContext.getSharedInstance(mActivity).getSessionManager()
+                            .getCurrentCastSession();
+                }
+                if (mCastHelper != null) {
+                    mCastHelper.setCastSessionManager();
+                }
+                if (shouldCastMiniControllerVisible()) {
+                    AudioServiceHelper.getAudioInstance().changeMiniControllerVisiblity(true);
+                } else {
+                    AudioServiceHelper.getAudioInstance().changeMiniControllerVisiblity(false);
+                }
 
-            refreshCastMediaIcon();
-            if (mCastSession == null) {
-                mCastSession = CastContext.getSharedInstance(mActivity).getSessionManager()
-                        .getCurrentCastSession();
-            }
-            mCastHelper.setCastSessionManager();
-            if (shouldCastMiniControllerVisible()) {
-                AudioServiceHelper.getAudioInstance().changeMiniControllerVisiblity(true);
+                createMediaChooserDialog();
+                try {
+                    mCastHelper.setCastDiscovery();
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                }
+
+                if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().isDefault()) {
+                    //Log.d(TAG, "This is a default route");
+                    mCastHelper.mSelectedDevice = null;
+                } else if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().getConnectionState()
+                        == MediaRouter.RouteInfo.CONNECTION_STATE_CONNECTED) {
+                    mCastHelper.isCastDeviceAvailable = true;
+                    mCastHelper.mSelectedDevice = CastDevice.getFromBundle(mCastHelper.mMediaRouter.getSelectedRoute().getExtras());
+                }
             } else {
-                AudioServiceHelper.getAudioInstance().changeMiniControllerVisiblity(false);
-            }
-
-            createMediaChooserDialog();
-            try {
-                mCastHelper.setCastDiscovery();
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
-
-            if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().isDefault()) {
-                //Log.d(TAG, "This is a default route");
-                mCastHelper.mSelectedDevice = null;
-            } else if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().getConnectionState()
-                    == MediaRouter.RouteInfo.CONNECTION_STATE_CONNECTED) {
-                mCastHelper.isCastDeviceAvailable = true;
-                mCastHelper.mSelectedDevice = CastDevice.getFromBundle(mCastHelper.mMediaRouter.getSelectedRoute().getExtras());
-            }
-        }else{
-            int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
-            if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(appCMSPresenter.getCurrentActivity(), resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-                        .show();
-            }
+                int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
+                if (apiAvailability.isUserResolvableError(resultCode)) {
+                    apiAvailability.getErrorDialog(appCMSPresenter.getCurrentActivity(), resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                            .show();
+                }
 //           Log.i(TAG, "This device is not supported.");
 //           Toast.makeText(mActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -430,7 +435,7 @@ public class CastServiceProvider {
     private void createMediaChooserDialog() {
         castChooserDialog = new CastChooserDialog(mActivity, callBackRokuMediaSelection);
         mCastHelper.routes.clear();
-        if (mCastHelper.mMediaRouter != null&&mCastHelper.mMediaRouter.getRoutes() != null) {
+        if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getRoutes() != null) {
             mCastHelper.routes.addAll(mCastHelper.mMediaRouter.getRoutes());
         }
 

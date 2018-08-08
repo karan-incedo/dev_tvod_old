@@ -51,6 +51,7 @@ import com.google.android.exoplayer2.drm.HttpMediaDrmCallback;
 import com.google.android.exoplayer2.drm.MediaDrmCallback;
 import com.google.android.exoplayer2.drm.UnsupportedDrmException;
 import com.google.android.exoplayer2.ext.ima.ImaAdsLoader;
+import com.google.android.exoplayer2.source.BehindLiveWindowException;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MediaSourceEventListener;
@@ -144,8 +145,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private Action1<PlayerState> onPlayerStateChanged;
     private Action1<Integer> onPlayerControlsStateChanged;
     private Action1<Boolean> onClosedCaptionButtonClicked;
-    private int resumeWindow;
-    private long resumePosition;
+    protected int resumeWindow;
+    protected long resumePosition;
     private int timeBarColor;
     private long bitrate = 0l;
     private int videoHeight = 0;
@@ -1352,11 +1353,30 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     @Override
     public void onPlayerError(ExoPlaybackException e) {
         mCurrentPlayerPosition = player.getCurrentPosition();
-        if (mErrorEventListener != null) {
+        if (isBehindLiveWindow(e)) {
+            resumeWindow = C.INDEX_UNSET;
+            resumePosition = C.TIME_UNSET;
+            preparePlayer();
+        }else if (mErrorEventListener != null) {
             mErrorEventListener.onRefreshTokenCallback();
         }
+
+
     }
 
+    protected static boolean isBehindLiveWindow(ExoPlaybackException e) {
+        if (e.type != ExoPlaybackException.TYPE_SOURCE) {
+            return false;
+        }
+        Throwable cause = e.getSourceException();
+        while (cause != null) {
+            if (cause instanceof BehindLiveWindowException) {
+                return true;
+            }
+            cause = cause.getCause();
+        }
+        return false;
+    }
     @Override
     public void onPositionDiscontinuity(int reason) {
 
