@@ -33,6 +33,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.ads.interactivemedia.v3.api.AdEvent;
 import com.google.android.exoplayer2.C;
@@ -135,7 +136,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     DefaultTrackSelector trackSelector;
     TrackGroupArray trackGroups;
     private AppCMSPresenter appCMSPresenter;
-    private ImageButton ccToggleButton, mSettingButton;
+    private ImageButton mSettingButton;
+    private ToggleButton ccToggleButton;
     private LinearLayout chromecastLivePlayerParent;
     private ViewGroup chromecastButtonPreviousParent;
     private FrameLayout chromecastButtonPlaceholder;
@@ -276,8 +278,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 settingsButtonVisibility(false);
             } else {
                 if (ccToggleButton != null) {
-//                    ccToggleButton.setChecked(isClosedCaptionEnabled);
-//                    ccToggleButton.setVisibility(VISIBLE);
+                    ccToggleButton.setChecked(isClosedCaptionEnabled);
+                    ccToggleButton.setVisibility(VISIBLE);
                 }
             }
 
@@ -517,12 +519,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
         ccToggleButton = createCC_ToggleButton();
         ((RelativeLayout) playerView.findViewById(R.id.exo_controller_container)).addView(ccToggleButton);
-        /*ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
-         *//*if (onClosedCaptionButtonClicked != null) {
+        ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (onClosedCaptionButtonClicked != null) {
                 onClosedCaptionButtonClicked.call(isChecked);
-            }*//*
+            }
             isClosedCaptionEnabled = isChecked;
-        });*/
+        });
 
         ///*
         if (appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID) {
@@ -534,15 +536,15 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
                     if (availableClosedCaptions == null
                             && hlsListViewAdapter == null
-                            && listViewAdapter == null ){
+                            && listViewAdapter == null) {
                         appCMSPresenter.showToast(getContext().getString(R.string.no_settings_available), Toast.LENGTH_SHORT);
-                    }else if (videoPlayerSettingsEvent != null){
-                        videoPlayerSettingsEvent.launchSetting(closedCaptionSelectorAdapter,listViewAdapter);
+                    } else if (videoPlayerSettingsEvent != null) {
+                        videoPlayerSettingsEvent.launchSetting(closedCaptionSelectorAdapter, listViewAdapter);
                         /*videoPlayerSettingsEvent.launchSetting(availableClosedCaptions, closedCaptionSelectorAdapter == null ? 0 : closedCaptionSelectorAdapter.getSelectedIndex(),
                                 availableStreamingQualitiesHLS, hlsListViewAdapter == null ? 0 : hlsListViewAdapter.getSelectedIndex(),
                                 availableStreamingQualities, listViewAdapter == null ? 0 : listViewAdapter.getSelectedIndex());
 */
-                    }else{
+                    } else {
                         appCMSPresenter.showToast(getContext().getString(R.string.something_wrong), Toast.LENGTH_SHORT);
                     }
 
@@ -553,13 +555,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
 
         try {
-            if (appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) {
-                StateListDrawable drawable = (StateListDrawable) currentStreamingQualitySelector.getBackground();
-                DrawableContainer.DrawableContainerState dcs = (DrawableContainer.DrawableContainerState) drawable.getConstantState();
-                Drawable[] drawableItems = dcs.getChildren();
-                GradientDrawable gradientDrawableChecked = (GradientDrawable) drawableItems[0]; // item 1
-                gradientDrawableChecked.setStroke(1, appCMSPresenter.getBrandPrimaryCtaColor());
-            }
+//            if (appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) {
+            StateListDrawable drawable = (StateListDrawable) currentStreamingQualitySelector.getBackground();
+            DrawableContainer.DrawableContainerState dcs = (DrawableContainer.DrawableContainerState) drawable.getConstantState();
+            Drawable[] drawableItems = dcs.getChildren();
+            GradientDrawable gradientDrawableChecked = (GradientDrawable) drawableItems[0]; // item 1
+            gradientDrawableChecked.setStroke(1, appCMSPresenter.getBrandPrimaryCtaColor());
+//            }
         } catch (Exception e) {
         }
 
@@ -614,7 +616,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
                 onPlayerControlsStateChanged.call(visibility);
             }
-            if (appCMSPresenter.getPlatformType().equals(AppCMSPresenter.PlatformType.TV)){
+            if (appCMSPresenter.getPlatformType().equals(AppCMSPresenter.PlatformType.TV)) {
                 if (visibility == View.VISIBLE) {
                     offsetSubtitleView();
                 } else {
@@ -762,19 +764,20 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             closedCaptionSelectorDialog.dismiss();
         });
         /*Click handler of the CC button on the player, which just opens the dialog*/
-        ccToggleButton.setOnClickListener(v -> {
+        /*ccToggleButton.setOnClickListener(v -> {
 
-            //if (appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) {
+            if (appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) {
             closedCaptionSelectorDialog.show();
             closedCaptionSelectorAdapter.notifyDataSetChanged();
             closedCaptionSelectorRecyclerView.scrollToPosition(selectedTrack);
-            // }
-        });
+             }
+        });*/
         closedCaptionSelectorCreated = true;
     }
 
     /**
      * Returns the selected CC group index
+     *
      * @return selected Closed Caption track
      */
     private int getSelectedCCTrack() {
@@ -799,6 +802,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     /**
      * overrides the CC track selection with the group id passed as a paramater
+     *
      * @param groupIndex index of the group you wanna select
      */
     private void setSelectedCCTrack(int groupIndex) {
@@ -812,6 +816,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
         if (!appCMSPresenter.isVideoDownloaded(streamingQualitySelector.getFilmId())) {
             if (streamingQualitySelector != null && appCMSPresenter != null) {
+                currentStreamingQualitySelector.setVisibility(VISIBLE);
                 availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
                 if (availableStreamingQualities != null && 1 < availableStreamingQualities.size()) {
                     qualitySelectorRecyclerView = new RecyclerView(getContext());
@@ -1103,6 +1108,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         return new MergingMediaSource(videoSource, subtitleSource);
     }
 
+    Uri offlineVideoUri, offlineClosedCaptionUri;
+
+    public void setOfflineUri(Uri videoUri, Uri closedCaptionUri) {
+        this.offlineVideoUri = videoUri;
+        this.offlineClosedCaptionUri = closedCaptionUri;
+
+    }
 
     /**
      * Queries video urls and subtitle urls from the hosting Activities which have implemented the
@@ -1143,6 +1155,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     mediaSourceList.add(buildMediaSource(Uri.parse(streamingQualityUrl), ""));
                 }
             }
+            if (offlineVideoUri != null)
+                mediaSourceList.add(buildMediaSource(offlineVideoUri, ""));
+
         } else { /* this is for HLS, getVideoUrl() returns the HLS url from the hosting activity*/
             mediaSourceList.add(buildMediaSource(Uri.parse(streamingQualitySelector.getVideoUrl()), ""));
         }
@@ -1190,6 +1205,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                             VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(INVISIBLE);
                         }
                     }
+
                 }
 
                 if (selectedSubtitleLanguageAvailable) {
@@ -1200,11 +1216,26 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(INVISIBLE);
                 }
             } else {
-                /*Disable CC if the list is empty meaning no cc available for the particular movie*/
-                settingsButtonVisibility(false);
-                toggleCCSelectorVisibility(false);
-                setCCToggleButtonSelection(false);
-                VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(INVISIBLE);
+                if (offlineClosedCaptionUri != null) {
+                    Format textFormat = Format.createTextSampleFormat(null,
+                            MimeTypes.APPLICATION_SUBRIP,
+                            C.SELECTION_FLAG_DEFAULT,
+                            "en");
+
+                    mediaSourceList.add(new SingleSampleMediaSource(
+                            offlineClosedCaptionUri,
+                            mediaDataSourceFactory,
+                            textFormat,
+                            C.TIME_UNSET));
+                    setCCToggleButtonSelection(true);
+                    VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(VISIBLE);
+                } else {
+                    /*Disable CC if the list is empty meaning no cc available for the particular movie*/
+                    settingsButtonVisibility(false);
+                    toggleCCSelectorVisibility(false);
+                    setCCToggleButtonSelection(false);
+                    VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(INVISIBLE);
+                }
             }
         } else {
             /*Disable CC if the user has turned CC off from settings*/
@@ -1313,7 +1344,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             } else if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)
                     && !useHls
                     && !streamingQualitySelectorCreated
-                    && isLiveStreaming()) {
+                    && !isLiveStreaming()) {
 
                 createStreamingQualitySelector();
                 String defaultVideoResolution = getContext().getString(R.string.default_video_resolution);
@@ -1369,27 +1400,30 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         } else {
             if (appCMSPresenter.isVideoDownloaded(streamingQualitySelector.getFilmId()) && appCMSPresenter.isUserLoggedIn()) {
                 currentStreamingQualitySelector.setVisibility(View.GONE);
-            } else if(appCMSPresenter != null
-                    && appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV){
+            } else if (appCMSPresenter != null
+                    && appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) {
                 currentStreamingQualitySelector.setVisibility(View.VISIBLE);
             }
         }
+//        currentStreamingQualitySelector.setVisibility(VISIBLE);
     }
 
     private void toggleCCSelectorVisibility(boolean show) {
         if (null != ccToggleButton
-                && appCMSPresenter!= null
+                && appCMSPresenter != null
                 && appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) {
             ccToggleButton.setVisibility(show ? View.VISIBLE : View.GONE);
         }
+        ccToggleButton.setVisibility(VISIBLE);
     }
 
     private void settingsButtonVisibility(boolean show) {
         if (null != ccToggleButton
-                && appCMSPresenter!= null
+                && appCMSPresenter != null
                 && appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID) {
             mSettingButton.setVisibility(show ? View.VISIBLE : View.GONE);
         }
+        mSettingButton.setVisibility(GONE);
     }
 
     @Override
@@ -1410,6 +1444,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             mErrorEventListener.onRefreshTokenCallback();
             mErrorEventListener.playerError(e);
         }
+        mSettingButton.setVisibility(GONE);
     }
 
     @Override
@@ -1620,16 +1655,23 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         this.appCMSPresenter = appCMSPresenter;
     }
 
-    protected ImageButton createCC_ToggleButton() {
-        ImageButton mToggleButton = new ImageButton(getContext());
+    protected ToggleButton createCC_ToggleButton() {
+        ToggleButton mToggleButton = new ToggleButton(getContext());
         RelativeLayout.LayoutParams toggleLP = new RelativeLayout.LayoutParams(BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_width, getContext()), BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_width, getContext()));
         toggleLP.addRule(RelativeLayout.CENTER_VERTICAL);
         toggleLP.addRule(RelativeLayout.RIGHT_OF, R.id.exo_media_controller);
         toggleLP.setMarginStart(BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_left_margin, getContext()));
         toggleLP.setMarginEnd(BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_left_margin, getContext()));
         mToggleButton.setLayoutParams(toggleLP);
-        mToggleButton.setBackground(getResources().getDrawable(R.drawable.cc_button_selector, null));
-        mToggleButton.setVisibility(GONE);
+        mToggleButton.setTextOff("");
+        mToggleButton.setTextOn("");
+        mToggleButton.setText("");
+        mToggleButton.setBackground(getResources().getDrawable(R.drawable.cc_toggle_selector, null));
+        mToggleButton.setVisibility(VISIBLE);
+        if (appCMSPresenter.getClosedCaptionPreference()) {
+            setCCToggleButtonSelection(true);
+        }
+        isClosedCaptionEnabled = appCMSPresenter.getClosedCaptionPreference();
         return mToggleButton;
     }
 
@@ -2204,11 +2246,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public interface VideoPlayerSettingsEvent {
         /**
-         *
          * @param closedCaptionSelectorAdapter
          * @param videoQualityAdapter
          */
         void launchSetting(ClosedCaptionSelectorAdapter closedCaptionSelectorAdapter, StreamingQualitySelectorAdapter videoQualityAdapter);
+
         void finishPlayerSetting();
 
     }
@@ -2248,7 +2290,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public void setStreamingQuality(int position, Object obj) {
         try {
-             if (obj instanceof HLSStreamingQuality) {
+            if (obj instanceof HLSStreamingQuality) {
                 int selectedIndex = hlsListViewAdapter.getDownloadQualityPosition();
                 if (selectedIndex == 0) {
                     trackSelector.clearSelectionOverrides(mVideoRendererIndex);
@@ -2277,16 +2319,17 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
 
-    public  void setCCToggleButtonSelection(boolean isSelected){
-        if (ccToggleButton != null){
+    public void setCCToggleButtonSelection(boolean isSelected) {
+        if (ccToggleButton != null) {
             ccToggleButton.setSelected(isSelected);
         }
     }
-    public boolean isLiveStreaming(){
+
+    public boolean isLiveStreaming() {
         if (getPlayerView() != null  /* if video is not Live */
                 && getPlayerView().getController() != null
                 && getPlayerView().getController().isPlayingLive() /* if video is not Live */
-                && appCMSPresenter.getPlatformType() != AppCMSPresenter.PlatformType.ANDROID){
+                && appCMSPresenter.getPlatformType() != AppCMSPresenter.PlatformType.ANDROID) {
             return true;
         } else {
             return false;
