@@ -193,7 +193,7 @@ public class BeaconPing extends Thread {
                                     null,
                                     null,
                                     null,
-                                    streamId,
+                                    getStreamId(),
                                     0d,
                                     0,
                                     appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId()));
@@ -238,6 +238,9 @@ public class BeaconPing extends Thread {
 
     public void setStreamId(String streamId) {
         this.streamId = streamId;
+    }
+    public String getStreamId() {
+        return streamId;
     }
 
     public void setContentDatum(ContentDatum contentDatum) {

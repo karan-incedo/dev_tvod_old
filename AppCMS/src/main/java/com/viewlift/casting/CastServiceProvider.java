@@ -319,29 +319,31 @@ public class CastServiceProvider {
                 mCastSession = CastContext.getSharedInstance(mActivity).getSessionManager()
                         .getCurrentCastSession();
             }
-            mCastHelper.setCastSessionManager();
-            if (shouldCastMiniControllerVisible()) {
-                AudioServiceHelper.getAudioInstance().changeMiniControllerVisiblity(true);
-            } else {
-                AudioServiceHelper.getAudioInstance().changeMiniControllerVisiblity(false);
-            }
+            if (mCastHelper != null) {
+                mCastHelper.setCastSessionManager();
+                if (shouldCastMiniControllerVisible()) {
+                    AudioServiceHelper.getAudioInstance().changeMiniControllerVisiblity(true);
+                } else {
+                    AudioServiceHelper.getAudioInstance().changeMiniControllerVisiblity(false);
+                }
 
-            createMediaChooserDialog();
-            try {
-                mCastHelper.setCastDiscovery();
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
+                createMediaChooserDialog();
+                try {
+                    mCastHelper.setCastDiscovery();
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                }
 
-            if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().isDefault()) {
-                //Log.d(TAG, "This is a default route");
-                mCastHelper.mSelectedDevice = null;
-            } else if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().getConnectionState()
-                    == MediaRouter.RouteInfo.CONNECTION_STATE_CONNECTED) {
-                mCastHelper.isCastDeviceAvailable = true;
-                mCastHelper.mSelectedDevice = CastDevice.getFromBundle(mCastHelper.mMediaRouter.getSelectedRoute().getExtras());
+                if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().isDefault()) {
+                    //Log.d(TAG, "This is a default route");
+                    mCastHelper.mSelectedDevice = null;
+                } else if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().getConnectionState()
+                        == MediaRouter.RouteInfo.CONNECTION_STATE_CONNECTED) {
+                    mCastHelper.isCastDeviceAvailable = true;
+                    mCastHelper.mSelectedDevice = CastDevice.getFromBundle(mCastHelper.mMediaRouter.getSelectedRoute().getExtras());
+                }
             }
-        }else{
+        } else {
             int PLAY_SERVICES_RESOLUTION_REQUEST = 1001;
             if (apiAvailability.isUserResolvableError(resultCode)) {
                 apiAvailability.getErrorDialog(appCMSPresenter.getCurrentActivity(), resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
@@ -430,7 +432,7 @@ public class CastServiceProvider {
     private void createMediaChooserDialog() {
         castChooserDialog = new CastChooserDialog(mActivity, callBackRokuMediaSelection);
         mCastHelper.routes.clear();
-        if (mCastHelper.mMediaRouter != null&&mCastHelper.mMediaRouter.getRoutes() != null) {
+        if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getRoutes() != null) {
             mCastHelper.routes.addAll(mCastHelper.mMediaRouter.getRoutes());
         }
 

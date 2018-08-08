@@ -1968,7 +1968,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "home.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } else if (moduleInfo.getBlockName().contains("downloads01")) {
+                } /*else if (moduleInfo.getBlockName().contains("downloads01")) {
 
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "my_watchlist.json"),
@@ -1979,14 +1979,14 @@ public class ViewCreator {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(2);
+                    module = appCMSPageUI1.getModuleList().get(1);
                 } else if (moduleInfo.getBlockName().contains("watchlist01") ||
                         moduleInfo.getBlockName().contains("watchlist02")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "my_watchlist.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                } else if (moduleInfo.getBlockName().contains("fullWidthCarousel01")) {
+                } */else if (moduleInfo.getBlockName().contains("fullWidthCarousel01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "full_image_carousel.json"),
                             AppCMSPageUI.class);

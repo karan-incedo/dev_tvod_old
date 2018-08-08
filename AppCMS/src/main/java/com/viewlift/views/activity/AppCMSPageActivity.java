@@ -86,7 +86,6 @@ import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSLibraryResult;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
-import com.viewlift.models.data.appcms.api.AppCMSRosterResult;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -452,7 +451,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
 
                 if (!TextUtils.isEmpty(deeplinkUrl)) {
-
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
                     if (!isActive) {
                         if (appCMSPresenter.getCurrentContext() != null) {
@@ -840,17 +843,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     }
 
-    public void handleIntent(Intent intent) {
-        if (intent != null && intent.getStringExtra(getString(R.string.deeplink_uri_extra_key)) != null) {
-            processDeepLink(Uri.parse(intent.getStringExtra(getString(R.string.deeplink_uri_extra_key))));
-//            Intent appCMSIntent = new Intent(appCMSPresenter.getCurrentContext(),
-//                    AppCMSPageActivity.class);
-//            Bundle extras = intent.getExtras();
-//            appCMSIntent.putExtras(extras);
-//            appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-//            appCMSPresenter.getCurrentContext().startActivity(appCMSIntent);
-        }
-    }
+
 
     private void keepScreenOn() {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -1395,7 +1388,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             processDeepLink(pendingDeeplinkUri);
             pendingDeeplinkUri = null;
         }
-        handleIntent(getIntent());
     }
 
     private void refreshPageData() {
