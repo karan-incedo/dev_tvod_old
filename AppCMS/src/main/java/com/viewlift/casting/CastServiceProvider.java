@@ -309,10 +309,10 @@ public class CastServiceProvider {
     }
 
     public void onActivityResume() {
-
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(mActivity);
-        if (resultCode == ConnectionResult.SUCCESS) {
+        try {
+            GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+            int resultCode = apiAvailability.isGooglePlayServicesAvailable(mActivity);
+            if (resultCode == ConnectionResult.SUCCESS) {
 
             refreshCastMediaIcon();
             if (mCastSession == null) {
@@ -351,6 +351,9 @@ public class CastServiceProvider {
             }
 //           Log.i(TAG, "This device is not supported.");
 //           Toast.makeText(mActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
