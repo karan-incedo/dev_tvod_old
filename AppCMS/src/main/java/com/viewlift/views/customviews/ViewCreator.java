@@ -4327,40 +4327,42 @@ public class ViewCreator {
                         componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
 
                         final String shareAction = component.getAction();
-
-                        componentViewResult.componentView.setOnClickListener(v -> {
-                            AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
-                            if (appCMSMain != null &&
-                                    moduleAPI != null &&
-                                    moduleAPI.getContentData() != null &&
-                                    !moduleAPI.getContentData().isEmpty() &&
-                                    moduleAPI.getContentData().get(0) != null &&
-                                    moduleAPI.getContentData().get(0).getGist() != null &&
-                                    moduleAPI.getContentData().get(0).getGist().getTitle() != null &&
-                                    moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
-                                StringBuilder filmUrl = new StringBuilder();
-                                filmUrl.append(appCMSMain.getDomainName());
-                                filmUrl.append(moduleAPI.getContentData().get(0).getGist().getPermalink());
-                                String[] extraData = new String[1];
-                                extraData[0] = filmUrl.toString();
-                                if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
-                                        shareAction,
-                                        moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                        extraData,
-                                        moduleAPI.getContentData().get(0),
-                                        false,
-                                        0,
-                                        null)) {
-                                    //Log.e(TAG, "Could not launch action: " +
+                        if(appCMSPresenter != null
+                                && !appCMSPresenter.getAppCMSMain().getId().equalsIgnoreCase("8630e831-6557-41a3-95c9-6aad9fea4c7d")) {
+                            componentViewResult.componentView.setOnClickListener(v -> {
+                                AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+                                if (appCMSMain != null &&
+                                        moduleAPI != null &&
+                                        moduleAPI.getContentData() != null &&
+                                        !moduleAPI.getContentData().isEmpty() &&
+                                        moduleAPI.getContentData().get(0) != null &&
+                                        moduleAPI.getContentData().get(0).getGist() != null &&
+                                        moduleAPI.getContentData().get(0).getGist().getTitle() != null &&
+                                        moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
+                                    StringBuilder filmUrl = new StringBuilder();
+                                    filmUrl.append(appCMSMain.getDomainName());
+                                    filmUrl.append(moduleAPI.getContentData().get(0).getGist().getPermalink());
+                                    String[] extraData = new String[1];
+                                    extraData[0] = filmUrl.toString();
+                                    if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
+                                            shareAction,
+                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                            extraData,
+                                            moduleAPI.getContentData().get(0),
+                                            false,
+                                            0,
+                                            null)) {
+                                        //Log.e(TAG, "Could not launch action: " +
 //                                            " permalink: " +
 //                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
 //                                            " action: " +
 //                                            component.getAction() +
 //                                            " film URL: " +
 //                                            filmUrl.toString());
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                         if (moduleAPI != null &&
                                 moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
@@ -4371,10 +4373,9 @@ public class ViewCreator {
                             componentViewResult.componentView.setVisibility(View.GONE);
 
                         }
-                        if ((appCMSPresenter != null &&
+                        if (appCMSPresenter != null &&
                                 appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS &&
                                 appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID)
-                                || appCMSPresenter.getAppCMSMain().getId().equalsIgnoreCase("8630e831-6557-41a3-95c9-6aad9fea4c7d")) // Handle for RCHDTV App only, Special Client CR.
                         {
                             componentViewResult.componentView.setVisibility(View.GONE);
                         }
