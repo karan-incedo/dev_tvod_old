@@ -2276,6 +2276,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     appCMSPresenter.isPageAtPersonDetailPage(updatedAppCMSBinder.getPageName())) {
                 mShareTopButton.setVisibility(View.VISIBLE);
                 mSearchTopButton.setVisibility(View.VISIBLE);
+                /**
+                 * Special CR for RCHDTV, Not supporting Share button.
+                 */
+                if(appCMSPresenter != null
+                        && appCMSPresenter.getAppCMSMain().getId().equalsIgnoreCase("8630e831-6557-41a3-95c9-6aad9fea4c7d"))
+                {
+                    mShareTopButton.setVisibility(View.GONE);
+                }
                 setCastingVisibility(false);
             } else {
                 mShareTopButton.setVisibility(View.GONE);

@@ -4371,9 +4371,11 @@ public class ViewCreator {
                             componentViewResult.componentView.setVisibility(View.GONE);
 
                         }
-                        if (appCMSPresenter != null &&
+                        if ((appCMSPresenter != null &&
                                 appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS &&
-                                appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID) {
+                                appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID)
+                                || appCMSPresenter.getAppCMSMain().getId().equalsIgnoreCase("8630e831-6557-41a3-95c9-6aad9fea4c7d")) // Handle for RCHDTV App only, Special Client CR.
+                        {
                             componentViewResult.componentView.setVisibility(View.GONE);
                         }
                         break;
