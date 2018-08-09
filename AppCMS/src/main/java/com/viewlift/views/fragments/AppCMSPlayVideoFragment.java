@@ -40,13 +40,11 @@ import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
-import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.beacon.BeaconBuffer;
 import com.viewlift.models.data.appcms.beacon.BeaconPing;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
-import com.viewlift.models.data.playersettings.HLSStreamingQuality;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.ClosedCaptionSelectorAdapter;
 import com.viewlift.views.adapters.StreamingQualitySelectorAdapter;
@@ -61,8 +59,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import rx.functions.Action1;
 
 /*
@@ -849,7 +845,10 @@ public class AppCMSPlayVideoFragment extends Fragment
                         : View.GONE);
         videoPlayerView.setAdsUrl(adsUrl);
         if (isVideoDownloaded) {
-            videoPlayerView.setOfflineUri(Uri.parse(hlsUrl), Uri.parse(closedCaptionUrl));
+            if (closedCaptionUrl != null)
+                videoPlayerView.setOfflineUri(Uri.parse(hlsUrl), Uri.parse(closedCaptionUrl));
+            else
+                videoPlayerView.setOfflineUri(Uri.parse(hlsUrl), null);
         }
         videoPlayerView.preparePlayer();
         videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);

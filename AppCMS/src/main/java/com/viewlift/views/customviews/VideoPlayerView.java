@@ -3,9 +3,7 @@ package com.viewlift.views.customviews;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.DrawableContainer;
@@ -13,7 +11,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.media.AudioManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -278,7 +275,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 settingsButtonVisibility(false);
             } else {
                 if (ccToggleButton != null) {
-                    ccToggleButton.setChecked(isClosedCaptionEnabled);
+                    setCCToggleButtonSelection(isClosedCaptionEnabled);
                     ccToggleButton.setVisibility(VISIBLE);
                 }
             }
@@ -1169,7 +1166,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
             /*check if user has a preferred subtitle language, which he/she might have chosen in the
             past, method returns null if there is no preference*/
-            String preferredSubtitleLanguage = appCMSPresenter.getPreferredSubtitleLanguage();
+//            String preferredSubtitleLanguage = appCMSPresenter.getPreferredSubtitleLanguage();
+            String preferredSubtitleLanguage = "en";
 
             /* Iterate over the CC list and create a SingleSampleMediaSource for each Subtitles and add
              * each one of them to the list*/
@@ -1210,7 +1208,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
                 if (selectedSubtitleLanguageAvailable) {
                     setCCToggleButtonSelection(true);
-                    VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(VISIBLE);
+                    if (ccToggleButton.isSelected())
+                        VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(VISIBLE);
                 } else {
                     setCCToggleButtonSelection(false);
                     VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(INVISIBLE);
@@ -1228,7 +1227,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                             textFormat,
                             C.TIME_UNSET));
                     setCCToggleButtonSelection(true);
-                    VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(VISIBLE);
+                    if (ccToggleButton.isSelected())
+                        VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(VISIBLE);
                 } else {
                     /*Disable CC if the list is empty meaning no cc available for the particular movie*/
                     settingsButtonVisibility(false);
@@ -1255,6 +1255,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             // Plays the video with the side-loaded subtitle.
             return new MergingMediaSource(mediaSources);
         }
+
     }
 
 
@@ -1667,11 +1668,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         mToggleButton.setTextOn("");
         mToggleButton.setText("");
         mToggleButton.setBackground(getResources().getDrawable(R.drawable.cc_toggle_selector, null));
-        mToggleButton.setVisibility(VISIBLE);
-        if (appCMSPresenter.getClosedCaptionPreference()) {
-            setCCToggleButtonSelection(true);
-        }
-        isClosedCaptionEnabled = appCMSPresenter.getClosedCaptionPreference();
         return mToggleButton;
     }
 
@@ -2273,7 +2269,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             /*set preferred language in the preferences in order to honor the user selection
              * for future*/
             appCMSPresenter.setPreferredSubtitleLanguage(closedCaptionSelector.getSubtitleLanguageFromIndex(position - 1));
-            VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(VISIBLE);
+            if (ccToggleButton.isSelected())
+                VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(VISIBLE);
 
         } else { /*if position is the mock entry, just hide the subtitle view and do other stuff*/
 
@@ -2321,7 +2318,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public void setCCToggleButtonSelection(boolean isSelected) {
         if (ccToggleButton != null) {
-            ccToggleButton.setSelected(isSelected);
+            ccToggleButton.setChecked(isSelected);
+//            ccToggleButton.setSelected(isSelected);
+
         }
     }
 
