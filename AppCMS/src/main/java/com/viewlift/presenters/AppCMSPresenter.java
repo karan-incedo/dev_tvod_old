@@ -15574,6 +15574,7 @@ public class AppCMSPresenter {
                 }
             } else {
                 if (getPlatformType() == PlatformType.ANDROID) {
+                    if(homePage.getPageId()!=null){
                     boolean launchSuccess = navigateToPage(homePage.getPageId(),
                             homePage.getPageName(),
                             homePage.getPageUI(),
@@ -15586,7 +15587,7 @@ public class AppCMSPresenter {
                     launchSuccessfull.call(true);
                     if (!launchSuccess) {
                         launchBlankPage();
-                    }
+                    }}
                 } else {
                     boolean launchSuccess = navigateToTVPage(homePage.getPageId(),
                             homePage.getPageName(),

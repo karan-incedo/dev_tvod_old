@@ -1452,22 +1452,22 @@ public class AppCMSPlayVideoFragment extends Fragment
     @Override
     public void onAudioFocusChange(int focusChange) {
         switch (focusChange) {
-            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                videoPlayerView.pausePlayer();
-                break;
-
-            case AudioManager.AUDIOFOCUS_GAIN:
-                if (videoPlayerView.getPlayer() != null && videoPlayerView.getPlayer().getPlayWhenReady()) {
-                    videoPlayerView.startPlayer(true);
-                } else {
-                    videoPlayerView.pausePlayer();
-                }
-                break;
-
-            case AudioManager.AUDIOFOCUS_LOSS:
-                videoPlayerView.pausePlayer();
-                abandonAudioFocus();
-                break;
+//            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+//                videoPlayerView.pausePlayer();
+//                break;
+//
+//            case AudioManager.AUDIOFOCUS_GAIN:
+//                if (videoPlayerView.getPlayer() != null && videoPlayerView.getPlayer().getPlayWhenReady()) {
+//                    videoPlayerView.startPlayer(true);
+//                } else {
+//                    videoPlayerView.pausePlayer();
+//                }
+//                break;
+//
+//            case AudioManager.AUDIOFOCUS_LOSS:
+//                videoPlayerView.pausePlayer();
+//                abandonAudioFocus();
+//                break;
 
             default:
                 break;

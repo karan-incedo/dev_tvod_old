@@ -521,6 +521,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 onClosedCaptionButtonClicked.call(isChecked);
             }
             isClosedCaptionEnabled = isChecked;
+            showSubtitle(isChecked);
         });
 
         ///*
@@ -1160,7 +1161,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }
 
         /*Check if user has enabled CC in the app setting, it is off by default*/
-        if (appCMSPresenter.getClosedCaptionPreference()) {
+
             /*getAvailableClosedCaptions() returns all the SRTs which we got in the ContentDatum*/
             List<ClosedCaptions> closedCaptionsList = closedCaptionSelector.getAvailableClosedCaptions();
 
@@ -1206,7 +1207,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
                 }
 
-                if (selectedSubtitleLanguageAvailable) {
+                if (selectedSubtitleLanguageAvailable&&appCMSPresenter.getClosedCaptionPreference()) {
                     setCCToggleButtonSelection(true);
                     if (ccToggleButton.isSelected())
                         VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(VISIBLE);
@@ -1237,6 +1238,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(INVISIBLE);
                 }
             }
+        if (appCMSPresenter.getClosedCaptionPreference()) {
+            setCCToggleButtonSelection(true);
+            if (ccToggleButton.isSelected())
+                VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(VISIBLE);
+
         } else {
             /*Disable CC if the user has turned CC off from settings*/
             settingsButtonVisibility(false);
@@ -2316,11 +2322,19 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
 
+    void showSubtitle(boolean subtitle) {
+        if (subtitle)
+            VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(VISIBLE);
+        else
+            VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(GONE);
+
+
+    }
+
     public void setCCToggleButtonSelection(boolean isSelected) {
         if (ccToggleButton != null) {
             ccToggleButton.setChecked(isSelected);
 //            ccToggleButton.setSelected(isSelected);
-
         }
     }
 

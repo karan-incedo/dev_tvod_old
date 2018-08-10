@@ -1246,10 +1246,11 @@ public abstract class BaseView extends FrameLayout {
                     break;
 
                 case PAGE_PLAN_PRICEINFO_KEY:
+//                case PAGE_PLAN_DESCRIPTION_KEY:
                     lm += convertDpToPixel(8, getContext());
-                    if (componentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
+                    /*if (componentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
                         gravity = Gravity.CENTER_VERTICAL;
-                    }
+                    }*/
                     break;
                 case PAGE_PLAN_FEATURE_TEXT_KEY:
                     if (componentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {

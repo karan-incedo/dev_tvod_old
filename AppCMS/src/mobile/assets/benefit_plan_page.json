@@ -238,17 +238,23 @@
                 "mobile": {
                   "leftMargin": 0,
                   "rightMargin": 0,
-                  "fontSize": 20
+                  "fontSize": 18,
+                  "height":30,
+                  "yAxis":11
                 },
                 "tabletLandscape": {
                   "leftMargin": 0,
                   "rightMargin": 0,
-                  "fontSize": 17
+                  "fontSize": 18,
+                  "height":30,
+                  "yAxis":13
                 },
                 "tabletPortrait": {
                   "leftMargin": 0,
                   "rightMargin": 0,
-                  "fontSize": 17
+                  "fontSize": 18,
+                  "height":30,
+                  "yAxis":13
                 }
               },
               "fontFamily": "OpenSans",
@@ -258,6 +264,40 @@
               "textColor": "#ffffff",
               "fontWeight": "Italic",
               "key": "planPriceInfo"
+            },{
+              "layout": {
+                "mobile": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 10,
+                  "height":14,
+                  "yAxis":41,
+                  "xAxis":22
+                },
+                "tabletLandscape": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 13,
+                  "height":14,
+                  "yAxis":43,
+                  "xAxis":21
+                },
+                "tabletPortrait": {
+                  "leftMargin": 0,
+                  "rightMargin": 0,
+                  "fontSize": 13,
+                  "height":14,
+                  "yAxis":43,
+                  "xAxis":22
+                }
+              },
+              "fontFamily": "OpenSans",
+              "numberOfLines": 1,
+              "textAlignment": "left",
+              "type": "label",
+              "textColor": "#ffffff",
+              "fontWeight": "Italic",
+              "key": "planDescription"
             },
             {
               "layout": {

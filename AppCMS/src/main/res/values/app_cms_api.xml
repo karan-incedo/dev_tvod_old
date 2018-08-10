@@ -467,6 +467,7 @@
     <string name="app_cms_page_article_tray_key">AC ArticleTray 01</string>
     <string name="app_cms_plan_title_key">planTitle</string>
     <string name="app_cms_plan_priceinfo_key">planPriceInfo</string>
+    <string name="app_cms_plan_description_key">planDescription</string>
     <string name="app_cms_plan_bestvalue_key">planBestValueLabel</string>
     <string name="app_cms_plan_purchase_button_key">planPurchaseButton</string>
     <string name="app_cms_plan_meta_dataview_key">planMetaDataView</string>
