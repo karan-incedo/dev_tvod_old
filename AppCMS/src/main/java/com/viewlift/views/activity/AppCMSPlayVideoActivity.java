@@ -34,6 +34,7 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Mpeg;
 import com.viewlift.models.data.appcms.api.VideoAssets;
+import com.viewlift.models.data.appcms.downloads.DownloadClosedCaptionRealm;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.playersettings.HLSStreamingQuality;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -735,47 +736,73 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     public List<ClosedCaptions> getAvailableClosedCaptions() {
         List<ClosedCaptions> closedCaptionsList = new ArrayList<>();
 
-        if (binder != null
-                && binder.getContentData() != null
-                && binder.getContentData().getContentDetails() != null
-                && binder.getContentData().getContentDetails().getClosedCaptions() != null) {
-            ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
-            if (closedCaptions != null) {
-                for (ClosedCaptions captions : closedCaptions) {
-                    if ("SRT".equalsIgnoreCase(captions.getFormat())) {
-                        closedCaptionsList.add(captions);
+        if(appCMSPresenter != null && appCMSPresenter.getRealmController().isCCFileAvailableForOffLine(binder.getContentData().getGist().getId())){
+
+          for(DownloadClosedCaptionRealm dc: appCMSPresenter.getRealmController().getAllDownloadedCCFiles(binder.getContentData().getGist().getId())) {
+              ClosedCaptions cc =Utils.convertDownloadClosedCaptionToClosedCaptions(dc);
+              if ("SRT".equalsIgnoreCase(cc.getFormat())) {
+                  cc.setUrl(appCMSPresenter.downloadedMediaLocalURI(dc.getCcFileEnqueueId()));
+                  closedCaptionsList.add(cc);
+              }
+          }
+        }else {
+            if (binder != null
+                    && binder.getContentData() != null
+                    && binder.getContentData().getContentDetails() != null
+                    && binder.getContentData().getContentDetails().getClosedCaptions() != null) {
+                ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
+                if (closedCaptions != null) {
+                    for (ClosedCaptions captions : closedCaptions) {
+                        if ("SRT".equalsIgnoreCase(captions.getFormat())) {
+                            closedCaptionsList.add(captions);
+                        }
                     }
                 }
             }
         }
-
         return closedCaptionsList;
     }
 
     @Override
     public String getSubtitleLanguageFromIndex(int index) {
         String language = null;
+        List<ClosedCaptions> closedCaptionsList = new ArrayList<>();
 
-        if (binder != null
-                && binder.getContentData() != null
-                && binder.getContentData().getContentDetails() != null
-                && binder.getContentData().getContentDetails().getClosedCaptions() != null) {
-            ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
-            List<ClosedCaptions> closedCaptionsList = new ArrayList<>();
+        if (appCMSPresenter != null && appCMSPresenter.getRealmController().isCCFileAvailableForOffLine(binder.getContentData().getGist().getId())) {
 
-            if (closedCaptions != null) {
-                for (ClosedCaptions captions : closedCaptions) {
-                    if ("SRT".equalsIgnoreCase(captions.getFormat())) {
-                        closedCaptionsList.add(captions);
-                    }
+            for (DownloadClosedCaptionRealm dc : appCMSPresenter.getRealmController().getAllDownloadedCCFiles(binder.getContentData().getGist().getId())) {
+                ClosedCaptions cc = Utils.convertDownloadClosedCaptionToClosedCaptions(dc);
+                if ("SRT".equalsIgnoreCase(cc.getFormat())) {
+                    cc.setUrl(appCMSPresenter.downloadedMediaLocalURI(dc.getCcFileEnqueueId()));
+                    closedCaptionsList.add(cc);
                 }
             }
 
             if (!closedCaptionsList.isEmpty()) {
                 language = closedCaptionsList.get(index).getLanguage();
             }
-        }
-        return language;
+
+        }else{
+            if (binder != null
+                    && binder.getContentData() != null
+                    && binder.getContentData().getContentDetails() != null
+                    && binder.getContentData().getContentDetails().getClosedCaptions() != null) {
+                ArrayList<ClosedCaptions> closedCaptions = binder.getContentData().getContentDetails().getClosedCaptions();
+
+                if (closedCaptions != null) {
+                    for (ClosedCaptions captions : closedCaptions) {
+                        if ("SRT".equalsIgnoreCase(captions.getFormat())) {
+                            closedCaptionsList.add(captions);
+                        }
+                    }
+                }
+
+                if (!closedCaptionsList.isEmpty()) {
+                    language = closedCaptionsList.get(index).getLanguage();
+                }
+            }
+         }
+       return language;
     }
 
 }

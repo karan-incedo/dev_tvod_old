@@ -312,8 +312,18 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
      * which have methods implemented
      * eg. {@link AppCMSPlayVideoActivity#getAvailableClosedCaptions()}
      */
+
+    Uri offlineVideoUri, offlineClosedCaptionUri;
+
+    public void setOfflineUri(Uri videoUri, Uri closedCaptionUri) {
+        this.offlineVideoUri = videoUri;
+        this.offlineClosedCaptionUri = closedCaptionUri;
+
+    }
+
     public void preparePlayer() {
         try {
+
             player.prepare(buildMediaSource());
         } catch (IllegalStateException e) {
             //Log.e(TAG, "Unsupported video format for URI: " + videoUri.toString());
@@ -613,13 +623,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
                 onPlayerControlsStateChanged.call(visibility);
             }
-            if (appCMSPresenter.getPlatformType().equals(AppCMSPresenter.PlatformType.TV)){
-                if (visibility == View.VISIBLE) {
+
+            if (visibility == View.VISIBLE) {
                     offsetSubtitleView();
-                } else {
+            } else {
                     resetSubtitleView();
-                }
             }
+
         });
         player.addVideoListener(this);
 
@@ -642,8 +652,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         if (playerView.getSubtitleView() != null) {
             if (appCMSPresenter.getPlatformType().equals(AppCMSPresenter.PlatformType.TV)) {
                 playerView.getSubtitleView().animate().translationY(-100).setDuration(100);
-            } else if (appCMSPresenter.getPlatformType().equals(AppCMSPresenter.PlatformType.ANDROID)) {
-                playerView.getSubtitleView().animate().translationY(-150).setDuration(100);
             }
         }
     }
@@ -1139,6 +1147,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     mediaSourceList.add(buildMediaSource(Uri.parse(streamingQualityUrl), ""));
                 }
             }
+
+            if (offlineVideoUri != null)
+                mediaSourceList.add(buildMediaSource(offlineVideoUri, ""));
+
         } else { /* this is for HLS, getVideoUrl() returns the HLS url from the hosting activity*/
             mediaSourceList.add(buildMediaSource(Uri.parse(streamingQualitySelector.getVideoUrl()), ""));
         }
@@ -1203,11 +1215,28 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(INVISIBLE);
             }
         } else {
-            /*Disable CC if the user has turned CC off from settings*/
-            settingsButtonVisibility(false);
-            toggleCCSelectorVisibility(false);
-            setCCToggleButtonSelection(false);
-            VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(INVISIBLE);
+            if (offlineClosedCaptionUri != null) {
+                Format textFormat = Format.createTextSampleFormat(null,
+                        MimeTypes.APPLICATION_SUBRIP,
+                        C.SELECTION_FLAG_DEFAULT,
+                        "en");
+
+                mediaSourceList.add(new SingleSampleMediaSource(
+                        offlineClosedCaptionUri,
+                        mediaDataSourceFactory,
+                        textFormat,
+                        C.TIME_UNSET));
+                setCCToggleButtonSelection(true);
+                if (ccToggleButton.isSelected())
+                    VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(VISIBLE);
+            }else {
+
+                /*Disable CC if the user has turned CC off from settings*/
+                settingsButtonVisibility(false);
+                toggleCCSelectorVisibility(false);
+                setCCToggleButtonSelection(false);
+                VideoPlayerView.this.getPlayerView().getSubtitleView().setVisibility(INVISIBLE);
+            }
         }
 
         // Convert list into array and pass onto the MergingMediaSource constructor
@@ -2258,12 +2287,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 currentStreamingQualitySelector.setText(availableStreamingQualitiesHLS.get(selectedIndex).getValue());
                 hlsListViewAdapter.setSelectedIndex(selectedIndex);
             } else {
-                TrackGroupArray trackGroups1 = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mVideoRendererIndex);
-                DefaultTrackSelector.SelectionOverride override = new DefaultTrackSelector.SelectionOverride(
-                        position, 0);
-                trackSelector.setSelectionOverride(mVideoRendererIndex, trackGroups1, override);
-                currentStreamingQualitySelector.setText(availableStreamingQualities.get(position));
-                listViewAdapter.setSelectedIndex(position);
+                 if(availableStreamingQualities != null) {
+                     TrackGroupArray trackGroups1 = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mVideoRendererIndex);
+                     DefaultTrackSelector.SelectionOverride override = new DefaultTrackSelector.SelectionOverride(
+                             position, 0);
+                     trackSelector.setSelectionOverride(mVideoRendererIndex, trackGroups1, override);
+                     currentStreamingQualitySelector.setText(availableStreamingQualities.get(position));
+                     listViewAdapter.setSelectedIndex(position);
+                 }
             }
 
 

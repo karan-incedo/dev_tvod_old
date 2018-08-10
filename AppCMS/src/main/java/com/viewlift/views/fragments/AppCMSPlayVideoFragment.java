@@ -850,6 +850,12 @@ public class AppCMSPlayVideoFragment extends Fragment
                         ? View.VISIBLE
                         : View.GONE);
         videoPlayerView.setAdsUrl(adsUrl);
+        if (isVideoDownloaded) {
+            if (closedCaptionUrl != null)
+                videoPlayerView.setOfflineUri(Uri.parse(hlsUrl), Uri.parse(closedCaptionUrl));
+            else
+                videoPlayerView.setOfflineUri(Uri.parse(hlsUrl), null);
+        }
         videoPlayerView.preparePlayer();
         videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
 

@@ -78,6 +78,8 @@ public class PlayerSettingsView extends FrameLayout {
             public void onClick(View v) {
 
                 if (playerSettingsEvent != null) {
+
+                    SelectedClosedCaptionIndex = closedCaptionSelectorAdapter.getDownloadQualityPosition();
                     playerSettingsEvent.finishPlayerSetting();
                 }
 

@@ -457,7 +457,10 @@ dependencies {
     implementation "com.android.volley:volley:$rootProject.ext.volleyVersion"
     implementation "com.squareup.picasso:picasso:$rootProject.ext.picassoVersion"
     implementation "com.fasterxml.uuid:java-uuid-generator:$rootProject.ext.uuidGeneratorVersion"
-    }
+    compile project(path: ':exoplayer-extension-ima')
+    implementation 'com.facebook.stetho:stetho:1.5.0'
+    implementation 'com.uphyca:stetho_realm:2.1.0'
+}
 
 fileTree(dir: 'libs', include: '**/*.aar')
         .each { File file ->

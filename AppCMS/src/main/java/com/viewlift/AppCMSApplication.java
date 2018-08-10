@@ -10,7 +10,8 @@ import com.amazon.alexa.vsk.clientlib.AlexaClientManager;
 import com.amazon.device.messaging.ADM;
 import com.appsflyer.AppsFlyerConversionListener;
 import com.appsflyer.AppsFlyerLib;
-import com.clevertap.android.sdk.ActivityLifecycleCallback;
+import com.facebook.stetho.Stetho;
+import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 import com.viewlift.models.data.appcms.downloads.DownloadMediaMigration;
 import com.viewlift.models.network.modules.AppCMSSiteModule;
 import com.viewlift.models.network.modules.AppCMSUIModule;
@@ -49,17 +50,21 @@ public class AppCMSApplication extends MultiDexApplication {
         Realm.init(this);
         RealmConfiguration config = new RealmConfiguration
                 .Builder()
-                .schemaVersion(4)
+                .schemaVersion(8)
                 .migration(new DownloadMediaMigration())
 //                .deleteRealmIfMigrationNeeded()  // for Development purpose
                 .build();
         Realm.setDefaultConfiguration(config);
+
+        Stetho.initialize(
+                Stetho.newInitializerBuilder(this)
+                        .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+                        .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
+                        .build());
     }
 
     @Override
     public void onCreate() {
-        // TODO: always comment for other apps
-        ActivityLifecycleCallback.register(this);
         super.onCreate();
 
         initRealmonfig();
@@ -89,6 +94,7 @@ public class AppCMSApplication extends MultiDexApplication {
                     //
                 }
             };
+
             appCMSPresenterComponent = DaggerAppCMSPresenterComponent
                     .builder()
                     .appCMSUIModule(new AppCMSUIModule(this))
@@ -109,7 +115,7 @@ public class AppCMSApplication extends MultiDexApplication {
                     Log.d(TAG, "Activity being started: " + activity.getLocalClassName());
                     openActivities++;
                     visibleActivities++;
-                    if (appCMSPresenterComponent.appCMSPresenter() != null) {
+                    if(appCMSPresenterComponent.appCMSPresenter()!=null){
                         appCMSPresenterComponent.appCMSPresenter().setResumedActivities(visibleActivities);
                     }
                 }
@@ -128,7 +134,7 @@ public class AppCMSApplication extends MultiDexApplication {
                     Log.d(TAG, "Activity being paused: " + activity.getLocalClassName());
                     appCMSPresenterComponent.appCMSPresenter().closeSoftKeyboard();
                     visibleActivities--;
-                    if (appCMSPresenterComponent.appCMSPresenter() != null) {
+                    if(appCMSPresenterComponent.appCMSPresenter()!=null){
                         appCMSPresenterComponent.appCMSPresenter().setResumedActivities(visibleActivities);
                     }
                 }
@@ -209,6 +215,7 @@ public class AppCMSApplication extends MultiDexApplication {
     }
 
 
+
     public void initializeAlexaClientLibrary() {
         // Retrieve the shared instance of the AlexaClientManager
         AlexaClientManager clientManager = AlexaClientManager.getSharedInstance();
@@ -251,7 +258,6 @@ public class AppCMSApplication extends MultiDexApplication {
     public void setOnActivityResumedAction(Action0 onActivityResumedAction) {
         this.onActivityResumedAction = onActivityResumedAction;
     }
-
     private boolean checkIsTelevision() {
         int uiMode = getResources().getConfiguration().uiMode;
         return (uiMode & Configuration.UI_MODE_TYPE_MASK) == Configuration.UI_MODE_TYPE_TELEVISION;
