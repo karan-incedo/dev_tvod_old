@@ -107,6 +107,17 @@ public class AppCMSUserSubscriptionPlanInfoResult {
     @SerializedName("description")
     @Expose
     private String description;
+    @SerializedName("brand")
+    @Expose
+    private String brand;
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
 
     public String getId() {
         return id;

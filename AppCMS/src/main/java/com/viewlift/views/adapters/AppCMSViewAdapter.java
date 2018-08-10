@@ -546,9 +546,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         if (isClickable) {
                             if (data.getGist() != null) {
                                 appCMSPresenter.setPlaySource("");
-                                if (moduleAPI.getContentData().get(0).getGist().getContentType().contains("SERIES"))
-                                    appCMSPresenter.setPlaySource(moduleAPI.getContentData().get(0).getGist().getTitle());
-                                else
+                                if (moduleAPI.getTitle() != null)
                                     appCMSPresenter.setPlaySource(moduleAPI.getTitle());
                                 //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                                 String permalink = data.getGist().getPermalink();
@@ -580,7 +578,22 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (data.getGist() != null && data.getGist().getContentType() != null) {
                                     contentType = data.getGist().getContentType();
                                 }
+                                if (action.contains(videoAction) && data.getGist() != null && data.getGist().getMediaType() != null &&
+                                        data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_video).toLowerCase()))
+                                    appCMSPresenter.setPlaySource(appCMSPresenter.getPlaySource() + "_Video Detail");
+                                if (action.contains(videoAction) && data.getGist() != null && data.getGist().getContentType() != null &&
+                                        data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_video).toLowerCase()))
+                                    appCMSPresenter.setPlaySource(appCMSPresenter.getPlaySource() + "_Video Detail");
+
                                 if (action.contains(videoAction) && data.getGist() != null &&
+                                        data.getGist().getMediaType() != null &&
+                                        data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_series).toLowerCase()) &&
+                                        data.getGist().getContentType() != null &&
+                                        data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_series).toLowerCase())) {
+                                    appCMSPresenter.setPlaySource("");
+                                    appCMSPresenter.setPlaySource(childComponent.getType());
+                                    appCMSPresenter.setPlaySource(appCMSPresenter.getPlaySource() + "_Show Detail");
+                                } else if (action.contains(videoAction) && data.getGist() != null &&
                                         data.getGist().getMediaType() != null &&
                                         !data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
                                         data.getGist().getContentType() != null &&
@@ -597,6 +610,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                         && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_playlist).toLowerCase())) {
                                     appCMSPresenter.setPlaySource(appCMSPresenter.getPlaySource() + "_Playlist Screen - " + data.getGist().getTitle());
                                 }
+
                                 if (action.contains("watchVideo") && moduleAPI.getTitle().contains("Continue Watching")) {
                                     appCMSPresenter.setPlaySource(appCMSPresenter.getPlaySource() + "_Home Page");
                                 }

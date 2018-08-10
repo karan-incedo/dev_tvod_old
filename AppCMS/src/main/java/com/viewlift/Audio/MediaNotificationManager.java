@@ -220,7 +220,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-         String action = intent.getAction();
+        String action = intent.getAction();
 
         /*if(mPlaybackState.getState() == PlaybackStateCompat.STATE_PAUSED){
             action=ACTION_PLAY;
@@ -244,7 +244,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 Intent i = new Intent(context, MusicService.class);
                 i.setAction(MusicService.ACTION_CMD);
                 i.putExtra(MusicService.CMD_NAME, MusicService.CMD_STOP_CASTING);
-                Utils.startService(mService,i);
+                Utils.startService(mService, i);
                 break;
             default:
         }
@@ -306,7 +306,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
             // it can actually be any valid Android Uri formatted String.
             // async fetch the album art icon
             String artUrl = mService.getResources().getString(R.string.app_cms_image_with_resize_query,
-                    description.getIconUri().toString(),120,120);
+                    description.getIconUri().toString(), 120, 120);
             art = AlbumArtCache.getInstance().getBigImage(artUrl);
 
             if (art == null) {
@@ -343,7 +343,9 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 .setContentText(description.getSubtitle())
                 .setLargeIcon(art);
 
-        if (CastHelper.getInstance(mService.getApplicationContext()).getDeviceName() != null && !TextUtils.isEmpty(CastHelper.getInstance(mService.getApplicationContext()).getDeviceName())) {
+        if (CastHelper.getInstance(mService.getApplicationContext()) != null &&
+                CastHelper.getInstance(mService.getApplicationContext()).getDeviceName() != null &&
+                !TextUtils.isEmpty(CastHelper.getInstance(mService.getApplicationContext()).getDeviceName())) {
             String castName = CastHelper.getInstance(mService.getApplicationContext()).getDeviceName();
             String castInfo = castName == null ? "" : mService.getResources()
                     .getString(R.string.casting_to_device, castName);

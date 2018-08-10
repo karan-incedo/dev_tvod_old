@@ -20,6 +20,8 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.components.AppCMSPresenterComponent;
 import com.viewlift.views.customviews.BaseView;
 
+import rx.functions.Action1;
+
 public class AppCMSLaunchActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSLaunchActivity";
 
@@ -30,7 +32,6 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     private ConnectivityManager connectivityManager;
     private BroadcastReceiver networkConnectedReceiver;
     private boolean appStartWithNetworkConnected;
-    private boolean forceReloadFromNetwork;
 
     private AppCMSPresenterComponent appCMSPresenterComponent;
 
@@ -52,7 +53,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
             appCMSPresenterComponent.appCMSPresenter().resetLaunched();
         }
 
-        handleIntent(getIntent());
+//        handleIntent(getIntent());
 
         presenterCloseActionReceiver = new BroadcastReceiver() {
             @Override
@@ -88,7 +89,13 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                             Utils.getProperty("SiteId", getApplicationContext()),
                             searchQuery,
                             AppCMSPresenter.PlatformType.ANDROID,
-                            false);
+                            false, new Action1<Boolean>() {
+                                @Override
+                                public void call(Boolean aBoolean) {
+                                    if(aBoolean)
+                                        handleIntent(getIntent());
+                                }
+                            });
                 } else if (!isConnected) {
                     appStartWithNetworkConnected = false;
                 }
@@ -136,7 +143,6 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                     }
                 }
 
-                forceReloadFromNetwork = intent.getBooleanExtra(getString(R.string.force_reload_from_network_key), false);
             } catch (Exception e) {
 
             }
@@ -173,7 +179,13 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                             Utils.getProperty("SiteId", getApplicationContext()),
                             searchQuery,
                             AppCMSPresenter.PlatformType.ANDROID,
-                            false);
+                            false, new Action1<Boolean>() {
+                                @Override
+                                public void call(Boolean aBoolean) {
+                                    if(aBoolean)
+                                        handleIntent(getIntent());
+                                }
+                            });
                 }
             } catch (Exception e) {
                 //Log.e(TAG, "Caught exception retrieving AppCMS data: " + e.getMessage());

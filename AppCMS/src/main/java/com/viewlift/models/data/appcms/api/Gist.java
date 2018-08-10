@@ -1039,5 +1039,15 @@ public class Gist implements Serializable {
     public void setSeasonNum(String seasonNum) {
         this.seasonNum = seasonNum;
     }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    String genre;
 }
 
