@@ -40,11 +40,13 @@ import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.beacon.BeaconBuffer;
 import com.viewlift.models.data.appcms.beacon.BeaconPing;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
+import com.viewlift.models.data.playersettings.HLSStreamingQuality;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.ClosedCaptionSelectorAdapter;
 import com.viewlift.views.adapters.StreamingQualitySelectorAdapter;
@@ -356,6 +358,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             refreshTokenTimer.schedule(refreshTokenTimerTask, 0, 600000);
         }
 
+
         startEntitlementCheckTimer();
 
 
@@ -372,6 +375,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_video_player, container, false);
+
         videoPlayerMainContainer =
                 rootView.findViewById(R.id.app_cms_video_player_main_container);
 
@@ -415,6 +419,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (closedCaptionSelector != null) {
             videoPlayerView.setClosedCaptionsSelector(closedCaptionSelector);
         }
+
+
 
 
         if (!TextUtils.isEmpty(policyCookie) &&
@@ -554,10 +560,10 @@ public class AppCMSPlayVideoFragment extends Fragment
                         //entitlementCheckTimerTask.cancel();
                         // tell the activity that the movie is finished
                         onClosePlayerEvent.onMovieFinished();
-                    } else if (appCMSPresenter.isAppSVOD() &&
+                    }else if(appCMSPresenter.isAppSVOD() &&
                             !isTrailer &&
                             !freeContent &&
-                            !appCMSPresenter.isUserSubscribed() && !entitlementCheckCancelled) {
+                            !appCMSPresenter.isUserSubscribed() && !entitlementCheckCancelled){
                         //entitlementCheckTimerTask.cancel();
                         // tell the activity that the movie is finished
                         onClosePlayerEvent.onMovieFinished();
@@ -844,12 +850,6 @@ public class AppCMSPlayVideoFragment extends Fragment
                         ? View.VISIBLE
                         : View.GONE);
         videoPlayerView.setAdsUrl(adsUrl);
-        if (isVideoDownloaded) {
-            if (closedCaptionUrl != null)
-                videoPlayerView.setOfflineUri(Uri.parse(hlsUrl), Uri.parse(closedCaptionUrl));
-            else
-                videoPlayerView.setOfflineUri(Uri.parse(hlsUrl), null);
-        }
         videoPlayerView.preparePlayer();
         videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
 
@@ -1452,22 +1452,22 @@ public class AppCMSPlayVideoFragment extends Fragment
     @Override
     public void onAudioFocusChange(int focusChange) {
         switch (focusChange) {
-//            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-//                videoPlayerView.pausePlayer();
-//                break;
-//
-//            case AudioManager.AUDIOFOCUS_GAIN:
-//                if (videoPlayerView.getPlayer() != null && videoPlayerView.getPlayer().getPlayWhenReady()) {
-//                    videoPlayerView.startPlayer(true);
-//                } else {
-//                    videoPlayerView.pausePlayer();
-//                }
-//                break;
-//
-//            case AudioManager.AUDIOFOCUS_LOSS:
-//                videoPlayerView.pausePlayer();
-//                abandonAudioFocus();
-//                break;
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                videoPlayerView.pausePlayer();
+                break;
+
+            case AudioManager.AUDIOFOCUS_GAIN:
+                if (videoPlayerView.getPlayer() != null && videoPlayerView.getPlayer().getPlayWhenReady()) {
+                    videoPlayerView.startPlayer(true);
+                } else {
+                    videoPlayerView.pausePlayer();
+                }
+                break;
+
+            case AudioManager.AUDIOFOCUS_LOSS:
+                videoPlayerView.pausePlayer();
+                abandonAudioFocus();
+                break;
 
             default:
                 break;
@@ -1483,7 +1483,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     @Override
-    public void launchSetting(ClosedCaptionSelectorAdapter closedCaptionSelectorAdapter, StreamingQualitySelectorAdapter streamingQualitySelectorAdapter) {
+    public void launchSetting(ClosedCaptionSelectorAdapter closedCaptionSelectorAdapter, StreamingQualitySelectorAdapter streamingQualitySelectorAdapter){
         videoPlayerView.pausePlayer();
         videoPlayerMainContainer.setVisibility(View.GONE);
         playerSettingsView.setClosedCaptionSelectorAdapter(closedCaptionSelectorAdapter);
@@ -1494,11 +1494,11 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     @Override
-    public void finishPlayerSetting() {
+    public void finishPlayerSetting(){
         playerSettingsView.setVisibility(View.GONE);
         videoPlayerMainContainer.setVisibility(View.VISIBLE);
         videoPlayerView.setClosedCaption(playerSettingsView.getSelectedClosedCaptionIndex());
-        videoPlayerView.setStreamingQuality(playerSettingsView.getSelectedStreamingQualityIndex(), "");
+        videoPlayerView.setStreamingQuality(playerSettingsView.getSelectedStreamingQualityIndex(),"");
         videoPlayerView.startPlayer(true);
     }
 
@@ -1528,6 +1528,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     public interface RegisterOnResumeVideo {
         void registerOnResumeVideo(OnResumeVideo onResumeVideo);
     }
+
 
 
     @Override
