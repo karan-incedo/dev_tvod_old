@@ -52,6 +52,11 @@ public class AppCMSVideoPageBinder extends Binder {
     List<String> availableStreamingQualities;
     List<ClosedCaptions> availableClosedCaptions;
 
+    int ccSelectedIndex = 0;
+    int hlsVideoQualitySelectedIndex = 0;
+    int videoQualitySelectedIndex = 0;
+
+
 
     public AppCMSVideoPageBinder(
             AppCMSPageUI appCMSPageUI,
@@ -335,5 +340,29 @@ public class AppCMSVideoPageBinder extends Binder {
 
     public void setAvailableClosedCaptions(List<ClosedCaptions> availableClosedCaptions) {
         this.availableClosedCaptions = availableClosedCaptions;
+    }
+
+    public int getCcSelectedIndex() {
+        return ccSelectedIndex;
+    }
+
+    public void setCcSelectedIndex(int ccSelectedIndex) {
+        this.ccSelectedIndex = ccSelectedIndex;
+    }
+
+    public int getHlsVideoQualitySelectedIndex() {
+        return hlsVideoQualitySelectedIndex;
+    }
+
+    public void setHlsVideoQualitySelectedIndex(int hlsVideoQualitySelectedIndex) {
+        this.hlsVideoQualitySelectedIndex = hlsVideoQualitySelectedIndex;
+    }
+
+    public int getVideoQualitySelectedIndex() {
+        return videoQualitySelectedIndex;
+    }
+
+    public void setVideoQualitySelectedIndex(int videoQualitySelectedIndex) {
+        this.videoQualitySelectedIndex = videoQualitySelectedIndex;
     }
 }

@@ -689,6 +689,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_priceinfo_key),
                 AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_description_key),
+                AppCMSUIKeyType.PAGE_PLAN_DESCRIPTION_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_bestvalue_key),
                 AppCMSUIKeyType.PAGE_PLAN_BESTVALUE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_purchase_button_key),

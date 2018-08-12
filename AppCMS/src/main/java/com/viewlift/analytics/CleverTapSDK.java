@@ -1,5 +1,6 @@
 package com.viewlift.analytics;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.net.ConnectivityManager;
 
@@ -7,6 +8,7 @@ import com.clevertap.android.sdk.CleverTapAPI;
 import com.clevertap.android.sdk.exceptions.CleverTapMetaDataNotFoundException;
 import com.clevertap.android.sdk.exceptions.CleverTapPermissionsNotSatisfied;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
@@ -85,9 +87,13 @@ public class CleverTapSDK {
     public void initializeSDK(AppCMSPresenter appCMSPresenter) {
         this.appCMSPresenter = appCMSPresenter;
         try {
-            cleverTapAPI = CleverTapAPI.getInstance(context);
+            cleverTapAPI = CleverTapAPI.getInstance(context.getApplicationContext());
+            cleverTapAPI.createNotificationChannel(context.getApplicationContext(), Utils.getProperty("AppName",context),
+                    Utils.getProperty("AppName",context),Utils.getProperty("AppName",context),NotificationManager.IMPORTANCE_MAX,false);
         } catch (CleverTapMetaDataNotFoundException e) {
+            e.printStackTrace();
         } catch (CleverTapPermissionsNotSatisfied e) {
+            e.printStackTrace();
         }
     }
 
@@ -107,19 +113,20 @@ public class CleverTapSDK {
     final String KEY_PROFILE_PAYMENT_HANDLER = "Payment Handler";
     final String KEY_PROFILE_COUNTRY = "Country";
     final String KEY_PROFILE_CURRENCY = "Currency";
+    final String KEY_PROFILE_REGISTRATION_METHOD = "Registration Method";
     final String KEY_FREE_TRIAL = "Free Trial";
 
     public void sendUserProfile(String loggedInUser, String loggedInUserName, String loggedInUserEmail,
                                 String userStatus, String subscriptionStartDate, String subscriptionEndDate,
                                 String transId, String country, double discountPrice, double planPrice,
                                 String currency, String planName, String paymentHandler, boolean freeTrial,
-                                String mobile) {
+                                String mobile, String paymentMode,String provider) {
         HashMap<String, Object> userProfile = new HashMap<>();
         userProfile.put(KEY_PROFILE_NAME, loggedInUserName);
         userProfile.put(KEY_PROFILE_EMAIL, loggedInUserEmail);
         userProfile.put(KEY_PROFILE_IDENTITY, loggedInUser);
         userProfile.put(KEY_PROFILE_USER_STATUS, userStatus);
-//        userProfile.put(KEY_PROFILE_SUBSCRIPTION_PAYMENT_MODE, );
+        userProfile.put(KEY_PROFILE_SUBSCRIPTION_PAYMENT_MODE, paymentMode);
         userProfile.put(KEY_PROFILE_SUBSCRIPTION_START_DATE, subscriptionStartDate);
         userProfile.put(KEY_PROFILE_SUBSCRIPTION_END_DATE, subscriptionEndDate);
         userProfile.put(KEY_PROFILE_SUBSCRIPTION_TRANSACTION_ID, transId);
@@ -131,6 +138,7 @@ public class CleverTapSDK {
         userProfile.put(KEY_PROFILE_COUNTRY, country);
         userProfile.put(KEY_PROFILE_CURRENCY, currency);
         userProfile.put(KEY_PROFILE_PHONE, mobile);
+        userProfile.put(KEY_PROFILE_REGISTRATION_METHOD, provider);
         String freetry;
         if (freeTrial)
             freetry = "Yes";
@@ -149,13 +157,29 @@ public class CleverTapSDK {
             playEvent.put(KEY_PLAYBACK_TYPE, "Streamed");
 
         playEvent.put(KEY_PLAY_SOURCE, appCMSPresenter.getPlaySource());
-        if (contentDatum.getGist().getPrimaryCategory() != null && contentDatum.getGist().getPrimaryCategory().getTitle() != null)
-            playEvent.put(KEY_CONTENT_GENRE, contentDatum.getGist().getPrimaryCategory().getTitle());
+        playEvent.put(KEY_CONTENT_GENRE, getGenre(contentDatum));
         return playEvent;
+    }
+
+    private String getGenre(ContentDatum contentDatum) {
+        String genre = "";
+        if (contentDatum.getGist().getPrimaryCategory() != null && contentDatum.getGist().getPrimaryCategory().getTitle() != null)
+            genre = contentDatum.getGist().getPrimaryCategory().getTitle();
+        if (appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId()) || (contentDatum.getGist().getLocalFileUrl() != null
+                && contentDatum.getGist().getLocalFileUrl().contains("file:")))
+            genre = contentDatum.getGist().getGenre();
+        if (contentDatum.getGist().getGenre() != null)
+            genre = contentDatum.getGist().getGenre();
+        return genre;
     }
 
     public void sendEventPlayStarted(ContentDatum contentDatum) {
         HashMap<String, Object> playEvent = playKeys(contentDatum);
+        if (contentDatum.getGist().getDownloadStatus() == DownloadStatus.STATUS_COMPLETED)
+            playEvent.put(KEY_BITRATE, appCMSPresenter.getUserDownloadQualityPref());
+        if (contentDatum.getGist() != null && contentDatum.getGist().getContentType() != null &&
+                contentDatum.getGist().getContentType().toLowerCase().contains(context.getString(R.string.content_type_audio).toLowerCase()))
+            playEvent.remove(KEY_BITRATE);
         cleverTapAPI.event.push(EVENT_PLAY_STARTED, playEvent);
     }
 
@@ -167,21 +191,31 @@ public class CleverTapSDK {
 
     public void sendEventWatched(ContentDatum contentDatum, long watchTime, String stream, int bufferCount, int bufferTime) {
         HashMap<String, Object> watchEvent = commonKeys(contentDatum);
+        watchEvent.put(KEY_PLAY_SOURCE, appCMSPresenter.getPlaySource());
         String playbackType = "streamed";
-        if (contentDatum.getGist().getDownloadStatus() == DownloadStatus.STATUS_COMPLETED)
+        watchEvent.put(KEY_BITRATE, appCMSPresenter.getCurrentVideoStreamingQuality());
+        if (contentDatum.getGist().getDownloadStatus() == DownloadStatus.STATUS_COMPLETED) {
             playbackType = "downloaded";
+            watchEvent.put(KEY_BITRATE, appCMSPresenter.getUserDownloadQualityPref());
+        }
+        if (contentDatum.getGist() != null && contentDatum.getGist().getContentType() != null &&
+                contentDatum.getGist().getContentType().toLowerCase().contains(context.getString(R.string.content_type_audio).toLowerCase()))
+            watchEvent.remove(KEY_BITRATE);
+
         watchEvent.put(KEY_PLAYBACK_TYPE, playbackType);
-        watchEvent.put(KEY_SUBTITLES, isSubtitlesAvailable(contentDatum));
+        if (contentDatum.getGist() != null && contentDatum.getGist().getContentType() != null &&
+                !contentDatum.getGist().getContentType().toLowerCase().contains(context.getString(R.string.content_type_audio).toLowerCase()))
+            watchEvent.put(KEY_SUBTITLES, isSubtitlesAvailable(contentDatum));
         if (contentDatum.getGist() != null && contentDatum.getGist().getContentType() != null &&
                 contentDatum.getGist().getContentType().toLowerCase().contains(context.getString(R.string.content_type_audio).toLowerCase()))
             watchEvent.put(KEY_LISTENING_TIME, watchTime);
         else
             watchEvent.put(KEY_WATCH_TIME, watchTime);
-
-        if (contentDatum.getGist().getPrimaryCategory() != null && contentDatum.getGist().getPrimaryCategory().getTitle() != null)
-            watchEvent.put(KEY_CONTENT_GENRE, contentDatum.getGist().getPrimaryCategory().getTitle());
-        watchEvent.put(KEY_BUFFER_TIME, bufferTime);
-        watchEvent.put(KEY_BUFFER_COUNT, bufferCount);
+        watchEvent.put(KEY_CONTENT_GENRE, getGenre(contentDatum));
+        if (!appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId())) {
+            watchEvent.put(KEY_BUFFER_TIME, bufferTime);
+            watchEvent.put(KEY_BUFFER_COUNT, bufferCount);
+        }
         watchEvent.put(KEY_STREAM, stream);
 //        watchEvent.put(KEY_CHANNEL, );
 
@@ -220,39 +254,59 @@ public class CleverTapSDK {
                 contentDatum.getGist().getContentType().toLowerCase().contains(context.getString(R.string.content_type_audio).toLowerCase())) {
             commonEvent.put(KEY_MUSIC_DIRECTOR_NAME, appCMSPresenter.getDirectorNameFromCreditBlocks(contentDatum.getCreditBlocks()));
             commonEvent.put(KEY_SINGER_NAME, appCMSPresenter.getArtistNameFromCreditBlocks(contentDatum.getCreditBlocks()));
-            if (appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId())) {
-                commonEvent.put(KEY_MUSIC_DIRECTOR_NAME, contentDatum.getGist().getArtistName());
-                commonEvent.put(KEY_SINGER_NAME, contentDatum.getGist().getDirectorName());
+            if (appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId()) || (contentDatum.getGist().getLocalFileUrl() != null
+                    && contentDatum.getGist().getLocalFileUrl().contains("file:"))) {
+                commonEvent.put(KEY_MUSIC_DIRECTOR_NAME, contentDatum.getGist().getDirectorName());
+                commonEvent.put(KEY_SINGER_NAME, contentDatum.getGist().getArtistName());
             }
+            if (contentDatum.getGist().getDirectorName() != null)
+                commonEvent.put(KEY_MUSIC_DIRECTOR_NAME, contentDatum.getGist().getDirectorName());
+            if (contentDatum.getGist().getDirectorName() != null)
+                commonEvent.put(KEY_SINGER_NAME, contentDatum.getGist().getArtistName());
+
         } else {
             commonEvent.put(KEY_DIRECTOR_NAME, appCMSPresenter.getDirectorNameFromCreditBlocks(contentDatum.getCreditBlocks()));
             commonEvent.put(KEY_ACTOR_NAME, appCMSPresenter.getArtistNameFromCreditBlocks(contentDatum.getCreditBlocks()));
+            if (appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId()) || (contentDatum.getGist().getLocalFileUrl() != null
+                    && contentDatum.getGist().getLocalFileUrl().contains("file:"))) {
+                commonEvent.put(KEY_DIRECTOR_NAME, contentDatum.getGist().getDirectorName());
+                commonEvent.put(KEY_ACTOR_NAME, contentDatum.getGist().getArtistName());
+            }
+            if (contentDatum.getGist().getDirectorName() != null)
+                commonEvent.put(KEY_DIRECTOR_NAME, contentDatum.getGist().getDirectorName());
+            if (contentDatum.getGist().getDirectorName() != null)
+                commonEvent.put(KEY_ACTOR_NAME, contentDatum.getGist().getArtistName());
         }
         return commonEvent;
     }
 
     public void sendEventDownloadStarted(ContentDatum contentDatum) {
         HashMap<String, Object> downloadEvent = playKeys(contentDatum);
-        downloadEvent.put(KEY_BITRATE, appCMSPresenter.getUserDownloadQualityPref());
+        downloadEvent.remove(KEY_PLAY_SOURCE);
+        if (contentDatum.getGist() != null && contentDatum.getGist().getContentType() != null &&
+                !contentDatum.getGist().getContentType().toLowerCase().contains(context.getString(R.string.content_type_audio).toLowerCase()))
+            downloadEvent.put(KEY_BITRATE, appCMSPresenter.getUserDownloadQualityPref());
         cleverTapAPI.event.push(EVENT_DOWNLOAD_INITIATED, downloadEvent);
     }
 
     public void sendEventDownloadComplete(ContentDatum contentDatum) {
         HashMap<String, Object> downloadEvent = playKeys(contentDatum);
-        downloadEvent.put(KEY_BITRATE, appCMSPresenter.getUserDownloadQualityPref());
-        if (contentDatum != null &&
-                contentDatum.getGist() != null &&
-                contentDatum.getGist().getMediaType() != null &&
-                contentDatum.getGist().getMediaType().contains(appCMSPresenter.getCurrentContext().getResources().getString(R.string.media_type_episode))) {
+        if (contentDatum != null && contentDatum.getGist() != null && contentDatum.getGist().getContentType() != null &&
+                !contentDatum.getGist().getContentType().toLowerCase().contains(context.getString(R.string.content_type_audio).toLowerCase()))
+            downloadEvent.put(KEY_BITRATE, appCMSPresenter.getUserDownloadQualityPref());
+        if (contentDatum.getGist().getMediaType() != null && contentDatum.getGist().getMediaType().contains(context.getResources().getString(R.string.media_type_episode))) {
             downloadEvent.put(KEY_EPISODE_NUMBER, contentDatum.getGist().getEpisodeNum());
             downloadEvent.put(KEY_SEASON_NUMBER, contentDatum.getGist().getSeasonNum());
             downloadEvent.put(KEY_SHOW_NAME, contentDatum.getGist().getShowName());
         }
+        downloadEvent.remove(KEY_PLAY_SOURCE);
+        downloadEvent.remove(KEY_PLAYBACK_TYPE);
         cleverTapAPI.event.push(EVENT_DOWNLOAD_COMPLETED, downloadEvent);
     }
 
     public void sendEventShare(ContentDatum contentDatum) {
         HashMap<String, Object> shareEvent = playKeys(contentDatum);
+        shareEvent.remove(KEY_PLAY_SOURCE);
         shareEvent.put(KEY_MEDIUM, "Android Native");
         cleverTapAPI.event.push(EVENT_SHARE, shareEvent);
     }
@@ -336,8 +390,7 @@ public class CleverTapSDK {
             errorEvent.put(KEY_LISTENING_TIME, watchTime);
         else
             errorEvent.put(KEY_WATCH_TIME, watchTime);
-        if (contentDatum.getGist().getPrimaryCategory() != null && contentDatum.getGist().getPrimaryCategory().getTitle() != null)
-            errorEvent.put(KEY_CONTENT_GENRE, contentDatum.getGist().getPrimaryCategory().getTitle());
+        errorEvent.put(KEY_CONTENT_GENRE, getGenre(contentDatum));
         errorEvent.put(KEY_ERROR, error);
         cleverTapAPI.event.push(EVENT_MEDIA_ERROR, errorEvent);
     }
@@ -366,7 +419,7 @@ public class CleverTapSDK {
                     if ((cc.getFormat() != null &&
                             cc.getFormat().equalsIgnoreCase("srt")) ||
                             cc.getUrl().toLowerCase().contains("srt")) {
-                        String closedCaptionUrl = cc.getUrl();
+
                         subtitleAvailable = true;
                     }
                 }

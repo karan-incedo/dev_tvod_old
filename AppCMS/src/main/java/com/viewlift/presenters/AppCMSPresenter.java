@@ -85,6 +85,9 @@ import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.apptentive.android.sdk.Apptentive;
+import com.clevertap.android.sdk.CleverTapAPI;
+import com.clevertap.android.sdk.exceptions.CleverTapMetaDataNotFoundException;
+import com.clevertap.android.sdk.exceptions.CleverTapPermissionsNotSatisfied;
 import com.facebook.AccessToken;
 import com.facebook.FacebookRequestError;
 import com.facebook.GraphRequest;
@@ -128,6 +131,7 @@ import com.viewlift.models.billing.appcms.subscriptions.SkuDetails;
 import com.viewlift.models.billing.utils.IabHelper;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSEventArchieveResult;
+import com.viewlift.models.data.appcms.api.AppCMSContentDetail;
 import com.viewlift.models.data.appcms.api.AppCMSLibraryResult;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSRentalResponse;
@@ -1695,12 +1699,16 @@ public class AppCMSPresenter {
                             if (appCMSEntitlementResponse.getAppCMSSignedURLResult() != null) {
                                 currentContentDatum.setAppCMSSignedURLResult(appCMSEntitlementResponse.getAppCMSSignedURLResult());
                             }
-                            if (appCMSEntitlementResponse.getDfp() != null && appCMSEntitlementResponse.getDfp().size() > 0) {
-                                for (DfpAds dfpAds : appCMSEntitlementResponse.getDfp()) {
-                                    if (dfpAds.getDeviceType().contains("android") && getPlatformType() == PlatformType.ANDROID &&
-                                            appCMSAndroid.getAdvertising() != null) {
+                            if(appCMSEntitlementResponse.getDfp() != null && appCMSEntitlementResponse.getDfp().size()>0){
+                                for (DfpAds dfpAds:appCMSEntitlementResponse.getDfp()){
+                                    //if (dfpAds.getDeviceType().contains("android") && getPlatformType()== PlatformType.ANDROID && appCMSAndroid.getAdvertising()!=null){
+                                    if (dfpAds.getDeviceType().contains("android")
+                                            && getPlatformType() == PlatformType.ANDROID
+                                            && appCMSAndroid.getAdvertising() != null){
                                         appCMSAndroid.getAdvertising().setVideoTag(dfpAds.getDfpAdTag());
-                                    } else if (dfpAds.getDeviceType().contains("fir_tv") && getPlatformType() == PlatformType.TV && appCMSAndroid.getAdvertising() != null) {
+                                    } else if (dfpAds.getDeviceType().contains("fir_tv")
+                                            && getPlatformType()== PlatformType.TV
+                                            && appCMSAndroid.getAdvertising()!=null){
                                         appCMSAndroid.getAdvertising().setVideoTag(dfpAds.getDfpAdTag());
                                     }
                                 }
@@ -1768,71 +1776,6 @@ public class AppCMSPresenter {
         }
     }
 
-
-    public void getRentalData(String id, Action1<AppCMSRentalResponse> readyAction, Action1<Boolean> downloadNotProcessedAction,
-                              Boolean isDownload) {
-        if (currentActivity != null) {
-            String url = "";
-            int endPoint = R.string.app_cms_getrental_api_url;
-//            id="cb89adef-b261-4d20-8875-b7f0848849b3";"e94c0540-942e-11e8-9176-2de6c1a4d094"
-            url = currentActivity.getString(endPoint,
-                    appCMSMain.getApiBaseUrl(), getLoggedInUser(),
-                    id);
-            GetAppCMSRentalVideoAsyncTask.Params params =
-                    new GetAppCMSRentalVideoAsyncTask.Params.Builder().url(url)
-                            .authToken(getAuthToken())
-                            .apiKey(apikey)
-                            .build();
-            showLoader();
-
-            new GetAppCMSRentalVideoAsyncTask(appCMSVideoDetailCall, appCMSEntitlementResponse -> {
-                try {
-                    Observable.just(appCMSEntitlementResponse).subscribe(readyAction);
-                    stopLoader();
-//                        System.out.println("Rental Response-"+appCMSEntitlementResponse);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }).execute(params);
-
-        }
-    }
-    public void getTransactionData(String id, Action1<List<Map<String,AppCMSTransactionDataValue>> > readyAction, Action1<Boolean> downloadNotProcessedAction,
-                                   Boolean isDownload) {
-        if (currentActivity != null) {
-            String url = "";
-            int endPoint = R.string.app_cms_gettransactiondata_api_url;
-
-            //dynamic url
-            url = currentActivity.getString(endPoint,
-                    appCMSMain.getApiBaseUrl(), getLoggedInUser(),
-                    id,"VIDEO","false",appCMSSite.getGist().getSiteInternalName());
-
-
-//            url = currentActivity.getString(endPoint,
-//                    appCMSMain.getApiBaseUrl(), "sarathTestUserHoichoi1",
-//                    "f35748db-e27c-405f-a10a-7b2970b0a225","VIDEO","false",appCMSSite.getGist().getSiteInternalName());
-
-            GetAppCMSTransactionlDataAsyncTask.Params params =
-                    new GetAppCMSTransactionlDataAsyncTask.Params.Builder().url(url)
-                            .authToken(getAuthToken())
-                            .apiKey(apikey)
-                            .build();
-            showLoader();
-
-            new GetAppCMSTransactionlDataAsyncTask(appCMSVideoDetailCall, appCMSEntitlementResponse -> {
-                try {
-                    Observable.just(appCMSEntitlementResponse).subscribe(readyAction);
-                    stopLoader();
-//                        System.out.println("Rental Response-"+appCMSEntitlementResponse);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }).execute(params);
-
-        }
-    }
-
     public void setResumedActivities(int currentResumedActivities) {
         this.currentResumedActivities = currentResumedActivities;
     }
@@ -1880,161 +1823,87 @@ public class AppCMSPresenter {
                             .apiKey(apikey)
                             .build();
 
-            refreshVideoData(filmId,
-                    updatedContentDatum -> {
-                        if (updatedContentDatum != null) {
-                            String updatedAction = expectedAction;
+            new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
+                    appCMSVideoDetail -> {
+                        try {
+                            if (appCMSVideoDetail != null &&
+                                    appCMSVideoDetail.getRecords() != null &&
+                                    appCMSVideoDetail.getRecords().get(0) != null &&
+                                    appCMSVideoDetail.getRecords().get(0).getContentDetails() != null) {
+                                String updatedAction = expectedAction;
 
-                            if (!TextUtils.isEmpty(expectedAction) &&
-                                    !expectedAction.equals(currentContext.getString(R.string.app_cms_action_videopage_key)) &&
-                                    !expectedAction.equals(currentContext.getString(R.string.app_cms_action_watchvideo_key))) {
-                                String contentType = "";
+                                if (!TextUtils.isEmpty(expectedAction) &&
+                                        !expectedAction.equals(currentContext.getString(R.string.app_cms_action_videopage_key)) &&
+                                        !expectedAction.equals(currentContext.getString(R.string.app_cms_action_watchvideo_key))) {
+                                    String contentType = "";
 
-                                if (updatedContentDatum.getGist() != null &&
-                                        updatedContentDatum.getGist().getContentType() != null) {
-                                    contentType = updatedContentDatum.getGist().getContentType();
+                                    if (appCMSVideoDetail.getRecords().get(0).getGist() != null &&
+                                            appCMSVideoDetail.getRecords().get(0).getGist().getContentType() != null) {
+                                        contentType = appCMSVideoDetail.getRecords().get(0).getGist().getContentType();
+                                    }
+
+                                    switch (contentType) {
+                                        case "SHOW":
+                                            updatedAction = currentContext.getString(R.string.app_cms_action_showvideopage_key);
+                                            break;
+
+                                        case "VIDEO":
+                                            updatedAction = currentContext.getString(R.string.app_cms_action_detailvideopage_key);
+                                            break;
+
+                                        default:
+                                            break;
+                                    }
                                 }
 
-                                switch (contentType) {
-                                    case "SHOW":
-                                        updatedAction = currentContext.getString(R.string.app_cms_action_showvideopage_key);
-                                        break;
-
-                                    case "VIDEO":
-                                        updatedAction = currentContext.getString(R.string.app_cms_action_detailvideopage_key);
-                                        break;
-
-                                    default:
-                                        break;
+                                if (updatedAction == null) {
+                                    updatedAction = currentContext.getString(R.string.app_cms_action_videopage_key);
                                 }
-                            }
 
-                            if (updatedAction == null) {
-                                updatedAction = currentContext.getString(R.string.app_cms_action_videopage_key);
-                            }
+                                Log.d(TAG, "Existing watched time: " + contentDatum.getGist().getWatchedTime());
+                                Log.d(TAG, "Updated watched time: " + appCMSVideoDetail.getRecords().get(0).getGist().getWatchedTime());
 
-                            Log.d(TAG, "Existing watched time: " + contentDatum.getGist().getWatchedTime());
-                            Log.d(TAG, "Updated watched time: " + updatedContentDatum.getGist().getWatchedTime());
+                                appCMSVideoDetail.getRecords().get(0).getGist().setWatchedTime(contentDatum.getGist().getWatchedTime());
+                                appCMSVideoDetail.getRecords().get(0).getGist().setWatchedPercentage(contentDatum.getGist().getWatchedPercentage());
 
-                            updatedContentDatum.getGist().setWatchedTime(contentDatum.getGist().getWatchedTime());
-                            updatedContentDatum.getGist().setWatchedPercentage(contentDatum.getGist().getWatchedPercentage());
-
-                            launchButtonSelectedAction(updatedContentDatum.getGist().getPermalink(),
-                                    updatedAction,
-                                    updatedContentDatum.getGist().getTitle(),
-                                    null,
-                                    updatedContentDatum,
-                                    false,
-                                    currentlyPlayingIndex,
-                                    relateVideoIds);
-                        } else {
-                            if (!isNetworkConnected()) {
-                                // Fix of SVFA-1435
-                                openDownloadScreenForNetworkError(false,
-                                        () -> launchVideoPlayer(contentDatum,
-                                                contentDatum.getGist().getId(),
-                                                currentlyPlayingIndex,
-                                                relateVideoIds,
-                                                watchedTime,
-                                                expectedAction));
-                            } else {
-                                if (watchedTime >= 0) {
-                                    contentDatum.getGist().setWatchedTime(watchedTime);
-                                }
-                                launchButtonSelectedAction(
-                                        contentDatum.getGist().getPermalink(),
-                                        action,
-                                        contentDatum.getGist().getTitle(),
+                                launchButtonSelectedAction(appCMSVideoDetail.getRecords().get(0).getGist().getPermalink(),
+                                        updatedAction,
+                                        appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
                                         null,
-                                        contentDatum,
+                                        appCMSVideoDetail.getRecords().get(0),
                                         false,
                                         currentlyPlayingIndex,
                                         relateVideoIds);
+                            } else {
+                                if (!isNetworkConnected()) {
+                                    // Fix of SVFA-1435
+                                    openDownloadScreenForNetworkError(false,
+                                            () -> launchVideoPlayer(contentDatum,
+                                                    contentDatum.getGist().getId(),
+                                                    currentlyPlayingIndex,
+                                                    relateVideoIds,
+                                                    watchedTime,
+                                                    expectedAction));
+                                } else {
+                                    if (watchedTime >= 0) {
+                                        contentDatum.getGist().setWatchedTime(watchedTime);
+                                    }
+                                    launchButtonSelectedAction(
+                                            contentDatum.getGist().getPermalink(),
+                                            action,
+                                            contentDatum.getGist().getTitle(),
+                                            null,
+                                            contentDatum,
+                                            false,
+                                            currentlyPlayingIndex,
+                                            relateVideoIds);
+                                }
                             }
-                        }
-                    }, null, false);
 
-//            new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
-//                    appCMSVideoDetail -> {
-//                        try {
-//                            if (appCMSVideoDetail != null &&
-//                                    appCMSVideoDetail.getRecords() != null &&
-//                                    appCMSVideoDetail.getRecords().get(0) != null &&
-//                                    appCMSVideoDetail.getRecords().get(0).getContentDetails() != null) {
-//                                String updatedAction = expectedAction;
-//
-//                                if (!TextUtils.isEmpty(expectedAction) &&
-//                                        !expectedAction.equals(currentContext.getString(R.string.app_cms_action_videopage_key)) &&
-//                                        !expectedAction.equals(currentContext.getString(R.string.app_cms_action_watchvideo_key))) {
-//                                    String contentType = "";
-//
-//                                    if (appCMSVideoDetail.getRecords().get(0).getGist() != null &&
-//                                            appCMSVideoDetail.getRecords().get(0).getGist().getContentType() != null) {
-//                                        contentType = appCMSVideoDetail.getRecords().get(0).getGist().getContentType();
-//                                    }
-//
-//                                    switch (contentType) {
-//                                        case "SHOW":
-//                                            updatedAction = currentContext.getString(R.string.app_cms_action_showvideopage_key);
-//                                            break;
-//
-//                                        case "VIDEO":
-//                                            updatedAction = currentContext.getString(R.string.app_cms_action_detailvideopage_key);
-//                                            break;
-//
-//                                        default:
-//                                            break;
-//                                    }
-//                                }
-//
-//                                if (updatedAction == null) {
-//                                    updatedAction = currentContext.getString(R.string.app_cms_action_videopage_key);
-//                                }
-//
-//                                Log.d(TAG, "Existing watched time: " + contentDatum.getGist().getWatchedTime());
-//                                Log.d(TAG, "Updated watched time: " + appCMSVideoDetail.getRecords().get(0).getGist().getWatchedTime());
-//
-//                                appCMSVideoDetail.getRecords().get(0).getGist().setWatchedTime(contentDatum.getGist().getWatchedTime());
-//                                appCMSVideoDetail.getRecords().get(0).getGist().setWatchedPercentage(contentDatum.getGist().getWatchedPercentage());
-//
-//                                launchButtonSelectedAction(appCMSVideoDetail.getRecords().get(0).getGist().getPermalink(),
-//                                        updatedAction,
-//                                        appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
-//                                        null,
-//                                        appCMSVideoDetail.getRecords().get(0),
-//                                        false,
-//                                        currentlyPlayingIndex,
-//                                        relateVideoIds);
-//                            } else {
-//                                if (!isNetworkConnected()) {
-//                                    // Fix of SVFA-1435
-//                                    openDownloadScreenForNetworkError(false,
-//                                            () -> launchVideoPlayer(contentDatum,
-//                                                    contentDatum.getGist().getId(),
-//                                                    currentlyPlayingIndex,
-//                                                    relateVideoIds,
-//                                                    watchedTime,
-//                                                    expectedAction));
-//                                } else {
-//                                    if (watchedTime >= 0) {
-//                                        contentDatum.getGist().setWatchedTime(watchedTime);
-//                                    }
-//                                    launchButtonSelectedAction(
-//                                            contentDatum.getGist().getPermalink(),
-//                                            action,
-//                                            contentDatum.getGist().getTitle(),
-//                                            null,
-//                                            contentDatum,
-//                                            false,
-//                                            currentlyPlayingIndex,
-//                                            relateVideoIds);
-//                                }
-//                            }
-//
-//                        } catch (Exception e) {
-//                            //Log.e(TAG, "Error retrieving AppCMS Video Details: " + e.getMessage());
-//                        }
-//                    }).execute(params);
+                        } catch (Exception e) {
+                            //Log.e(TAG, "Error retrieving AppCMS Video Details: " + e.getMessage());
+                        }
+                    }).execute(params);
         }
         return result;
     }
@@ -2062,10 +1931,6 @@ public class AppCMSPresenter {
                         try {
                             for (DownloadVideoRealm downloadVideoRealm : realmController.getAllUnSyncedWithServer(getLoggedInUser())) {
                                 updateWatchedTime(downloadVideoRealm.getVideoId(), downloadVideoRealm.getWatchedTime());
-                                //sync start time of videos to server which dont have transaction end date
-                                getRentalData(downloadVideoRealm.getVideoId(), updatedContentDatum -> {
-                                    downloadVideoRealm.setRentStartTimeUpdated(true);
-                                }, null, false);
                             }
                         } catch (NullPointerException e) {
                             e.printStackTrace();
@@ -2145,24 +2010,6 @@ public class AppCMSPresenter {
         }
     }
 
-    public void updateVideoStartTime(String id){
-        {
-                currentActivity.runOnUiThread(() -> {
-                    try {
-                        // copyFromRealm is used to get an unmanaged in-memory copy of an already
-                        // persisted RealmObject
-                        DownloadVideoRealm downloadedVideo = realmController.getRealm()
-                                .copyFromRealm(realmController.getDownloadById(id));
-                        downloadedVideo.setRentStartWatchTime(System.currentTimeMillis());
-
-                        realmController.updateDownload(downloadedVideo);
-                    } catch (Exception e) {
-                        //Log.e(TAG, "Film " + filmId + " has not been downloaded");
-                    }
-                });
-
-        }
-    }
     /**
      * This will retrieve the current user watch history and store the data into a hashmap
      * to be used as a cache for future requests to display the user's current watched history.
@@ -2187,7 +2034,7 @@ public class AppCMSPresenter {
      * for retrieving the current user's watchlist again.
      */
     private void populateFilmsInUserWatchlist() {
-        if (watchlistPage == null) {
+        if(watchlistPage==null){
             return;
         }
         AppCMSPageUI appCMSPageUI = navigationPages.get(watchlistPage.getPageId());
@@ -2338,7 +2185,7 @@ public class AppCMSPresenter {
                     }
                 } else {
                     if (platformType == PlatformType.ANDROID) {
-                        getAppCMSAndroid(tryCount + 1);
+                        getAppCMSAndroid(tryCount + 1,null);
                     } else if (platformType == PlatformType.TV) {
                         getAppCMSTV(tryCount + 1);
                     }
@@ -2993,37 +2840,32 @@ public class AppCMSPresenter {
                                                 } else if (appCMSPageAPI.getTitle().equalsIgnoreCase(currentActivity.getString(R.string.app_cms_pagename_articlescreen_key))) {
                                                     processRelatedArticleDeepLink(appCMSPageAPI);
                                                 }
+                                                Bundle args = getPageActivityBundle(currentActivity,
+                                                        this.appCMSPageUI,
+                                                        appCMSPageAPI,
+                                                        this.pageId,
+                                                        appCMSPageAPI.getTitle(),
+                                                        this.pagePath,
+                                                        screenName.toString(),
+                                                        loadFromFile,
+                                                        this.appbarPresent,
+                                                        this.fullscreenEnabled,
+                                                        this.navbarPresent,
+                                                        this.sendCloseAction,
+                                                        this.searchQuery,
+                                                        screenType);
+                                                if (args != null) {
+                                                    Intent updatePageIntent =
+                                                            new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                                                    updatePageIntent.putExtra(
+                                                            currentActivity.getString(R.string.app_cms_bundle_key),
+                                                            args);
+                                                    updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                                                    currentActivity.sendBroadcast(updatePageIntent);
 
-
-                                                for (int i = 0; i < appCMSPageAPI.getModules().size(); i++) {
-                                                    if (appCMSPageAPI.getModules().get(i) != null &&
-                                                            appCMSPageAPI.getModules().get(i).getModuleType() != null ) {
-
-                                                        if(appCMSPageAPI.getModules().get(i).getModuleType().equalsIgnoreCase("VideoDetailModule") ){
-                                                            int position = i;
-
-                                                            if ((appCMSPageAPI.getModules().get(i).getContentData().get(0).getPricing() != null &&
-                                                                    appCMSPageAPI.getModules().get(i).getContentData().get(0).getPricing().getType() != null )){
-                                                                getTransactionData(appCMSPageAPI.getModules().get(i).getContentData().get(0).getGist().getId(), updatedContentDatum -> {
-
-                                                                    appCMSPageAPI.getModules().get(position).getContentData().get(0).getGist().setObjTransactionDataValue(updatedContentDatum);
-                                                                    appCMSPageAPI.getModules().get(position).getContentData().get(0).getGist().setRentedDialogShow(false);
-                                                                    launchNavigationPageWithBundleData(appCMSPageAPIAction,appCMSPageAPI,screenType,screenName);
-                                                                }, null, false);
-                                                            }else{
-                                                                launchNavigationPageWithBundleData(appCMSPageAPIAction,appCMSPageAPI,screenType,screenName);
-
-                                                            }
-
-
-                                                            break;
-                                                        }else{
-                                                            launchNavigationPageWithBundleData(appCMSPageAPIAction,appCMSPageAPI,screenType,screenName);
-
-                                                        }
-                                                    }
+                                                    stopLoader();
                                                 }
-
+                                                launched = true;
                                             } else {
                                                 if (launched) {
                                                     sendStopLoadingPageAction(true,
@@ -3046,35 +2888,6 @@ public class AppCMSPresenter {
         return result;
     }
 
-
-    public void launchNavigationPageWithBundleData(AppCMSPageAPIAction appCMSPageAPIAction, AppCMSPageAPI appCMSPageAPI, ExtraScreenType screenType, StringBuffer screenName){
-        Bundle args = getPageActivityBundle(currentActivity,
-                appCMSPageAPIAction.appCMSPageUI,
-                appCMSPageAPI,
-                appCMSPageAPIAction.pageId,
-                appCMSPageAPI.getTitle(),
-                appCMSPageAPIAction.pagePath,
-                screenName.toString(),
-                loadFromFile,
-                appCMSPageAPIAction.appbarPresent,
-                appCMSPageAPIAction.fullscreenEnabled,
-                appCMSPageAPIAction.navbarPresent,
-                appCMSPageAPIAction.sendCloseAction,
-                appCMSPageAPIAction.searchQuery,
-                screenType);
-        if (args != null) {
-            Intent updatePageIntent =
-                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-            updatePageIntent.putExtra(
-                    currentActivity.getString(R.string.app_cms_bundle_key),
-                    args);
-            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
-            currentActivity.sendBroadcast(updatePageIntent);
-
-            stopLoader();
-        }
-        launched = true;
-    }
     public void navigateToEventDetailPage(String permaLink) {
         String pagePath = permaLink;
 
@@ -4002,7 +3815,7 @@ public class AppCMSPresenter {
      * @param appCMSPageUI
      * @param action
      */
-    private void showChangeLanguageTVDialog(AppCMSPageUI appCMSPageUI, String action) {
+    private void showChangeLanguageTVDialog(AppCMSPageUI appCMSPageUI, String action){
         if (currentActivity != null) {
             if (appCMSPageUI == null) {
                 showLoader();
@@ -4044,8 +3857,8 @@ public class AppCMSPresenter {
             ArrayList<Module> moduleList = new ArrayList<>();
             moduleList.add(module);
             appCMSPageAPI.setModules(moduleList);
-            // appCMSPageAPI.setId();
-            // appCMSPageAPI.setTitle(title);
+           // appCMSPageAPI.setId();
+           // appCMSPageAPI.setTitle(title);
             ArrayList<ContentDatum> data = new ArrayList<>();
             for (Language navigationPrimary : languageArrayList) {
                 data.add(navigationPrimary.convertToContentDatum());
@@ -5906,7 +5719,8 @@ public class AppCMSPresenter {
             downloadVideoRealm.setVideoThumbId_DM(thumbEnqueueId);
             downloadVideoRealm.setPosterThumbId_DM(posterEnqueueId);
             downloadVideoRealm.setVideoId_DM(enqueueId);
-
+            if (contentDatum.getGist().getPrimaryCategory() != null && contentDatum.getGist().getPrimaryCategory().getTitle() != null)
+                downloadVideoRealm.setGenre(contentDatum.getGist().getPrimaryCategory().getTitle());
             if (contentDatum.getGist().getId() != null) {
                 downloadVideoRealm.setVideoId(contentDatum.getGist().getId());
 //                downloadVideoRealm.setVideoImageUrl(getPngPosterPath(contentDatum.getGist().getId()));
@@ -5917,6 +5731,7 @@ public class AppCMSPresenter {
             if (contentDatum.getGist().getTitle() != null) {
                 downloadVideoRealm.setVideoTitle(contentDatum.getGist().getTitle());
             }
+
 
             if (contentDatum.getCreditBlocks() != null && contentDatum.getCreditBlocks().size() > 0) {
 
@@ -6365,6 +6180,8 @@ public class AppCMSPresenter {
                     updateContentDatum.getGist().setTransactionEndDate(contentDatum.getGist().getTransactionEndDate());
                 }
 
+                if (updateContentDatum.getGist().getGenre() == null)
+                    updateContentDatum.getGist().setPrimaryCategory(contentDatum.getGist().getPrimaryCategory());
                 if (contentDatum.getSeriesName() != null)
                     updateContentDatum.setSeriesName(contentDatum.getSeriesName());
                 if (updateContentDatum.getCreditBlocks() == null)
@@ -6906,59 +6723,17 @@ public class AppCMSPresenter {
                 settings.setLazyLoad(false);
 
                 List<ContentDatum> contentData = new ArrayList<>();
-                List<ContentDatum> contentDataFilter = new ArrayList<>();
-
                 try {
                     for (DownloadVideoRealm downloadVideoRealm : realmController.getDownloadesByUserId(getLoggedInUser())) {
                         contentData.add(downloadVideoRealm.convertToContentDatum(getLoggedInUser()));
-                        contentDataFilter.add(downloadVideoRealm.convertToContentDatum(getLoggedInUser()));
-
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-
-                /**
-                 * remove downloaded items which are expired
-                 */
-                for (int i = 0; i < contentDataFilter.size(); i++) {
-
-                    int position = i;
-                    float rentalPeriod=0;
-                    long expirationDate=0;
-                    long stratTime=0;
-
-
-                    /**
-                     * check for downloaded TVOD contents.IF any downloaded content has transaction end date then compare its end date with current date.
-                     * If transaction end date is 0 then compare start time with addition to rental period and combined copare to current date.
-                     * if It is less rhan current date than remove it from downloads.
-                     */
-                    if(contentDataFilter.get(i).getGist().getTransactionEndDate()>0){
-                         expirationDate = contentDataFilter.get(i).getGist().getTransactionEndDate();
-                    }else if(contentDataFilter.get(i).getGist().getRentalPeriod()>0 && contentDataFilter.get(i).getGist().getRentStartTime()>0){
-                        stratTime = contentDataFilter.get(i).getGist().getRentStartTime();
-                        rentalPeriod=contentDataFilter.get(i).getGist().getRentalPeriod();
-                        //convert rentalPeriod hours into ms and then add to start time
-                        long rentPeriodinMs= (long) (rentalPeriod*60*1000*1000);
-                        expirationDate=stratTime+rentPeriodinMs;
-                    }
-
-                    long remainingTime = getTimeIntervalForEvent(expirationDate, "EEE MMM dd HH:mm:ss");
-                    if (expirationDate > 0 && remainingTime < 0) {
-                        removeDownloadedFile(contentDataFilter.get(i).getGist().getId(),
-                                userVideoDownloadStatus -> {
-                                });
-                        contentData.remove(0);
-
-                    }
-                }
-
                 module.setContentData(contentData);
                 module.setTitle(currentActivity.getString(R.string.app_cms_page_download_title));
                 moduleList.add(module);
                 appCMSPageAPI.setModules(moduleList);
-
 
                 cancelInternalEvents();
                 pushActionInternalEvents(pageId
@@ -8170,8 +7945,8 @@ public class AppCMSPresenter {
                                 }
                             }
                             if (isPlayerScreenOpen && currentActivity != null) {
-
-                                GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+                                try{
+                                    GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
                                 int resultCode = apiAvailability.isGooglePlayServicesAvailable(currentActivity);
                                 if (resultCode == ConnectionResult.SUCCESS) {
 
@@ -8197,6 +7972,7 @@ public class AppCMSPresenter {
                                         Toast.makeText(currentActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
                                     }*/
                                 }
+                                }catch (Exception e){e.printStackTrace();}
                             }
 
                         } else {
@@ -8221,7 +7997,7 @@ public class AppCMSPresenter {
                                AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper
             , boolean isPlayerScreenOpen, Boolean playAudio, int tryCount,
                                AppCMSAudioDetailAPIAction appCMSAudioDetailAPIAction) {
-
+        try{
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(getCurrentActiveContext());
         if (resultCode != ConnectionResult.SUCCESS) {
@@ -8236,6 +8012,7 @@ public class AppCMSPresenter {
             }*/
             return;
         }
+        }catch (Exception e){e.printStackTrace(); return;}
 
         if (!isNetworkConnected()) {
             int count = tryCount;
@@ -8285,7 +8062,7 @@ public class AppCMSPresenter {
                                 }
                             }
                             if (isPlayerScreenOpen && currentActivity != null) {
-
+                                try{
                                 GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
                                 int resultCode = apiAvailability.isGooglePlayServicesAvailable(currentActivity);
                                 if (resultCode == ConnectionResult.SUCCESS) {
@@ -8310,6 +8087,7 @@ public class AppCMSPresenter {
                                         Toast.makeText(currentActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
                                     }*/
                                 }
+                                }catch (Exception e){e.printStackTrace();}
                             }
 
                         } else {
@@ -8479,7 +8257,7 @@ public class AppCMSPresenter {
     }
 
     public void navigateToLibraryPage(String pageId, String pageTitle,
-                                      boolean launchActivity) {
+                                     boolean launchActivity) {
         if (!isNetworkConnected()) {
             openDownloadScreenForNetworkError(launchActivity,
                     () -> navigateToLibraryPage(pageId, pageTitle, launchActivity));
@@ -8527,7 +8305,16 @@ public class AppCMSPresenter {
                                     cancelInternalEvents();
                                     pushActionInternalEvents(this.pageId
                                             + BaseView.isLandscape(currentActivity));
-
+//                                    Type type = new TypeToken<AppCMSLibraryResult>() {
+//                                    }.getType();
+//
+//
+//                                    HashMap<String, Gist> appCMSPageUI1 = new GsonBuilder().create().fromJson(loadJsonFromAssets(currentContext, "reponse_library.json"),type );
+////
+//                                    AppCMSPageAPI pageAPI = null;
+//                                    if (appCMSPageUI1 != null) {
+//                                        pageAPI = convertLibraryResultToAppCMSPageAPI(appCMSPageUI1);
+//                                    }
 
                                     final StringBuffer screenName = new StringBuffer();
                                     if (!TextUtils.isEmpty(pageIdToPageNameMap.get(pageId))) {
@@ -8569,7 +8356,6 @@ public class AppCMSPresenter {
                                             false,
                                             null,
                                             ExtraScreenType.NONE);
-
                                     if (args != null) {
                                         Intent pageIntent =
                                                 new Intent(AppCMSPresenter
@@ -9733,6 +9519,7 @@ public class AppCMSPresenter {
                                     }
                                     sendRefreshPageAction();
                                     userIdentityAction.call(userIdentityResult);
+                                    senduserProfileEvent();
                                 } catch (Exception e) {
                                     //Log.e(TAG, "Error get user identity data: " + e.getMessage());
                                 }
@@ -11047,7 +10834,6 @@ public class AppCMSPresenter {
         if (currentContext != null) {
             if (networkConnected) {
                 sendOfflineBeaconMessage();
-//                sendOfflineRentedDownloadStatus();
                 updateAllOfflineWatchTime();
             }
 
@@ -11871,7 +11657,7 @@ public class AppCMSPresenter {
                               final String siteId,
                               final Uri searchQuery,
                               final PlatformType platformType,
-                              boolean bustCache) {
+                              boolean bustCache,Action1<Boolean> launchSuccessfull) {
         Log.w(TAG, "Attempting to retrieve main.json");
         //createlanguageArray();
         defaultLanguage = getLanguage();
@@ -11887,7 +11673,7 @@ public class AppCMSPresenter {
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
-                .bustCache(true)
+                .bustCache(bustCache)
                 .networkDisconnected(!isNetworkConnected())
                 .build();
 
@@ -11902,7 +11688,7 @@ public class AppCMSPresenter {
                                             siteId,
                                             searchQuery,
                                             platformType,
-                                            bustCache));
+                                            bustCache,launchSuccessfull));
                         } else {
                             launchBlankPage();
                         }
@@ -11939,11 +11725,11 @@ public class AppCMSPresenter {
 
                         //check default language
 
-                        if (null != defaultLanguage && null != appCMSMain.getLanguages()) {
-                            ArrayList<Language> languageList = (ArrayList) appCMSMain.getLanguages().getLanguageList();
-                            System.out.println("TESTS Default language = " + defaultLanguage.getLanguageCode());
-                            boolean isLanguageExistinMain = languageList != null && languageList.contains(defaultLanguage);
-                            if (!isLanguageExistinMain) {
+                        if(null != defaultLanguage && null != appCMSMain.getLanguages()){
+                            ArrayList<Language> languageList = (ArrayList)appCMSMain.getLanguages().getLanguageList();
+                            System.out.println("TESTS Default language = "+defaultLanguage.getLanguageCode());
+                            boolean isLanguageExistinMain = languageList != null  && languageList.contains(defaultLanguage);
+                            if(!isLanguageExistinMain){
                                 defaultLanguage = appCMSMain.getLanguages().getDefaultlanguage();
 
                             }
@@ -11963,7 +11749,8 @@ public class AppCMSPresenter {
                             apikey = Utils.getProperty("XAPI", currentActivity);
                         }
                         Utils.setHls(appCMSMain.isHls());
-                        getAppCMSSite(platformType);
+
+                        getAppCMSSite(platformType,launchSuccessfull);
                     }
                 } catch (Exception e) {
                     //Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
@@ -12280,7 +12067,7 @@ public class AppCMSPresenter {
                                 fullText);
                 transaction.add(R.id.app_cms_addon_fragment,
                         appCMSMoreFragment,
-                        currentActivity.getString(R.string.app_cms_more_page_tag)).commitAllowingStateLoss();
+                        currentActivity.getString(R.string.app_cms_more_page_tag)).commit();
                 showAddOnFragment(true, 0.2f);
                 setNavItemToCurrentAction(currentActivity);
             }
@@ -12295,33 +12082,6 @@ public class AppCMSPresenter {
             currentActivity.sendBroadcast(args);
         }
     }
-
-    public void showNoPurchaseDialog(String title, String fullText) {
-        if (platformType == PlatformType.ANDROID && !isAdditionalFragmentVisibile()) {
-            if (currentActivity != null &&
-                    currentActivity instanceof AppCompatActivity &&
-                    isAdditionalFragmentViewAvailable()) {
-                pushActionInternalEvents(currentActivity.getString(R.string.more_page_action));
-                String FIREBASE_VIDEO_DETAIL_SCREEN = "Video Detail Screen";
-                String eventValue = FIREBASE_VIDEO_DETAIL_SCREEN + "-" + title;
-                sendFirebaseAnalyticsEvents(eventValue);
-                clearAdditionalFragment();
-                FragmentTransaction transaction =
-                        ((AppCompatActivity) currentActivity).getSupportFragmentManager().beginTransaction();
-                AppCMSNoPurchaseFragment appCMSMoreFragment =
-                        AppCMSNoPurchaseFragment.newInstance(currentActivity,
-                                title,
-                                fullText);
-                transaction.add(R.id.app_cms_addon_fragment,
-                        appCMSMoreFragment,
-                        currentActivity.getString(R.string.app_cms_more_page_tag)).commitAllowingStateLoss();
-                showAddOnFragment(true, 0.09f);
-                setNavItemToCurrentAction(currentActivity);
-            }
-        }
-    }
-
-
 
     @SuppressWarnings("unused")
     public void showClearHistoryDialog(String title, String fullText, Action1<Integer> action1) {
@@ -12882,63 +12642,7 @@ public class AppCMSPresenter {
                 }
         }
     }
-    public void showRentTimeDialog(Action1<Boolean> oncConfirmationAction,String rentTime) {
-        if (currentActivity != null) {
-            if(rentTime==null || TextUtils.isEmpty(rentTime)){
-                rentTime="x";
-            }
-            int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
-            AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
-            String title = "Alert";
-            String message = "once video start you have "+rentTime+" amount of hours to consume the video";
 
-            builder.setTitle(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
-                    Integer.toHexString(textColor).substring(2),
-                    title)))
-                    .setMessage(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
-                            Integer.toHexString(textColor).substring(2),
-                            message)));
-            builder.setPositiveButton(R.string.app_cms_confirm_alert_dialog_button_text,
-                    (dialog, which) -> {
-                        dialog.dismiss();
-                        if (oncConfirmationAction != null) {
-                            Observable.just(true)
-                                    .onErrorResumeNext(throwable -> Observable.empty())
-                                    .subscribe(oncConfirmationAction);
-                        }
-                    });
-            builder.setNegativeButton(R.string.app_cms_cancel_alert_dialog_button_text,
-                    (dialog, which) -> {
-                        try {
-                            dialog.dismiss();
-                            if (oncConfirmationAction != null) {
-                                Observable.just(false)
-                                        .onErrorResumeNext(throwable -> Observable.empty())
-                                        .subscribe(oncConfirmationAction);
-                            }
-                        } catch (Exception e) {
-                            //Log.e(TAG, "Error closing confirm cancellation dialog: " + e.getMessage());
-                        }
-                    });
-            builder.setCancelable(false);
-            AlertDialog dialog = builder.create();
-            if (dialog.getWindow() != null) {
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
-                        Color.parseColor(getAppBackgroundColor())));
-                if (currentActivity.getWindow().isActive()) {
-                    try {
-                        dialog.show();
-                        int tintTextColor = getBrandPrimaryCtaColor();
-                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(tintTextColor);
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(tintTextColor);
-                    } catch (Exception e) {
-                        //Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
-//                                + e.toString());
-                    }
-                }
-            }
-        }
-    }
     public void showConfirmCancelSubscriptionDialog(Action1<Boolean> oncConfirmationAction) {
         if (currentActivity != null) {
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
@@ -13388,19 +13092,6 @@ public class AppCMSPresenter {
         }
     }
 
-    private void sendOfflineRentedDownloadStatus(){
-        for (DownloadVideoRealm downloadVideoRealm :
-                realmController.getDownloadesByUserId(getLoggedInUser())) {
-
-            if(!downloadVideoRealm.isRentStartTimeUpdated()){
-                getRentalData(downloadVideoRealm.getVideoId(), updatedContentDatum -> {
-                    downloadVideoRealm.setRentStartTimeUpdated(true);
-                }, null, false);
-
-     }
-        }
-    }
-
     private void sendOfflineBeaconMessage() {
         ArrayList<BeaconRequest> beaconRequests = getBeaconRequestList();
 
@@ -13592,7 +13283,8 @@ public class AppCMSPresenter {
         String contentType = searchResultClick[5];
         String gistId = searchResultClick[6];
         //Log.d(TAG, "Launching " + permalink + ":" + action);
-
+        setPlaySource("");
+        setPlaySource("Search List");
         /*get audio details on tray click item and play song*/
         if (mediaType.toLowerCase().contains(currentContext.getString(R.string.app_cms_article_key_type).toLowerCase())) {
             setCurrentArticleIndex(-1);
@@ -13622,6 +13314,7 @@ public class AppCMSPresenter {
         /*Get playlist data and open playlist page*/
         if (mediaType != null
                 && mediaType.toLowerCase().contains(currentContext.getString(R.string.media_type_playlist).toLowerCase())) {
+            setPlaySource(getPlaySource() + "_Playlist Screen - " + title);
             navigateToPlaylistPage(gistId, title, false);
             return;
         }
@@ -13853,6 +13546,7 @@ public class AppCMSPresenter {
             if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
                 setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
             }
+            senduserProfileEvent();
 
 /*
             if (currentContext != null && currentContext instanceof AppCMSApplication) {
@@ -14060,6 +13754,7 @@ public class AppCMSPresenter {
             //Log.e(TAG, "Failed to update user subscription status");
             stopLoader();
         }
+        senduserProfileEvent();
     }
 
     public List<SubscriptionPlan> availablePlans() {
@@ -15440,7 +15135,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private void getAppCMSSite(final PlatformType platformType) {
+    private void getAppCMSSite(final PlatformType platformType,Action1<Boolean> launchSuccessfull) {
         Log.w(TAG, "Attempting to retrieve site.json");
         if (currentActivity != null) {
             //Log.d(TAG, "Retrieving site.json");
@@ -15461,7 +15156,7 @@ public class AppCMSPresenter {
                                         .build();
                                 switch (platformType) {
                                     case ANDROID:
-                                        getAppCMSAndroid(0);
+                                        getAppCMSAndroid(0,launchSuccessfull);
                                         break;
 
                                     case TV:
@@ -15701,7 +15396,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private void getAppCMSAndroid(int tryCount) {
+    private void getAppCMSAndroid(int tryCount,Action1<Boolean> launchSuccessfull) {
         //Log.d(TAG, "Attempting to retrieve android.json");
         try {
             GetAppCMSAndroidUIAsyncTask.Params params =
@@ -15719,7 +15414,7 @@ public class AppCMSPresenter {
                             appCMSAndroidUI.getMetaPages().isEmpty()) {
                         //Log.e(TAG, "AppCMS keys for pages for appCMSAndroid not found");
                         if (tryCount < 2) {
-                            getAppCMSAndroid(tryCount + 1);
+                            getAppCMSAndroid(tryCount + 1,launchSuccessfull);
                         } else {
                             launchBlankPage();
                         }
@@ -15743,7 +15438,7 @@ public class AppCMSPresenter {
                                     this.appCMSAndroidModules = appCMSAndroidModules;
                                     this.processedUIModules = true;
                                     if (processedUIModules && processedUIPages) {
-                                        finalizeLaunch(tryCount);
+                                        finalizeLaunch(tryCount,launchSuccessfull);
                                     }
                                 });
 
@@ -15769,7 +15464,7 @@ public class AppCMSPresenter {
                                         processedUIPages = true;
 
                                         if (processedUIModules && processedUIPages) {
-                                            finalizeLaunch(tryCount);
+                                            finalizeLaunch(tryCount,launchSuccessfull);
                                         }
                                     },
                                     loadFromFile,
@@ -15784,7 +15479,7 @@ public class AppCMSPresenter {
                                     () -> {
                                         this.processedUIPages = true;
                                         if (processedUIModules && processedUIPages) {
-                                            finalizeLaunch(tryCount);
+                                            finalizeLaunch(tryCount,launchSuccessfull);
                                         }
                                     });
                         }
@@ -15800,12 +15495,12 @@ public class AppCMSPresenter {
         }
     }
 
-    private void finalizeLaunch(int tryCount) {
+    private void finalizeLaunch(int tryCount,Action1<Boolean> launchSuccessfull) {
         Log.w(TAG, "Finalizing launch");
         if (!isNetworkConnected()) {
             if (getPlatformType() == PlatformType.ANDROID) {
                 openDownloadScreenForNetworkError(true,
-                        () -> getAppCMSAndroid(tryCount));
+                        () -> getAppCMSAndroid(tryCount,launchSuccessfull));
             } else {
                 launchBlankPage();
             }
@@ -15898,6 +15593,7 @@ public class AppCMSPresenter {
                 }
             } else {
                 if (getPlatformType() == PlatformType.ANDROID) {
+                    if(homePage.getPageId()!=null){
                     boolean launchSuccess = navigateToPage(homePage.getPageId(),
                             homePage.getPageName(),
                             homePage.getPageUI(),
@@ -15907,9 +15603,10 @@ public class AppCMSPresenter {
                             true,
                             false,
                             deeplinkSearchQuery);
+                    launchSuccessfull.call(true);
                     if (!launchSuccess) {
                         launchBlankPage();
-                    }
+                    }}
                 } else {
                     boolean launchSuccess = navigateToTVPage(homePage.getPageId(),
                             homePage.getPageName(),
@@ -16700,7 +16397,7 @@ public class AppCMSPresenter {
                             this.processedUIModules = true;
                             if (processedUIModules && processedUIPages) {
                                 processedUIModules = false;
-                                finalizeLaunch(tryCount);
+                                finalizeLaunch(tryCount,null);
                             }
 
                         });
@@ -16730,7 +16427,7 @@ public class AppCMSPresenter {
                                 processedUIPages = true;
                                 if (processedUIModules && processedUIPages) {
                                     processedUIPages = false;
-                                    finalizeLaunch(tryCount);
+                                    finalizeLaunch(tryCount,null);
                                 }
                             },
                             loadFromFile,
@@ -16743,7 +16440,7 @@ public class AppCMSPresenter {
                     processMetaPagesList(loadFromFile,
                             appCMSAndroidUI.getMetaPages(),
                             () -> {
-                                finalizeLaunch(tryCount);
+                                finalizeLaunch(tryCount,null);
                             });
                 }
             }
@@ -18092,7 +17789,8 @@ public class AppCMSPresenter {
             navigateToPhotoGalleryPage(gistId, title, null, false);
             return;
         }
-
+        if (action.contains(currentContext.getString(R.string.app_cms_action_detailvideopage_key)))
+            setPlaySource(getPlaySource() + "_Video Detail");
 
         if (!launchButtonSelectedAction(permalink,
                 action,
@@ -18927,7 +18625,7 @@ public class AppCMSPresenter {
                 && appCMSAndroid.getAdvertising().getVideoTag() != null) {
             videoTag = appCMSAndroid.getAdvertising().getVideoTag();
         }
-        if (videoTag == null) {
+       if (videoTag == null) {
             return null;
         }
         Date now = new Date();
@@ -20786,25 +20484,24 @@ public class AppCMSPresenter {
             }
         }
     }
-
     private void getLibraryPage(final String apiBaseUrl,
-                                final String siteId,
-                                String pageId,
-                                final AppCMSLibraryAPIAction rosterAPIAction) {
+                               final String siteId,
+                               String pageId,
+                               final AppCMSLibraryAPIAction rosterAPIAction) {
         if (currentActivity != null) {
             try {
                 String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
                         apiBaseUrl,
                         getRefreshToken());
 
-//"c0a7b4c0-4dd1-11e8-a7b9-018cd7572a0"
+
                 appCMSRefreshIdentityCall.call(url, apikey, refreshIdentityResponse -> {
                     try {
                         appCMSLibraryCall.call(
                                 currentActivity.getString(R.string.app_cms_library_data_page_api_url,
-                                        apiBaseUrl, siteId, getLoggedInUser()
+                                        apiBaseUrl,siteId,getLoggedInUser()
 //
-                                ), getAuthToken(), apikey,
+                                ),getAuthToken(), apikey,
                                 rosterAPIAction);
 
                     } catch (IOException e) {
@@ -20864,15 +20561,15 @@ public class AppCMSPresenter {
         final Uri searchQuery;
 
         AppCMSLibraryAPIAction(boolean appbarPresent,
-                               boolean fullscreenEnabled,
-                               boolean navbarPresent,
-                               AppCMSPageUI appCMSPageUI,
-                               String action,
-                               String pageId,
-                               String pageTitle,
-                               String pagePath,
-                               boolean launchActivity,
-                               Uri searchQuery) {
+                        boolean fullscreenEnabled,
+                        boolean navbarPresent,
+                        AppCMSPageUI appCMSPageUI,
+                        String action,
+                        String pageId,
+                        String pageTitle,
+                        String pagePath,
+                        boolean launchActivity,
+                        Uri searchQuery) {
             this.appbarPresent = appbarPresent;
             this.fullscreenEnabled = fullscreenEnabled;
             this.navbarPresent = navbarPresent;
@@ -21109,8 +20806,10 @@ public class AppCMSPresenter {
 
     public void initializeCleverTap() {
         checkCleverTapAvailability();
-        if (isCleverTapAvailable)
+        if (isCleverTapAvailable) {
             cleverTapSDK.initializeSDK(this);
+            senduserProfileEvent();
+        }
     }
 
     public void senduserProfileEvent() {
@@ -21123,23 +20822,45 @@ public class AppCMSPresenter {
                             String userStatus = "Subscribed";
                             if (!isUserSubscribed())
                                 userStatus = "Not Subscribed";
-                            String subscriptionStartDate = getUserSubscriptionInfo().getSubscriptionStartDate();
-                            String subscriptionEndDate = getUserSubscriptionInfo().getSubscriptionEndDate();
-                            String transId = getUserSubscriptionInfo().getVlTransactionId();
-                            String country = getUserSubscriptionInfo().getCountryCode();
-                            double discountPrice = getUserSubscriptionInfo().getTotalAmount();
+                            if (!isUserLoggedIn())
+                                userStatus = "Anonymous";
+                            if (isUserLoggedIn() && getUserSubscriptionInfo() == null)
+                                userStatus = "Never subscribed";
+                            String subscriptionStartDate = "";
+                            String subscriptionEndDate = "";
+                            String transId = "";
+                            String country = "";
+                            double discountPrice = 0;
+                            String planName = "";
+                            String paymentHandler = "";
+                            String paymentMode = "";
+                            boolean freeTrial = false;
+                            if (getUserSubscriptionInfo() != null) {
+                                subscriptionStartDate = getUserSubscriptionInfo().getSubscriptionStartDate();
+                                subscriptionEndDate = getUserSubscriptionInfo().getSubscriptionEndDate();
+                                transId = getUserSubscriptionInfo().getVlTransactionId();
+                                country = getUserSubscriptionInfo().getCountryCode();
+                                Locale loc = new Locale("", country);
+                                country = loc.getDisplayCountry();
+                                discountPrice = planToPurchaseDiscountedPrice;
+                                planName = getUserSubscriptionInfo().getIdentifier();
+                                paymentHandler = getUserSubscriptionInfo().getPaymentHandler();
+                                if (paymentHandler.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ccavenue_payment_processor))) {
+                                    paymentHandler = currentActivity.getString(R.string.subscription_ccavenue_payment_processor_friendly);
+                                }
+                                freeTrial = getUserSubscriptionInfo().getFreeTrial();
+                                paymentMode = getUserSubscriptionInfo().getBrand();
+                            }
                             double planPrice = planToPurchasePrice;
                             String currency = currencyCode;
-                            String planName = getUserSubscriptionInfo().getIdentifier();
-                            String paymentHandler = getUserSubscriptionInfo().getPaymentHandler();
-                            boolean freeTrial = getUserSubscriptionInfo().getFreeTrial();
-                            String mobile = userIdentity.getPhone().getNumber();
+                            String mobile = "";
+                            if (userIdentity != null && userIdentity.getPhone() != null && userIdentity.getPhone().getNumber() != null)
+                                mobile = userIdentity.getPhone().getNumber();
 
                             cleverTapSDK.sendUserProfile(getLoggedInUser(), getLoggedInUserName(), getLoggedInUserEmail(),
                                     userStatus, subscriptionStartDate, subscriptionEndDate, transId, country, discountPrice,
-                                    planPrice, currency, planName, paymentHandler, freeTrial, mobile);
+                                    planPrice, currency, planName, paymentHandler, freeTrial, mobile, paymentMode,userIdentity.getProvider());
                         } catch (Exception e) {
-                            //
                         }
                     });
 
@@ -21200,6 +20921,8 @@ public class AppCMSPresenter {
             if (useCCAvenue())
                 paymentHandler = "CCAvenue";
             String country = countryCode;
+            Locale loc = new Locale("", country);
+            country = loc.getDisplayCountry();
             double discountPrice = planToPurchaseDiscountedPrice;
             double planPrice = planToPurchasePrice;
             String currency = currencyCode;
@@ -21243,12 +20966,23 @@ public class AppCMSPresenter {
     }
 
     public void sendSearchEvent(String keyword) {
-        if (isCleverTapAvailable)
+        if (isCleverTapAvailable) {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             cleverTapSDK.sendEventSearch(keyword);
+        }
     }
 
     public void sendDownloadCompleteEvent(long downloadId) {
         if (isCleverTapAvailable) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             DownloadVideoRealm videoDownloaded = getVideoDownloadedByDMID(downloadId);
             if (videoDownloaded != null) {
                 ContentDatum contentDatum = videoDownloaded.convertToContentDatum(getLoggedInUser());
@@ -21297,7 +21031,7 @@ public class AppCMSPresenter {
 
     String playSource = "";
 
-    boolean isCleverTapAvailable = false;
+   public boolean isCleverTapAvailable = false;
 
     private void checkCleverTapAvailability() {
         if (getCurrentActivity().getString(R.string.app_cms_clevertap_acc_id) != null &&
@@ -21307,5 +21041,13 @@ public class AppCMSPresenter {
             isCleverTapAvailable = true;
     }
 
+    public String getCurrentVideoStreamingQuality() {
+        return currentVideoStreamingQuality;
+    }
 
+    public void setCurrentVideoStreamingQuality(String currentVideoStreamingQuality) {
+        this.currentVideoStreamingQuality = currentVideoStreamingQuality;
+    }
+
+    String currentVideoStreamingQuality;
 }

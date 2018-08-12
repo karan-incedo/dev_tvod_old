@@ -10,7 +10,6 @@ import android.support.v7.app.MediaRouteDiscoveryFragment;
 import android.support.v7.media.MediaRouteSelector;
 import android.support.v7.media.MediaRouter;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.cast.CastDevice;
@@ -101,28 +100,31 @@ public class CastHelper {
 
 
     private CastHelper(Context mContext) {
-
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(mContext);
-
         mAppContext = mContext.getApplicationContext();
+        try {
+            GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+            int resultCode = apiAvailability.isGooglePlayServicesAvailable(mContext);
 
-        if (resultCode == ConnectionResult.SUCCESS) {
 
-            mCastContext = CastContext.getSharedInstance(mAppContext);
-            mMediaRouteSelector = new MediaRouteSelector.Builder()
-                    .addControlCategory("com.google.android.gms.cast.CATEGORY_CAST")
-                    .build();
-            appName = mAppContext.getResources().getString(R.string.app_name);
-            beaconScreenName = mAppContext.getResources().getString(R.string.app_cms_beacon_casting_screen_name);
-            mMediaRouterCallback = new MyMediaRouterCallback();
-            castCurrentMediaPosition = 0L;
-            setCastDiscovery();
-        }/*else{
+            if (resultCode == ConnectionResult.SUCCESS) {
+
+                mCastContext = CastContext.getSharedInstance(mAppContext);
+                mMediaRouteSelector = new MediaRouteSelector.Builder()
+                        .addControlCategory("com.google.android.gms.cast.CATEGORY_CAST")
+                        .build();
+                appName = mAppContext.getResources().getString(R.string.app_name);
+                beaconScreenName = mAppContext.getResources().getString(R.string.app_cms_beacon_casting_screen_name);
+                mMediaRouterCallback = new MyMediaRouterCallback();
+                castCurrentMediaPosition = 0L;
+                setCastDiscovery();
+            }/*else{
 
             Log.i(TAG, "This device is not supported.");
             Toast.makeText(mContext, "This device is not supported. Please upgrade your play-service", Toast.LENGTH_SHORT).show();
         }*/
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static class OnApplicationEnded {
@@ -386,7 +388,7 @@ public class CastHelper {
     public void launchTrailer(AppCMSPresenter appCMSPresenter, String filmId, AppCMSVideoPageBinder binder, long currentPosition) {
 
         Toast.makeText(mAppContext, mAppContext.getString(R.string.loading_vid_on_casting), Toast.LENGTH_SHORT).show();
-        if(binder == null || binder.getContentData() == null){
+        if (binder == null || binder.getContentData() == null) {
             Toast.makeText(mAppContext, mAppContext.getString(R.string.app_cms_download_stream_info_error_title), Toast.LENGTH_SHORT).show();
             return;
         }
@@ -655,7 +657,7 @@ public class CastHelper {
                     getRemoteMediaClient().removeProgressListener(progressListener);
                 }
 
-                onAppDisConnectCalled =  false;
+                onAppDisConnectCalled = false;
                 if (callBackRemoteListener != null && mActivity != null && mActivity instanceof AppCMSPlayVideoActivity && binderPlayScreen != null && !onAppDisConnectCalled) {
                     onAppDisConnectCalled = true;
                     //if player activity already opened than finish it

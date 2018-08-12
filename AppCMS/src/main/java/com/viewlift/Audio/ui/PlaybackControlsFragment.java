@@ -44,12 +44,14 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.Audio.MusicService;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSPlayAudioActivity;
 
 import java.util.concurrent.Executors;
@@ -84,6 +86,7 @@ public class PlaybackControlsFragment extends Fragment {
     ProgressBar progressBarPlayPause;
     int currentProgess = 0;
     public MediaBrowserCompat mMediaBrowser;
+    AppCMSPresenter appCMSPresenter;
 
     private ScheduledFuture<?> mScheduleFuture;
     // Receive callbacks from the MediaController. Here we update our state such as which queue
@@ -108,6 +111,14 @@ public class PlaybackControlsFragment extends Fragment {
     };
     UpdateDataReceiver serviceReceiver;
     UpdateMetaDataReceiver updateRecevierMeta;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
+                .getAppCMSPresenterComponent()
+                .appCMSPresenter();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -155,10 +166,11 @@ public class PlaybackControlsFragment extends Fragment {
     }
 
     private void connectMediaService() {
-        mMediaBrowser = new MediaBrowserCompat(getActivity(),
-                new ComponentName(getActivity(), MusicService.class), mConnectionCallback, null);
-
         try {
+            mMediaBrowser = new MediaBrowserCompat(getActivity(),
+                    new ComponentName(getActivity(), MusicService.class), mConnectionCallback, null);
+
+
             if (mMediaBrowser != null && !mMediaBrowser.isConnected())
                 mMediaBrowser.connect();
         } catch (IllegalStateException e) {

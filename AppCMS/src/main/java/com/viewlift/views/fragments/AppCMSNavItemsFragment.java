@@ -153,12 +153,16 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 }*/
                 if (appCMSPresenter.getAppCMSMain()
                         .getServiceType()
-                        .equals(getContext().getString(R.string.app_cms_main_svod_service_type_key)) &&
-                        appCMSPresenter.getNavigation() != null &&
-                        appCMSPresenter.getNavigation().getSettings() != null &&
-                        appCMSPresenter.getNavigation().getSettings().getPrimaryCta() != null &&
-                        appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText() != null) {
-                    appCMSNavFreeTrialButton.setText(appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText());
+                        .equals(getContext().getString(R.string.app_cms_main_svod_service_type_key))
+                        ) {
+                    if(appCMSPresenter.getNavigation() != null &&
+                            appCMSPresenter.getNavigation().getSettings() != null &&
+                            appCMSPresenter.getNavigation().getSettings().getPrimaryCta() != null &&
+                            appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText() != null) {
+                        appCMSNavFreeTrialButton.setText(appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText());
+                    }else{
+                        appCMSNavFreeTrialButton.setText(getString(R.string.app_cms_subscribe_now));
+                    }
                 } else {
                     appCMSNavFreeTrialButton.setText(getString(R.string.app_cms_sign_up_pager_title));
                 }

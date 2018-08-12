@@ -8,9 +8,7 @@ import android.os.Build;
 import android.view.ViewGroup;
 
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.views.customviews.ViewCreator;
 
-import java.io.Serializable;
 import java.util.List;
 
 public class StreamingQualitySelectorAdapter extends AppCMSDownloadRadioAdapter<String>  {
@@ -30,19 +28,27 @@ public class StreamingQualitySelectorAdapter extends AppCMSDownloadRadioAdapter<
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         ViewHolder viewHolder = super.onCreateViewHolder(viewGroup, i);
 
-        viewHolder.getmText().setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
+        if (appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) {
+            viewHolder.getmText().setTextColor(appCMSPresenter.getBrandPrimaryCtaColor());
+        }else {
+            viewHolder.getmText().setTextColor(Color.WHITE);
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (viewHolder.getmRadio().getButtonDrawable() != null) {
+                viewHolder.getmRadio().getButtonDrawable().setColorFilter(
+                        appCMSPresenter.getBrandPrimaryCtaColor(),PorterDuff.Mode.MULTIPLY);
+/*
                 viewHolder.getmRadio().getButtonDrawable().setColorFilter(Color.parseColor(
                         ViewCreator.getColor(viewGroup.getContext(),
-                                appCMSPresenter.getAppCtaBackgroundColor())),
-                        PorterDuff.Mode.MULTIPLY);
+                                        appCMSPresenter.getAppCtaBackgroundColor())),
+                        PorterDuff.Mode.MULTIPLY);*/
             }
         } else {
-            int switchOnColor = Color.parseColor(
+            int switchOnColor = appCMSPresenter.getBrandPrimaryCtaColor();
+            /*int switchOnColor = Color.parseColor(
                     ViewCreator.getColor(viewGroup.getContext(),
-                            appCMSPresenter.getAppCtaBackgroundColor()));
+                            appCMSPresenter.getAppCtaBackgroundColor()));*/
             ColorStateList colorStateList = new ColorStateList(
                     new int[][]{
                             new int[]{android.R.attr.state_checked},

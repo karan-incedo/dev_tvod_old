@@ -82,6 +82,16 @@ public class DownloadVideoRealm extends RealmObject {
     String showName;
     String seasonNum;
 
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    String genre;
+
     public String getEpisodeNum() {
         return episodeNum;
     }
@@ -171,10 +181,10 @@ public class DownloadVideoRealm extends RealmObject {
     }
 
 
-
     public String getVideoIdDB() {
         return videoIdDB;
     }
+
     public void setVideoIdDB(String videoIdDB) {
         this.videoIdDB = videoIdDB;
     }
@@ -465,9 +475,11 @@ public class DownloadVideoRealm extends RealmObject {
         gist.setEpisodeNum(getEpisodeNum());
         gist.setShowName(getShowName());
         gist.setSeasonNum(getSeasonNum());
+        gist.setGenre(getGenre());
         return data;
     }
-    public DownloadVideoRealm createCopy(){
+
+    public DownloadVideoRealm createCopy() {
         DownloadVideoRealm downloadVideoRealm = new DownloadVideoRealm();
         downloadVideoRealm.setEpisodeNum(getEpisodeNum());
         downloadVideoRealm.setShowName(getShowName());
@@ -508,6 +520,7 @@ public class DownloadVideoRealm extends RealmObject {
         downloadVideoRealm.setPosterThumbId_DM(getPosterThumbId_DM());
         downloadVideoRealm.setContentType(getContentType());
         downloadVideoRealm.setMediaType(getMediaType());
+        downloadVideoRealm.setGenre(getGenre());
         return downloadVideoRealm;
     }
 }

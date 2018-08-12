@@ -47,6 +47,9 @@ public class DownloadMediaMigration implements RealmMigration {
         if(!realmObjectSchema.hasField("seasonNum")){
             realmObjectSchema.addField("seasonNum",String.class);
         }
+        if(!realmObjectSchema.hasField("genre")){
+            realmObjectSchema.addField("genre",String.class);
+        }
 
         if(!realmObjectSchema.hasField("transactionEndDate")){
             realmObjectSchema.addField("transactionEndDate",long.class);

@@ -1175,5 +1175,15 @@ public class Gist implements Serializable {
     }
 
     List<Map<String,AppCMSTransactionDataValue>> objTransactionDataValue;
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    String genre;
 }
 

@@ -123,4 +123,12 @@
             android:focusable="false" />
 
     </RelativeLayout>
+
+    <com.viewlift.views.customviews.PlayerSettingsView
+        android:id="@+id/playerSettingView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#2d000000"
+        android:visibility="gone"/>
+
 </RelativeLayout>
