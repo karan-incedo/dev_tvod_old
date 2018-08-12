@@ -967,6 +967,14 @@ public class CollectionGridItemView extends BaseView {
 
                     String userId = appCMSPresenter.getLoggedInUser();
 
+                    if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_MYLIBRARY_01_MODULE_KEY){
+                        if(data.getGist().getPurchaseType().equalsIgnoreCase("PURCHASE") || data.getGist().getScheduleEndDate()>0){
+                            ((ImageButton) view).setVisibility(View.GONE);
+
+                        }
+
+                    }
+
                     if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
                         ((ImageButton) view).setImageResource(R.drawable.ic_downloaded_big);
                     } else {
@@ -1001,7 +1009,7 @@ public class CollectionGridItemView extends BaseView {
                         }
                     }
 
-                    if(data.getGist().getContentType().equalsIgnoreCase(getResources().getString(R.string.season))){
+                    if(data.getGist()!=null && data.getGist().getContentType()!=null && data.getGist().getContentType().equalsIgnoreCase(getResources().getString(R.string.season))){
                         ((ImageButton) view).setVisibility(View.GONE);
                     }
                 } /*else if (componentKey == AppCMSUIKeyType.PAGE_AUDIO_DOWNLOAD_BUTTON_KEY) {
@@ -1626,7 +1634,19 @@ public class CollectionGridItemView extends BaseView {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    ((TextView) view).setVisibility(View.VISIBLE);
+
+                    if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_MYLIBRARY_01_MODULE_KEY){
+                        if(data.getGist().getContentType().equalsIgnoreCase(getResources().getString(R.string.season))){
+                            ((TextView) view).setVisibility(View.VISIBLE);
+                        }else{
+                            ((TextView) view).setVisibility(View.GONE);
+
+                        }
+
+                    }else{
+                        ((TextView) view).setVisibility(View.VISIBLE);
+
+                    }
                 }else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_FEATURE_TEXT_KEY) {
                     if (data != null && data.getPlanDetails() != null && data.getPlanDetails().get(0) != null &&
                             data.getPlanDetails().get(0).getFeatureDetails() != null &&

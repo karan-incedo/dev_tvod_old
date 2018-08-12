@@ -813,36 +813,70 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                 } else {
 
                                     if (isLibraryPage) {
-                                        appCMSPresenter.getRentalData(data.getGist().getId(), updatedContentDatum -> {
 
-                                            boolean isPlayable = false;
+                                        int finalCurrentPlayingIndex = currentPlayingIndex;
+                                        List<String> finalRelatedVideoIds = relatedVideoIds;
+                                        String finalAction = action;
 
-                                            /**
-                                             * get the transaction end date and compare with current time if end date is less than current date
-                                             * playable will be false
-                                             */
-                                            long expirationDate = data.getGist().getrentPerioedendDate();
-                                            long remainingTime = appCMSPresenter.getTimeIntervalForEvent(expirationDate, "EEE MMM dd HH:mm:ss");
+                                        if(data.getGist().getPurchaseType().equalsIgnoreCase("RENT") || data.getGist().getScheduleEndDate()==0) {
 
-                                            if (remainingTime < 0) {
-                                                isPlayable = false;
-                                            }
-                                            if (!isPlayable) {
-                                                appCMSPresenter.showNoPurchaseDialog(appCMSPresenter.getCurrentContext().getString(R.string.rental_title), appCMSPresenter.getCurrentContext().getString(R.string.rental_description));
-                                                return;
-                                            }
-                                        }, null, false);
+                                            appCMSPresenter.getTransactionData(data.getGist().getId(), updatedContentDatum -> {
+
+
+                                                if (updatedContentDatum != null &&
+                                                        updatedContentDatum.size() > 0 &&
+                                                        updatedContentDatum.get(0).size() > 0) {
+
+                                                }
+                                                appCMSPresenter.showRentTimeDialog(retry -> {
+                                                    if (retry) {
+                                                        appCMSPresenter.getRentalData(moduleAPI.getContentData().get(0).getGist().getId(), getRentalData -> {
+                                                            appCMSPresenter.launchVideoPlayer(data,
+                                                                    data.getGist().getId(),
+                                                                    finalCurrentPlayingIndex,
+                                                                    finalRelatedVideoIds,
+                                                                    -1,
+                                                                    finalAction);
+                                                        }, null, false);
+                                                    } else {
+//                                                appCMSPresenter.sendCloseOthersAction(null, true, false);
+                                                    }
+                                                }, "x");
+
+                                            }, null, false);
+                                        }
+
+//                                        appCMSPresenter.getRentalData(data.getGist().getId(), updatedContentDatum -> {
+//
+//                                            boolean isPlayable = false;
+//
+//                                            /**
+//                                             * get the transaction end date and compare with current time if end date is less than current date
+//                                             * playable will be false
+//                                             */
+//                                            long expirationDate = data.getGist().getrentPerioedendDate();
+//                                            long remainingTime = appCMSPresenter.getTimeIntervalForEvent(expirationDate, "EEE MMM dd HH:mm:ss");
+//
+//                                            if (remainingTime < 0) {
+//                                                isPlayable = false;
+//                                            }
+//                                            if (!isPlayable) {
+//                                                appCMSPresenter.showNoPurchaseDialog(appCMSPresenter.getCurrentContext().getString(R.string.rental_title), appCMSPresenter.getCurrentContext().getString(R.string.rental_description));
+//                                                return;
+//                                            }
+//                                        }, null, false);
+                                    }else {
+                                        /*play movie from web URL*/
+                                        appCMSPresenter.launchVideoPlayer(data,
+                                                data.getGist().getId(),
+                                                currentPlayingIndex,
+                                                relatedVideoIds,
+                                                -1,
+                                                action);
                                     }
-                                    /*play movie from web URL*/
-                                    appCMSPresenter.launchVideoPlayer(data,
-                                            data.getGist().getId(),
-                                            currentPlayingIndex,
-                                            relatedVideoIds,
-                                            -1,
-                                            action);
                                 }
                             }
-                            if (action != null && !TextUtils.isEmpty(action)) {
+                            else if (action != null && !TextUtils.isEmpty(action)) {
 
                                 if (isDonwloadPage && action.contains(trayAction)) {
                                     if (data.getGist() != null &&

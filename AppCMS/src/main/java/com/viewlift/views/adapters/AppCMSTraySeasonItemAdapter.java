@@ -74,7 +74,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         Collections.reverse(seasonList);
         this.adapterData = seasonList.get(0).getEpisodes();
         this.sortData();
-        this.mContext=context;
+        this.mContext = context;
         this.seriesName = moduleAPI.getContentData().get(0).getGist().getTitle();
         this.components = components;
         this.allEpisodeIds = allEpisodeIds;
@@ -268,60 +268,82 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                              * if pricing type is TVOD than first call rental API and check video end date
                              * if video end date is greater than current date than play video else show message
                              */
-                            if (data!=null)
-//                                    (data.getPricing() != null &&
-//                                    data.getPricing().getType() != null &&
+                            if (data != null &&
+                                    data.getPricing() != null &&
+                                    data.getPricing().getType() != null)
 //                                    data.getPricing().getType().equalsIgnoreCase("TVOD")))
                             {
                                 int finalCurrentPlayingIndex = currentPlayingIndex;
                                 List<String> finalRelatedVideoIds = relatedVideoIds;
                                 String finalAction = action;
-                                appCMSPresenter.getRentalData(data.getId(), updatedContentDatum -> {
-                                    boolean isPlayable = false;
+                                appCMSPresenter.getTransactionData(data.getId(), updatedContentDatum -> {
+                                    boolean isPlayable = true;
 
-                                    if(updatedContentDatum==null){
-                                        isPlayable=true;
+
+                                    if (updatedContentDatum != null &&
+                                            updatedContentDatum.size() > 0) {
+                                        if (updatedContentDatum.get(0).size() == 0) {
+                                            isPlayable = false;
+                                        }
                                     }
+//                                    if(updatedContentDatum==null){
+//                                        isPlayable=true;
+//                                    }
                                     if (!isPlayable) {
                                         appCMSPresenter.showNoPurchaseDialog(mContext.getString(R.string.rental_title), mContext.getString(R.string.rental_description));
 
                                     } else {
-                                        if (data.getGist() == null ||
-                                                data.getGist().getContentType() == null) {
-                                            if (!appCMSPresenter.launchVideoPlayer(data,
-                                                    data.getGist().getId(),
-                                                    finalCurrentPlayingIndex,
-                                                    relatedVideoIds,
-                                                    -1,
-                                                    finalAction)) {
-                                                //Log.e(TAG, "Could not launch action: " +
-                                                //                                                " permalink: " +
-                                                //                                                permalink +
-                                                //                                                " action: " +
-                                                //                                                action);
-                                            }
-                                        } else {
-                                            if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                                    finalAction,
-                                                    title,
-                                                    null,
-                                                    data,
-                                                    false,
-                                                    finalCurrentPlayingIndex,
-                                                    relatedVideoIds)) {
-                                                //Log.e(TAG, "Could not launch action: " +
-                                                //                                                " permalink: " +
-                                                //                                                permalink +
-                                                //                                                " action: " +
-                                                //                                                action);
-                                            }
+
+                                        String rentalPeriod="";
+                                        if (data.getPricing().getRent() != null &&
+                                                data.getPricing().getRent().getRentalPeriod() != null) {
+                                            rentalPeriod=data.getPricing().getRent().getRentalPeriod();
                                         }
+                                        appCMSPresenter.showRentTimeDialog(retry -> {
+                                            if (retry) {
+                                                appCMSPresenter.getRentalData(data.getGist().getId(), rentalResponse -> {
+
+                                                    if (data.getGist() == null ||
+                                                            data.getGist().getContentType() == null) {
+                                                        if (!appCMSPresenter.launchVideoPlayer(data,
+                                                                data.getGist().getId(),
+                                                                finalCurrentPlayingIndex,
+                                                                relatedVideoIds,
+                                                                -1,
+                                                                finalAction)) {
+                                                            //Log.e(TAG, "Could not launch action: " +
+                                                            //                                                " permalink: " +
+                                                            //                                                permalink +
+                                                            //                                                " action: " +
+                                                            //                                                action);
+                                                        }
+                                                    } else {
+                                                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                                                finalAction,
+                                                                title,
+                                                                null,
+                                                                data,
+                                                                false,
+                                                                finalCurrentPlayingIndex,
+                                                                relatedVideoIds)) {
+                                                            //Log.e(TAG, "Could not launch action: " +
+                                                            //                                                " permalink: " +
+                                                            //                                                permalink +
+                                                            //                                                " action: " +
+                                                            //                                                action);
+                                                        }
+                                                    }
+                                                    System.out.println("response ");
+                                                }, null, false);
+                                            } else {
+//                                                appCMSPresenter.sendCloseOthersAction(null, true, false);
+                                            }
+                                        }, rentalPeriod);
+
                                     }
                                     System.out.println("response ");
                                 }, null, false);
-                            }
-
-                           else if (data.getGist() == null ||
+                            } else if (data.getGist() == null ||
                                     data.getGist().getContentType() == null) {
                                 if (!appCMSPresenter.launchVideoPlayer(data,
                                         data.getGist().getId(),
@@ -461,9 +483,10 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     }
 
 
-    public void launchVideoPLayer(){
+    public void launchVideoPLayer() {
 
     }
+
     @Override
     public void resetData(RecyclerView listView) {
         //

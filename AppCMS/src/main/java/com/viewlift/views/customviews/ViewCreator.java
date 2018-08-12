@@ -76,6 +76,7 @@ import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.AppCMSTransactionDataValue;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Fights;
@@ -116,13 +117,16 @@ import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.customviews.plans.SubscriptionMetaDataView;
 import com.viewlift.views.customviews.plans.ViewPlansMetaDataView;
 import com.viewlift.views.customviews.season.SeasonModule;
+import com.viewlift.views.fragments.AppCMSNoPurchaseFragment;
 import com.viewlift.views.utilities.ImageLoader;
 import com.viewlift.views.utilities.ImageUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import rx.Observable;
 import rx.functions.Action1;
 
 import static android.view.ViewGroup.FOCUS_BEFORE_DESCENDANTS;
@@ -3545,8 +3549,9 @@ public class ViewCreator {
                         moduleAPI.getContentData().get(0).getPricing() != null &&
                         moduleAPI.getContentData().get(0).getGist() != null &&
                         moduleAPI.getContentData().get(0).getGist().getScheduleStartDate() > 0 &&
-                        moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue()!=null &&
-                        moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().size()>0
+                        moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue() != null &&
+                        moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().size() > 0 &&
+                        moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().get(0).size() > 0
                         ) {
                     componentViewResult.componentView = new LinearLayout(context);
                     ((LinearLayout) componentViewResult.componentView).setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -4164,15 +4169,43 @@ public class ViewCreator {
                             componentViewResult.componentView.setTag(moduleAPI.getContentData().get(0).getGist().getId());
 
                             /**
-                             * if transaction type is PPV than hide download option
+                             * if video is not purchased then hide download option
                              */
+
 
                             if ((moduleAPI.getContentData().get(0).getPricing() != null &&
                                     moduleAPI.getContentData().get(0).getPricing().getType() != null &&
-                                    moduleAPI.getContentData().get(0).getPricing().getType().equalsIgnoreCase("PPV"))) {
-                                componentViewResult.componentView.setVisibility(View.GONE);
+                                    (moduleAPI.getContentData().get(0).getPricing().getType().equalsIgnoreCase("TVOD") || moduleAPI.getContentData().get(0).getPricing().getType().equalsIgnoreCase("PPV")))) {
 
-                                return;
+                                //if transaction data from getAPI() is empty then hide download button
+
+                                if (moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue() != null &&
+                                        moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().size() > 0) {
+                                    if (moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().get(0).size() == 0) {
+                                        AppCMSTransactionDataValue obj=moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().get(0).get(moduleAPI.getContentData().get(0).getGist().getId());
+                                        System.out.println("Rental value"+obj.getRentalPeriod());
+                                        componentViewResult.componentView.setVisibility(View.GONE);
+                                        break;
+//
+                                    }
+                                }
+
+                                /**
+                                 * if schedule start date is not 0 and greater than current time hide download button as video is not started
+                                 */
+                                if ((moduleAPI.getContentData().get(0).getGist().getScheduleStartDate()) > 0) {
+                                    long eventDate = (moduleAPI.getContentData().get(0).getGist().getScheduleStartDate());
+                                    //calculate remaining time from event date and current date
+                                    long remainingTime = appCMSPresenter.getTimeIntervalForEvent(eventDate, "YYYY MMM dd HH:mm:ss");
+                                    if (remainingTime > 0) {
+                                        componentViewResult.componentView.setVisibility(View.GONE);
+                                        break;
+
+                                    }
+
+                                }
+
+
                             }
 
                             if (appCMSPresenter.isDownloadEnable()) {
@@ -4326,11 +4359,14 @@ public class ViewCreator {
                                 (moduleAPI.getContentData().get(0).getPricing().getType().equalsIgnoreCase("TVOD") || moduleAPI.getContentData().get(0).getPricing().getType().equalsIgnoreCase("PPV")))) {
 
 
-                                if(moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue()!=null &&
-                                        moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().size()>0) {
-                                    if(moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().get(0).size()==0){
+                            if (moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue() != null &&
+                                    moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().size() > 0) {
+                                if (moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().get(0).size() == 0) {
 
-                                        componentViewResult.componentView.setVisibility(View.GONE);
+//                                    AppCMSTransactionDataValue obj=moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().get(0).get(moduleAPI.getContentData().get(0).getGist().getId());
+//                                    System.out.println("Rental value"+obj.getRentalPeriod());
+
+                                    componentViewResult.componentView.setVisibility(View.GONE);
 //                                        final Handler handler = new Handler();
 //                                        handler.postDelayed(new Runnable() {
 //                                            @Override
@@ -4339,13 +4375,20 @@ public class ViewCreator {
 //                                            }
 //                                        }, 500);
 
+//                                        Observable.just("One").delay(500, TimeUnit.MILLISECONDS).subscribe(appCMSPresenter.displayDialog);
+
+
+                                    if (!moduleAPI.getContentData().get(0).getGist().isRentedDialogShownAlready())
+                                    {
                                         appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
                                                 final Handler handler = new Handler();
+                                                handler.getLooper();
                                                 handler.postDelayed(new Runnable() {
                                                     @Override
                                                     public void run() {
+                                                        moduleAPI.getContentData().get(0).getGist().setRentedDialogShow(true);
                                                         appCMSPresenter.showNoPurchaseDialog(context.getString(R.string.rental_title), context.getString(R.string.rental_description));
                                                     }
                                                 }, 500);
@@ -4353,6 +4396,7 @@ public class ViewCreator {
                                         });
                                     }
                                 }
+                            }
 
                         }
 
@@ -4397,31 +4441,33 @@ public class ViewCreator {
                                         List<String> finalRelatedVideoIds = relatedVideoIds;
 
 
+                                        int finalCurrentPlayingIndex1 = currentPlayingIndex;
+                                        List<String> finalRelatedVideoIds1 = relatedVideoIds;
+                                        System.out.println("rental period- " + moduleAPI.getContentData().get(0).getPricing().getRent().getRentalPeriod());
 
-                                        appCMSPresenter.getRentalData(moduleAPI.getContentData().get(0).getGist().getId(), updatedContentDatum -> {
-                                            boolean isPlayable = false;
+                                        String rentalPeriod = "";
+                                        if (moduleAPI.getContentData().get(0).getPricing().getRent() != null &&
+                                                moduleAPI.getContentData().get(0).getPricing().getRent().getRentalPeriod() != null) {
+                                            rentalPeriod = moduleAPI.getContentData().get(0).getPricing().getRent().getRentalPeriod();
+                                        }
+                                        appCMSPresenter.showRentTimeDialog(retry -> {
+                                            if (retry) {
+                                                appCMSPresenter.getRentalData(moduleAPI.getContentData().get(0).getGist().getId(), updatedContentDatum -> {
+                                                    boolean isPlayable = false;
 
-                                            /**
-                                             * get the transaction end date and compare with current time if end date is less than current date
-                                             * playable will be false
-                                             */
-                                            long expirationDate = moduleAPI.getContentData().get(0).getGist().getrentPerioedendDate();
-                                            long remainingTime = appCMSPresenter.getTimeIntervalForEvent(expirationDate, "EEE MMM dd HH:mm:ss");
-
-                                            if(remainingTime<0){
-                                                isPlayable=false;
-                                            }
-                                            if (!isPlayable) {
-                                                appCMSPresenter.showNoPurchaseDialog(context.getString(R.string.rental_title), context.getString(R.string.rental_description));
+                                                    appCMSPresenter.launchVideoPlayer(moduleAPI.getContentData().get(0),
+                                                            moduleAPI.getContentData().get(0).getGist().getId(),
+                                                            finalCurrentPlayingIndex1, finalRelatedVideoIds1,
+                                                            moduleAPI.getContentData().get(0).getGist().getWatchedTime(),
+                                                            component.getAction());
+                                                    System.out.println("response ");
+                                                }, null, false);
                                             } else {
-                                                appCMSPresenter.launchVideoPlayer(moduleAPI.getContentData().get(0),
-                                                        moduleAPI.getContentData().get(0).getGist().getId(),
-                                                        finalCurrentPlayingIndex, finalRelatedVideoIds,
-                                                        moduleAPI.getContentData().get(0).getGist().getWatchedTime(),
-                                                        component.getAction());
+//                                                appCMSPresenter.sendCloseOthersAction(null, true, false);
                                             }
-                                            System.out.println("response ");
-                                        }, null, false);
+                                        }, rentalPeriod);
+
+
                                     } else {
 
                                         appCMSPresenter.launchVideoPlayer(moduleAPI.getContentData().get(0),
@@ -7712,24 +7758,46 @@ public class ViewCreator {
                             null);
                     return;
                 }
+
+//                contentDatum.getGist().setRentalPeriod(48);
+//                contentDatum.getGist().setTransactionEndDate(1534247577000L);
                 if ((contentDatum.getPricing() != null &&
                         contentDatum.getPricing().getType() != null &&
-                        contentDatum.getPricing().getType().equalsIgnoreCase("TVOD"))) {
+                        contentDatum.getPricing().getType().equalsIgnoreCase("TVOD")) ||
+                        (contentDatum.getGist()!=null && contentDatum.getGist().getPurchaseType().equalsIgnoreCase("Rent"))) {
+                    contentDatum.setTvodPricing(true);
 
-                    appCMSPresenter.getRentalData(contentDatum.getGist().getId(), updatedContentDatum -> {
+                    appCMSPresenter.getTransactionData(contentDatum.getGist().getId(), updatedContentDatum -> {
 
                         boolean isPlayable = false;
+
+
+                        if (updatedContentDatum != null &&
+                                updatedContentDatum.size() > 0 &&
+                                updatedContentDatum.get(0).size() > 0) {
+                            AppCMSTransactionDataValue objTransactionData=updatedContentDatum.get(0).get(contentDatum.getGist().getId());
+                            contentDatum.getGist().setRentalPeriod(objTransactionData.getRentalPeriod());
+                            contentDatum.getGist().setTransactionEndDate(objTransactionData.getTransactionEndDate());
+
+//                            contentDatum.getGist().setRentalPeriod(48);
+//                            contentDatum.getGist().setTransactionEndDate(1534247577000L);
+//                            contentDatum.getGist().setTransactionStartDate(objTransactionData.getTransactionStartDate());
+
+//                                    System.out.println("Rental value"+obj.getRentalPeriod());
+
+                        }
 
                         /**
                          * get the transaction end date and compare with current time if end date is less than current date
                          * playable will be false
                          */
-                        long expirationDate = contentDatum.getGist().getrentPerioedendDate();
+                        long expirationDate = contentDatum.getGist().getTransactionEndDate();
                         long remainingTime = appCMSPresenter.getTimeIntervalForEvent(expirationDate, "EEE MMM dd HH:mm:ss");
 
-                        if(remainingTime<0){
-                            isPlayable=false;
+                        if (remainingTime < 0) {
+                            isPlayable = false;
                         }
+                        isPlayable=true;
                         if (!isPlayable) {
                             appCMSPresenter.showNoPurchaseDialog(appCMSPresenter.getCurrentContext().getString(R.string.rental_title), appCMSPresenter.getCurrentContext().getString(R.string.rental_description));
 
@@ -7738,6 +7806,29 @@ public class ViewCreator {
 
                         }
                     }, null, false);
+
+//                    appCMSPresenter.getRentalData(contentDatum.getGist().getId(), updatedContentDatum -> {
+//
+//                        boolean isPlayable = false;
+//
+//                        /**
+//                         * get the transaction end date and compare with current time if end date is less than current date
+//                         * playable will be false
+//                         */
+//                        long expirationDate = contentDatum.getGist().getrentPerioedendDate();
+//                        long remainingTime = appCMSPresenter.getTimeIntervalForEvent(expirationDate, "EEE MMM dd HH:mm:ss");
+//
+//                        if (remainingTime < 0) {
+//                            isPlayable = false;
+//                        }
+//                        if (!isPlayable) {
+//                            appCMSPresenter.showNoPurchaseDialog(appCMSPresenter.getCurrentContext().getString(R.string.rental_title), appCMSPresenter.getCurrentContext().getString(R.string.rental_description));
+//
+//                        } else {
+//                            updateForDownload(contentDatum, appCMSPresenter, imageButton, this, addClickListener);
+//
+//                        }
+//                    }, null, false);
                 } else {
                     updateForDownload(contentDatum, appCMSPresenter, imageButton, this, addClickListener);
 
@@ -7853,7 +7944,7 @@ public class ViewCreator {
     }
 
     public static void updateForDownload(ContentDatum contentDatum, AppCMSPresenter appCMSPresenter, ImageButton imageButton, UpdateDownloadImageIconAction updateDownloadImageIconAction, View.OnClickListener addClickListener) {
-        if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
+        if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) || contentDatum.isTvodPricing() ||
                 !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
             imageButton.setOnClickListener(null);
             /**

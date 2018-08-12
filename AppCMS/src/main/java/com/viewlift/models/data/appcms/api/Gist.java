@@ -61,6 +61,17 @@ public class Gist implements Serializable {
     @Expose
     private long transactionEndDate;
 
+    public long getRentStartTime() {
+        return rentStartTime;
+    }
+
+    public void setRentStartTime(long rentStartTime) {
+        this.rentStartTime = rentStartTime;
+    }
+
+    private long rentStartTime;
+
+
     public String getTransactionType() {
         return transactionType;
     }
@@ -608,6 +619,28 @@ public class Gist implements Serializable {
     @Expose
     Pricing pricing;
 
+    public float getRentalPeriod() {
+        return rentalPeriod;
+    }
+
+    public void setRentalPeriod(float rentalPeriod) {
+        this.rentalPeriod = rentalPeriod;
+    }
+
+    float rentalPeriod;
+
+
+    public boolean isRentedDialogShownAlready() {
+        return isRentedDialogShownAlready;
+    }
+
+    public void setRentedDialogShow(boolean rentedDialogShow) {
+        isRentedDialogShownAlready = rentedDialogShow;
+    }
+
+    boolean isRentedDialogShownAlready;
+
+
     public String getSeasonTitle() {
         return seasonTitle;
     }
@@ -637,13 +670,6 @@ public class Gist implements Serializable {
     long currentPlayingPosition;
     Boolean isCastingConnected;
 
-    public long getrentPerioedendDate() {
-        return rentPerioedendDate;
-    }
-
-    public void setrentPerioedendDate(long endDate) {
-        this.rentPerioedendDate = endDate;
-    }
 
     public String getSubscriptionType() {
         return subscriptionType;
@@ -653,7 +679,6 @@ public class Gist implements Serializable {
         this.subscriptionType = subscriptionType;
     }
 
-    long rentPerioedendDate;
     String subscriptionType;
 
 

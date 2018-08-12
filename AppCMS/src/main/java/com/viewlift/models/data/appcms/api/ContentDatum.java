@@ -161,6 +161,17 @@ public class ContentDatum implements Serializable {
     @Expose
     Pricing pricing;
 
+    public boolean isTvodPricing() {
+        return isTvodPricing;
+    }
+
+    public void setTvodPricing(boolean tvodPricing) {
+        isTvodPricing = tvodPricing;
+    }
+
+    boolean isTvodPricing;
+
+
     Players players;
 
     private AppCMSSignedURLResult appCMSSignedURLResult;

@@ -46,6 +46,7 @@ import butterknife.ButterKnife;
 
 public class AppCMSNoPurchaseFragment extends DialogFragment {
     private static final String TAG = "MoreFragment";
+    public static boolean isVisible=false;
 
     public static AppCMSNoPurchaseFragment newInstance(Context context, String title, String moreText) {
         AppCMSNoPurchaseFragment fragment = new AppCMSNoPurchaseFragment();
@@ -61,8 +62,8 @@ public class AppCMSNoPurchaseFragment extends DialogFragment {
 
 
 
-    @BindView(R.id.app_cms_container_layout_parent)
-    ImageView app_cms_container_layout_parent;
+//    @BindView(R.id.app_cms_container_layout_parent)
+//    ImageView app_cms_container_layout_parent;
 
     @BindView(R.id.app_cms_more_text)
     TextView appCMSMoreText;
@@ -92,7 +93,7 @@ public class AppCMSNoPurchaseFragment extends DialogFragment {
 
         app_cms_back_to_desc.setBackgroundColor(appCMSPresenter.getBrandPrimaryCtaColor());
         app_cms_back_to_desc.setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
-
+        isVisible=true;
         String textColor = "#ffffffff";
         try {
             textColor = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor();
@@ -100,14 +101,7 @@ public class AppCMSNoPurchaseFragment extends DialogFragment {
             //Log.e(TAG, "Could not retrieve text color from AppCMS Brand: " + e.getMessage());
         }
 
-//        appCMSCloseButton.setOnClickListener((v) -> {
-//            dismiss();
-//            if (appCMSPresenter != null) {
-//                appCMSPresenter.popActionInternalEvents();
-//                appCMSPresenter.setNavItemToCurrentAction(getActivity());
-//                appCMSPresenter.showMainFragmentView(true);
-//            }
-//        });
+
 
         app_cms_back_to_desc.setOnClickListener((v) -> {
             dismiss();
@@ -115,6 +109,7 @@ public class AppCMSNoPurchaseFragment extends DialogFragment {
                 appCMSPresenter.popActionInternalEvents();
                 appCMSPresenter.setNavItemToCurrentAction(getActivity());
                 appCMSPresenter.showMainFragmentView(true);
+                isVisible=false;
             }
         });
 
@@ -146,13 +141,14 @@ public class AppCMSNoPurchaseFragment extends DialogFragment {
         }
         WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
 
-        app_cms_container_layout_parent.setAlpha(0.96f);
-        final Activity activity = getActivity();
-        final View content = activity.findViewById(android.R.id.content).getRootView();
-        if (app_cms_container_layout_parent.getWidth() > 0 && app_cms_container_layout_parent.getHeight()>0) {
-            Bitmap image = new BlurBuilder().blur(app_cms_container_layout_parent);
-            app_cms_container_layout_parent.setBackgroundDrawable(new BitmapDrawable(activity.getResources(), image));
-        } /*else {
+//        app_cms_container_layout_parent.setAlpha(0.96f);
+//        final Activity activity = getActivity();
+//        final View content = activity.findViewById(android.R.id.content).getRootView();
+//        if (app_cms_container_layout_parent.getWidth() > 0 && app_cms_container_layout_parent.getHeight()>0) {
+//            Bitmap image = new BlurBuilder().blur(app_cms_container_layout_parent);
+//            app_cms_container_layout_parent.setBackgroundDrawable(new BitmapDrawable(activity.getResources(), image));
+//        }
+        /*else {
             content.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
@@ -169,6 +165,12 @@ public class AppCMSNoPurchaseFragment extends DialogFragment {
     public void onStart() {
         super.onStart();
         setWindow();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+//        dismiss();
     }
 
     @Override
@@ -192,28 +194,22 @@ public class AppCMSNoPurchaseFragment extends DialogFragment {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+//        isVisible=false;
+    }
+
     private void setWindow() {
         Dialog dialog = getDialog();
         if (dialog != null) {
-//            int width = ViewGroup.LayoutParams.MATCH_PARENT;
-//            int height = dpToPx(400);//ViewGroup.LayoutParams.MATCH_PARENT;
+            int width = ViewGroup.LayoutParams.MATCH_PARENT;
+            int height = ViewGroup.LayoutParams.MATCH_PARENT;
             Window window = dialog.getWindow();
-//            window.setLayout(width, height);
-            window.setGravity(Gravity.BOTTOM);
-            WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
-            params.gravity = Gravity.CENTER;
-            params.y = 150;
-//            params.verticalMargin=200;
-            dialog.getWindow().setAttributes(params);
-            Context context = dialog.getContext();
-
-            Point displaySize = getDisplayDimensions(context);
-            int width = displaySize.x - 0 - 0;
-            int height = displaySize.y - 150 - 0;
             window.setLayout(width, height);
+
+            window.setGravity(Gravity.START);
         }
-
-
     }
 
     @NonNull

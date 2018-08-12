@@ -7,15 +7,15 @@ import com.vimeo.stag.UseStag;
 import java.io.Serializable;
 
 @UseStag
-public class rent implements Serializable {
+public class    rent implements Serializable {
 
     @SerializedName("sd")
     @Expose
-    String sd;
+    float sd;
 
     @SerializedName("hd")
     @Expose
-    String hd;
+    float hd;
 
     @SerializedName("uhd")
     @Expose
@@ -25,19 +25,19 @@ public class rent implements Serializable {
     @Expose
     String rentalPeriod;
 
-    public String getSd() {
+    public float getSd() {
         return sd;
     }
 
-    public void setSd(String sd) {
+    public void setSd(float sd) {
         this.sd = sd;
     }
 
-    public String getHd() {
+    public float getHd() {
         return hd;
     }
 
-    public void setHd(String hd) {
+    public void setHd(float hd) {
         this.hd = hd;
     }
 

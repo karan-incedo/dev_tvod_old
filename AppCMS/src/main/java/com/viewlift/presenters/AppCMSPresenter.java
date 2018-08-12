@@ -2062,6 +2062,10 @@ public class AppCMSPresenter {
                         try {
                             for (DownloadVideoRealm downloadVideoRealm : realmController.getAllUnSyncedWithServer(getLoggedInUser())) {
                                 updateWatchedTime(downloadVideoRealm.getVideoId(), downloadVideoRealm.getWatchedTime());
+                                //sync start time of videos to server which dont have transaction end date
+                                getRentalData(downloadVideoRealm.getVideoId(), updatedContentDatum -> {
+                                    downloadVideoRealm.setRentStartTimeUpdated(true);
+                                }, null, false);
                             }
                         } catch (NullPointerException e) {
                             e.printStackTrace();
@@ -2141,6 +2145,24 @@ public class AppCMSPresenter {
         }
     }
 
+    public void updateVideoStartTime(String id){
+        {
+                currentActivity.runOnUiThread(() -> {
+                    try {
+                        // copyFromRealm is used to get an unmanaged in-memory copy of an already
+                        // persisted RealmObject
+                        DownloadVideoRealm downloadedVideo = realmController.getRealm()
+                                .copyFromRealm(realmController.getDownloadById(id));
+                        downloadedVideo.setRentStartWatchTime(System.currentTimeMillis());
+
+                        realmController.updateDownload(downloadedVideo);
+                    } catch (Exception e) {
+                        //Log.e(TAG, "Film " + filmId + " has not been downloaded");
+                    }
+                });
+
+        }
+    }
     /**
      * This will retrieve the current user watch history and store the data into a hashmap
      * to be used as a cache for future requests to display the user's current watched history.
@@ -2985,6 +3007,7 @@ public class AppCMSPresenter {
                                                                 getTransactionData(appCMSPageAPI.getModules().get(i).getContentData().get(0).getGist().getId(), updatedContentDatum -> {
 
                                                                     appCMSPageAPI.getModules().get(position).getContentData().get(0).getGist().setObjTransactionDataValue(updatedContentDatum);
+                                                                    appCMSPageAPI.getModules().get(position).getContentData().get(0).getGist().setRentedDialogShow(false);
                                                                     launchNavigationPageWithBundleData(appCMSPageAPIAction,appCMSPageAPI,screenType,screenName);
                                                                 }, null, false);
                                                             }else{
@@ -5941,13 +5964,14 @@ public class AppCMSPresenter {
             downloadVideoRealm.setWatchedTime(contentDatum.getGist().getWatchedTime());
             downloadVideoRealm.setContentType(contentDatum.getGist().getContentType());
             downloadVideoRealm.setMediaType(contentDatum.getGist().getMediaType());
-            downloadVideoRealm.setExpirationTime(1535816891000L);
-
+//            downloadVideoRealm.setTransactionEndDate(1535816891000L);
+            downloadVideoRealm.setRentStartWatchTime(0l);
+            downloadVideoRealm.setRentStartTimeUpdated(false);
             if (contentDatum.getGist().getTransactionEndDate() > 0) {
-                downloadVideoRealm.setExpirationTime(contentDatum.getGist().getTransactionEndDate());
+                downloadVideoRealm.setTransactionEndDate(contentDatum.getGist().getTransactionEndDate());
 
             } else if (contentDatum.getGist().getTransactionDateEpoch() > 0) {
-                downloadVideoRealm.setExpirationTime(contentDatum.getGist().getTransactionDateEpoch());
+                downloadVideoRealm.setTransactionEndDate(contentDatum.getGist().getTransactionDateEpoch());
 
             }
 
@@ -6897,19 +6921,39 @@ public class AppCMSPresenter {
                 /**
                  * remove downloaded items which are expired
                  */
-//                for (int i = 0; i < contentDataFilter.size(); i++) {
-//
-//                    int position = i;
-//                    long expirationDate = contentDataFilter.get(i).getGist().getrentPerioedendDate();
-//                    long remainingTime = getTimeIntervalForEvent(expirationDate, "EEE MMM dd HH:mm:ss");
-//                    if (expirationDate > 0 && remainingTime > 0) {
-//                        removeDownloadedFile(contentDataFilter.get(i).getGist().getId(),
-//                                userVideoDownloadStatus -> {
-//                                });
-//                        contentData.remove(0);
-//
-//                    }
-//                }
+                for (int i = 0; i < contentDataFilter.size(); i++) {
+
+                    int position = i;
+                    float rentalPeriod=0;
+                    long expirationDate=0;
+                    long stratTime=0;
+
+
+                    /**
+                     * check for downloaded TVOD contents.IF any downloaded content has transaction end date then compare its end date with current date.
+                     * If transaction end date is 0 then compare start time with addition to rental period and combined copare to current date.
+                     * if It is less rhan current date than remove it from downloads.
+                     */
+                    if(contentDataFilter.get(i).getGist().getTransactionEndDate()>0){
+                         expirationDate = contentDataFilter.get(i).getGist().getTransactionEndDate();
+                    }else if(contentDataFilter.get(i).getGist().getRentalPeriod()>0 && contentDataFilter.get(i).getGist().getRentStartTime()>0){
+                        stratTime = contentDataFilter.get(i).getGist().getRentStartTime();
+                        rentalPeriod=contentDataFilter.get(i).getGist().getRentalPeriod();
+                        //convert rentalPeriod hours into ms and then add to start time
+                        long rentPeriodinMs= (long) (rentalPeriod*60*1000*1000);
+                        expirationDate=stratTime+rentPeriodinMs;
+                    }
+
+                    long remainingTime = getTimeIntervalForEvent(expirationDate, "EEE MMM dd HH:mm:ss");
+                    if (expirationDate > 0 && remainingTime < 0) {
+                        removeDownloadedFile(contentDataFilter.get(i).getGist().getId(),
+                                userVideoDownloadStatus -> {
+                                });
+                        contentData.remove(0);
+
+                    }
+                }
+
                 module.setContentData(contentData);
                 module.setTitle(currentActivity.getString(R.string.app_cms_page_download_title));
                 moduleList.add(module);
@@ -11003,6 +11047,7 @@ public class AppCMSPresenter {
         if (currentContext != null) {
             if (networkConnected) {
                 sendOfflineBeaconMessage();
+//                sendOfflineRentedDownloadStatus();
                 updateAllOfflineWatchTime();
             }
 
@@ -11842,7 +11887,7 @@ public class AppCMSPresenter {
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
-                .bustCache(bustCache)
+                .bustCache(true)
                 .networkDisconnected(!isNetworkConnected())
                 .build();
 
@@ -12235,7 +12280,7 @@ public class AppCMSPresenter {
                                 fullText);
                 transaction.add(R.id.app_cms_addon_fragment,
                         appCMSMoreFragment,
-                        currentActivity.getString(R.string.app_cms_more_page_tag)).commit();
+                        currentActivity.getString(R.string.app_cms_more_page_tag)).commitAllowingStateLoss();
                 showAddOnFragment(true, 0.2f);
                 setNavItemToCurrentAction(currentActivity);
             }
@@ -12269,12 +12314,14 @@ public class AppCMSPresenter {
                                 fullText);
                 transaction.add(R.id.app_cms_addon_fragment,
                         appCMSMoreFragment,
-                        currentActivity.getString(R.string.app_cms_more_page_tag)).commit();
-                showAddOnFragment(true, 1.0f);
+                        currentActivity.getString(R.string.app_cms_more_page_tag)).commitAllowingStateLoss();
+                showAddOnFragment(true, 0.09f);
                 setNavItemToCurrentAction(currentActivity);
             }
         }
     }
+
+
 
     @SuppressWarnings("unused")
     public void showClearHistoryDialog(String title, String fullText, Action1<Integer> action1) {
@@ -12835,7 +12882,63 @@ public class AppCMSPresenter {
                 }
         }
     }
+    public void showRentTimeDialog(Action1<Boolean> oncConfirmationAction,String rentTime) {
+        if (currentActivity != null) {
+            if(rentTime==null || TextUtils.isEmpty(rentTime)){
+                rentTime="x";
+            }
+            int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
+            AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
+            String title = "Alert";
+            String message = "once video start you have "+rentTime+" amount of hours to consume the video";
 
+            builder.setTitle(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
+                    Integer.toHexString(textColor).substring(2),
+                    title)))
+                    .setMessage(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
+                            Integer.toHexString(textColor).substring(2),
+                            message)));
+            builder.setPositiveButton(R.string.app_cms_confirm_alert_dialog_button_text,
+                    (dialog, which) -> {
+                        dialog.dismiss();
+                        if (oncConfirmationAction != null) {
+                            Observable.just(true)
+                                    .onErrorResumeNext(throwable -> Observable.empty())
+                                    .subscribe(oncConfirmationAction);
+                        }
+                    });
+            builder.setNegativeButton(R.string.app_cms_cancel_alert_dialog_button_text,
+                    (dialog, which) -> {
+                        try {
+                            dialog.dismiss();
+                            if (oncConfirmationAction != null) {
+                                Observable.just(false)
+                                        .onErrorResumeNext(throwable -> Observable.empty())
+                                        .subscribe(oncConfirmationAction);
+                            }
+                        } catch (Exception e) {
+                            //Log.e(TAG, "Error closing confirm cancellation dialog: " + e.getMessage());
+                        }
+                    });
+            builder.setCancelable(false);
+            AlertDialog dialog = builder.create();
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
+                        Color.parseColor(getAppBackgroundColor())));
+                if (currentActivity.getWindow().isActive()) {
+                    try {
+                        dialog.show();
+                        int tintTextColor = getBrandPrimaryCtaColor();
+                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(tintTextColor);
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(tintTextColor);
+                    } catch (Exception e) {
+                        //Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
+//                                + e.toString());
+                    }
+                }
+            }
+        }
+    }
     public void showConfirmCancelSubscriptionDialog(Action1<Boolean> oncConfirmationAction) {
         if (currentActivity != null) {
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
@@ -13282,6 +13385,19 @@ public class AppCMSPresenter {
             return beaconRequestList;
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    private void sendOfflineRentedDownloadStatus(){
+        for (DownloadVideoRealm downloadVideoRealm :
+                realmController.getDownloadesByUserId(getLoggedInUser())) {
+
+            if(!downloadVideoRealm.isRentStartTimeUpdated()){
+                getRentalData(downloadVideoRealm.getVideoId(), updatedContentDatum -> {
+                    downloadVideoRealm.setRentStartTimeUpdated(true);
+                }, null, false);
+
+     }
         }
     }
 
@@ -20686,7 +20802,7 @@ public class AppCMSPresenter {
                     try {
                         appCMSLibraryCall.call(
                                 currentActivity.getString(R.string.app_cms_library_data_page_api_url,
-                                        apiBaseUrl, siteId, "c0a7b4c0-4dd1-11e8-a7b9-018cd7572a0"
+                                        apiBaseUrl, siteId, getLoggedInUser()
 //
                                 ), getAuthToken(), apikey,
                                 rosterAPIAction);
