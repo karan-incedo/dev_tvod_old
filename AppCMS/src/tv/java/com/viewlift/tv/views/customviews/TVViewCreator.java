@@ -55,7 +55,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSTransactionDataValue;
@@ -312,13 +311,13 @@ public class TVViewCreator {
 
             if(module.getBlockName().equalsIgnoreCase("languageSettings01")){
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "language_setting.json"), ModuleList.class);
-            }*/
+            }
             if(module.getBlockName().equalsIgnoreCase("library01")){
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "myLibrary.json"), ModuleList.class);
             }
             if(module.getBlockName().equalsIgnoreCase("videoPlayerInfo01")){
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail1.json"), ModuleList.class);
-            }
+            }*/
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
             if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())
