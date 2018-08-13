@@ -457,7 +457,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
                 if (!isVideoLoaded) {
                     videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
-                    if (!isTrailer) {
+                    if (!isTrailer && !isLiveStreaming) {
                         appCMSPresenter.updateWatchedTime(filmId,
                                 videoPlayerView.getCurrentPosition() / 1000);
                     }
@@ -527,12 +527,19 @@ public class AppCMSPlayVideoFragment extends Fragment
                 }
 
                 if (onClosePlayerEvent != null && playerState.isPlayWhenReady() && !showEntitlementDialog) {
-
+                    //entitlementCheckTimerTask.cancel();
+                    // tell the activity that the movie is finished
+                    onClosePlayerEvent.onMovieFinished();
+                }else if(appCMSPresenter.isAppSVOD() &&
+                        !isTrailer &&
+                        !freeContent &&
+                        !appCMSPresenter.isUserSubscribed() && !entitlementCheckCancelled){
+                    //entitlementCheckTimerTask.cancel();
                     // tell the activity that the movie is finished
                     onClosePlayerEvent.onMovieFinished();
                 }
 
-                if (!isTrailer && 30 <= (videoPlayerView.getCurrentPosition() / 1000)) {
+                if (!isTrailer && 30 <= (videoPlayerView.getCurrentPosition() / 1000) && !isLiveStreaming) {
                     appCMSPresenter.updateWatchedTime(filmId,
                             videoPlayerView.getCurrentPosition() / 1000);
                 }
@@ -1423,7 +1430,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     @Override
     public void onResumeVideo() {
         resumeVideo();
-        if (videoPlayerView != null) {
+        if (videoPlayerView != null && showEntitlementDialog == false) {
             videoPlayerView.startPlayer(true);
         }
     }

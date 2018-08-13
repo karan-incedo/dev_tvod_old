@@ -52,12 +52,14 @@ public class AppCMSSubscriptionPlanCall {
                      final Action1<AppCMSUserSubscriptionPlanResult> userSubscriptionPlanResult)
             throws IOException {
 
-        //Log.d(TAG, "URL: " + url);
+
         authHeaders.clear();
         if (!TextUtils.isEmpty(apiKey) && !TextUtils.isEmpty(authToken)) {
             authHeaders.put("Authorization", authToken);
             authHeaders.put("x-api-key", apiKey);
         }
+        Log.d(TAG, "URL: " + url);
+        Log.d(TAG, "URL: " + authHeaders);
 
         switch (subscriptionCallType) {
 

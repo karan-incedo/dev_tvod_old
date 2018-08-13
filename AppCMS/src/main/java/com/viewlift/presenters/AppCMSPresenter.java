@@ -881,7 +881,9 @@ public class AppCMSPresenter {
                             editDownload(contentDatum, userVideoDownloadStatus -> {
 
                             }, true, null);
-                        } else {
+                        } else if(appCMSMain != null
+                                && appCMSMain.getFeatures() != null
+                                && appCMSMain.getFeatures().isMobileAppDownloads()) {
                             showDownloadQualityScreen(contentDatum, userVideoDownloadStatus -> {
 
                             });
@@ -2175,6 +2177,14 @@ public class AppCMSPresenter {
         }
         return false;
     }
+    public boolean isAutoPlayEnable() {
+        if (getAppCMSMain() != null &&
+                getAppCMSMain().getFeatures() != null &&
+                getAppCMSMain().getFeatures().isAutoPlay()) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * This will make a call to the anonymous user API to retrieve an anonymous user token.
@@ -2741,7 +2751,10 @@ public class AppCMSPresenter {
                     } else if (actionType == AppCMSActionType.SIGNIN) {
                         //ViewCreator.clearPlayerView();
                         navigateToLoginPage(false);
-                    } else if (actionType == AppCMSActionType.CHANGE_DOWNLOAD_QUALITY) {
+                    } else if (actionType == AppCMSActionType.CHANGE_DOWNLOAD_QUALITY
+                            && appCMSMain != null
+                            && appCMSMain.getFeatures() != null
+                            && appCMSMain.getFeatures().isMobileAppDownloads()) {
                         //ViewCreator.clearPlayerView();
                         showDownloadQualityScreen(contentDatum, userVideoDownloadStatus -> {
                             //
@@ -5271,7 +5284,7 @@ public class AppCMSPresenter {
                                         if (action != null && actionToPageMap.containsKey(action)) {
                                             actionToPageMap.put(action, appCMSPageUIResult);
                                         }
-                                        showDownloadQualityScreen(contentDatum, resultAction1);
+                                            showDownloadQualityScreen(contentDatum, resultAction1);
                                     }
                                 },
                                 loadFromFile,
@@ -7899,8 +7912,8 @@ public class AppCMSPresenter {
                                 }
                             }
                             if (isPlayerScreenOpen && currentActivity != null) {
-
-                                GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+                                try{
+                                    GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
                                 int resultCode = apiAvailability.isGooglePlayServicesAvailable(currentActivity);
                                 if (resultCode == ConnectionResult.SUCCESS) {
 
@@ -7926,6 +7939,7 @@ public class AppCMSPresenter {
                                         Toast.makeText(currentActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
                                     }*/
                                 }
+                                }catch (Exception e){e.printStackTrace();}
                             }
 
                         } else {
@@ -7950,7 +7964,7 @@ public class AppCMSPresenter {
                                AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper
             , boolean isPlayerScreenOpen, Boolean playAudio, int tryCount,
                                AppCMSAudioDetailAPIAction appCMSAudioDetailAPIAction) {
-
+        try{
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(getCurrentActiveContext());
         if (resultCode != ConnectionResult.SUCCESS) {
@@ -7965,6 +7979,7 @@ public class AppCMSPresenter {
             }*/
             return;
         }
+        }catch (Exception e){e.printStackTrace(); return;}
 
         if (!isNetworkConnected()) {
             int count = tryCount;
@@ -8014,7 +8029,7 @@ public class AppCMSPresenter {
                                 }
                             }
                             if (isPlayerScreenOpen && currentActivity != null) {
-
+                                try{
                                 GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
                                 int resultCode = apiAvailability.isGooglePlayServicesAvailable(currentActivity);
                                 if (resultCode == ConnectionResult.SUCCESS) {
@@ -8039,6 +8054,7 @@ public class AppCMSPresenter {
                                         Toast.makeText(currentActivity, "This device is not supported.", Toast.LENGTH_SHORT).show();
                                     }*/
                                 }
+                                }catch (Exception e){e.printStackTrace();}
                             }
 
                         } else {
@@ -10057,7 +10073,11 @@ public class AppCMSPresenter {
         }
 
         AppCMSPageAPI appCMSPageAPI = null;
-        if (platformType == PlatformType.ANDROID) {
+        if (platformType == PlatformType.ANDROID
+                && pageIdToPageNameMap != null
+                && pageIdToPageNameMap.get(pageId) != null
+                && TextUtils.isEmpty(pageIdToPageNameMap.get(pageId))
+                && !pageIdToPageNameMap.get(pageId).equalsIgnoreCase(getCurrentActivity().getString(R.string.app_cms_page_subscription_page_name_key))) {
             try {
                 appCMSPageAPI = getPageAPILruCache().get(pageId);
             } catch (Exception e) {
@@ -13997,7 +14017,7 @@ public class AppCMSPresenter {
                         }
                     });
         } catch (Exception e) {
-            //Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
+            Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
             //Log.e(TAG, "Caught exception when attempting to refresh subscription data: " + e.getMessage());
             if (onRefreshReadyAction != null) {
                 onRefreshReadyAction.call();
