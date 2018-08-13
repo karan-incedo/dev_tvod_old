@@ -107,6 +107,7 @@
     <string name="app_cms_watchlist_navigation_title">Watchlist</string>
     <string name="app_cms_download_page_title">Downloads</string>
     <string name="app_cms_history_navigation_title">History</string>
+    <string name="app_cms_library_navigation_title">Library</string>
 
     <string name="more_page_action">MorePage</string>
 
@@ -475,12 +476,15 @@
     <string name="terms_of_service">Terms of Service</string>
     <string name="privacy_policy">privacy policy</string>
     <string name="season">Season</string>
-    
-    
-    
+
+    <string name="rental_title">Uh Oh</string>
+    <string name="rental_description">Unfortunately you can not purchase on this platform.Content you have already purchased will become available here automatically</string>
+
+
     <string name="no_fight_records">No fight records found</string>
 
     <string name="rupee_symbol">\u20B9</string>
+    <string name="thank_you">Thank You</string>
 </resources>
 
 

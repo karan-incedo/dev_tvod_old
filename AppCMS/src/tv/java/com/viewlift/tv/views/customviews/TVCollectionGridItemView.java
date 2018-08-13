@@ -213,6 +213,19 @@ public class TVCollectionGridItemView extends TVBaseView {
                                         .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder)))
                                 .into((ImageView) view);
 
+                    } else if (data.getGist() != null
+                            && data.getGist().getContentType() != null
+                            && data.getGist().getContentType().equalsIgnoreCase("season")
+                            && data.getGist().getImages() != null
+                            && data.getGist().getImages().get_16x9Image() != null
+                            && data.getGist().getImages().get_16x9Image().getUrl() != null){
+                        Glide.with(context)
+                                .load(data.getGist().getImages().get_16x9Image().getUrl() )
+                                .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                        .placeholder(R.drawable.video_image_placeholder)
+                                        .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder)))
+                                .into((ImageView) view);
+
                     } else {
                         ((ImageView) view).setImageResource(R.drawable.video_image_placeholder);
                     }
@@ -249,10 +262,14 @@ public class TVCollectionGridItemView extends TVBaseView {
                             return true;
                         } else if(event.getAction() == KeyEvent.ACTION_DOWN
                                 && keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                            ((AppCmsHomeActivity) context).findViewById(R.id.appcms_removeall).setFocusable(false);
+                            if (((AppCmsHomeActivity) context).findViewById(R.id.appcms_removeall) != null) {
+                                ((AppCmsHomeActivity) context).findViewById(R.id.appcms_removeall).setFocusable(false);
+                            }
                         }else if(event.getAction() == KeyEvent.ACTION_DOWN
                                 && keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                            ((AppCmsHomeActivity) context).findViewById(R.id.appcms_removeall).setFocusable(true);
+                            if (((AppCmsHomeActivity) context).findViewById(R.id.appcms_removeall) != null) {
+                                ((AppCmsHomeActivity) context).findViewById(R.id.appcms_removeall).setFocusable(true);
+                            }
                         }
                         return false;
                     });
@@ -503,7 +520,8 @@ public class TVCollectionGridItemView extends TVBaseView {
                             childComponent,
                             data));
                     view.setFocusable(false);
-                    if("SERIES".equalsIgnoreCase(data.getGist().getContentType())){
+                    if("SERIES".equalsIgnoreCase(data.getGist().getContentType())
+                    || "SEASON".equalsIgnoreCase(data.getGist().getContentType())){
                         view.setVisibility(View.INVISIBLE);
                     }else{
                         view.setVisibility(View.VISIBLE);
@@ -530,13 +548,22 @@ public class TVCollectionGridItemView extends TVBaseView {
 
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_EXPIRE_TIME_TITLE) {
-                    if (data.getGist() != null && data.getGist().getTitle() != null) {
+                    if (data.getGist() != null ) {
                         ((TextView) view).setSingleLine(true);
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                        ((TextView) view).setVisibility(View.VISIBLE);
                         ((TextView) view).setBackground(context.getResources().getDrawable(R.drawable.rectangle_with_round_corners,null));
-                        ((TextView) view).setText(data.getGist().getTitle());
+//                        String epoch = data.getGist().getTransactionEndDate();
+//                        long longEpoch = Long.parseLong(epoch);
+                        long longEpoch = data.getGist().getTransactionEndDate();
+                        Date endDate = new Date(longEpoch * 1000);
+                        String timeDiff = calculateTimeDiff(endDate);
                         ((TextView) view).setGravity(Gravity.CENTER);
+                        if (!TextUtils.isEmpty(timeDiff)) {
+                            ((TextView) view).setText(timeDiff);
+                            ((TextView) view).setVisibility(View.VISIBLE);
+                        } else {
+                            ((TextView) view).setVisibility(View.GONE);
+                        }
 
                     }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_ICON_LABEL_KEY) {
@@ -563,6 +590,29 @@ public class TVCollectionGridItemView extends TVBaseView {
                     }
                 }
                 if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_TITLE_LABEL) {
+                    if (!TextUtils.isEmpty(data.getGist().getTitle())) {
+                        ((TextView) view).setText(data.getGist().getTitle());
+                        if (childComponent.getNumberOfLines() != 0) {
+                            ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                        }
+                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                    }
+                    setTypeFace(appCMSPresenter,context, jsonValueKeyMap, childComponent, ((TextView) view));
+                    view.setFocusable(false);
+
+                }else if (componentKey == AppCMSUIKeyType.PAGE_LIBRARY_ITEM_TITLE_LABEL) {
+                     if (data.getGist() != null
+                            && data.getGist().getContentType().equalsIgnoreCase("season")){
+                         if (!TextUtils.isEmpty(data.getGist().getSeriesTitle())) {
+                             ((TextView) view).setText(data.getGist().getSeriesTitle());
+                             if (childComponent.getNumberOfLines() != 0) {
+                                 ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
+                             }
+                             ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                         }
+                         setTypeFace(appCMSPresenter,context, jsonValueKeyMap, childComponent, ((TextView) view));
+                         view.setFocusable(false);
+                     }
                     if (!TextUtils.isEmpty(data.getGist().getTitle())) {
                         ((TextView) view).setText(data.getGist().getTitle());
                         if (childComponent.getNumberOfLines() != 0) {
@@ -697,6 +747,28 @@ public class TVCollectionGridItemView extends TVBaseView {
                 return itemContainer;
             }
         }
+    }
+
+    private String calculateTimeDiff(Date endDate) {
+
+        Date d1 = new Date();
+
+        long diff = endDate.getTime() - d1.getTime();
+        long diffSeconds = diff / 1000 % 60;
+        long diffMinutes = diff / (60 * 1000) % 60;
+        long diffHours = diff / (60 * 60 * 1000);
+        long diffInDays = diff / (1000 * 60 * 60 * 24);
+
+        if (diffInDays > 0)
+            return diffInDays + " Days Remaining";
+        else if (diffHours > 0)
+            return diffHours + " Hours Remaining";
+        else if (diffMinutes > 0)
+            return diffMinutes + " Minutes Remaining";
+        else if (diffSeconds > 0)
+            return diffSeconds + " Seconds Remaining";
+        else
+            return null;
     }
 
     public ViewGroup getChildrenContainer() {

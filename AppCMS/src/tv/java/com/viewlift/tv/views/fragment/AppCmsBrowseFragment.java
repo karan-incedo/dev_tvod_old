@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.AppCMSTransactionDataValue;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -128,31 +129,78 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     public void pushedPlayKey() {
         if (null != rowData && !rowData.isPlayerComponent) {
             Utils.pageLoading(true, getActivity());
-            String filmId = rowData.contentData.getGist().getId();
-            String permaLink = rowData.contentData.getGist().getPermalink();
-            String title = rowData.contentData.getGist().getTitle();
+            ContentDatum contentDatum = rowData.contentData;
+            String filmId = contentDatum.getGist().getId();
+            String permaLink = contentDatum.getGist().getPermalink();
+            String title = contentDatum.getGist().getTitle();
 
             long diff = System.currentTimeMillis() - clickedTime;
             if (diff > 2000) {
                 clickedTime = System.currentTimeMillis();
-                if (null != rowData.contentData.getGist().getContentType() &&
-                        rowData.contentData.getGist().getContentType().equalsIgnoreCase("SERIES")) {
+                if (null != contentDatum.getGist().getContentType() &&
+                        contentDatum.getGist().getContentType().equalsIgnoreCase("SERIES")) {
                     appCMSPresenter.launchTVButtonSelectedAction(
-                            rowData.contentData.getGist().getPermalink(),
+                            contentDatum.getGist().getPermalink(),
                             "showDetailPage",
-                            rowData.contentData.getGist().getTitle(),
+                            contentDatum.getGist().getTitle(),
                             null,
-                            rowData.contentData,
+                            contentDatum,
                             false,
                             -1,
                             null,
                             null);
                 } else {
-                    appCMSPresenter.launchTVVideoPlayer(rowData.contentData,
-                            0,
-                            rowData.relatedVideoIds,
-                            rowData.contentData.getGist().getWatchedTime(),
-                            null);
+                    if (contentDatum.getPricing() != null) {
+                        if ("TVOD".equalsIgnoreCase(contentDatum.getPricing().getType())) {
+                            appCMSPresenter.getTransactionData(contentDatum.getGist().getId(), maps -> {
+                                if (maps != null
+                                        && maps.get(0) != null
+                                        && maps.get(0).get(contentDatum.getGist().getId()) != null) {
+                                    AppCMSTransactionDataValue appCMSTransactionDataValue = maps.get(0).get(contentDatum.getGist().getId());
+
+                                } else {
+                                    Utils.getClearDialogFragment(
+                                            getContext(),
+                                            appCMSPresenter,
+                                            getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                            getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height),
+                                            null,
+                                            "Unfortunately, you cannot make purchases on this platform. Content you have already purchased will become available here automatically.",
+                                            "BACK TO DESCRIPTION",
+                                            null,
+                                            10f
+                                    );
+                                }
+                            }, null, false);
+                        } else if ("PPV".equalsIgnoreCase(contentDatum.getPricing().getType())) {
+                            appCMSPresenter.getTransactionData(contentDatum.getGist().getId(), maps -> {
+                                if (maps != null
+                                        && maps.get(0) != null
+                                        && maps.get(0).get(contentDatum.getGist().getId()) != null) {
+                                    AppCMSTransactionDataValue appCMSTransactionDataValue = maps.get(0).get(contentDatum.getGist().getId());
+
+                                } else {
+                                    Utils.getClearDialogFragment(
+                                            getContext(),
+                                            appCMSPresenter,
+                                            getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                            getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height),
+                                            null,
+                                            "Unfortunately, you cannot make purchases on this platform. Content you have already purchased will become available here automatically.",
+                                            "BACK TO DESCRIPTION",
+                                            null,
+                                            10f
+                                    );
+                                }
+                            }, null, false);
+                        }
+                    } else {
+                        appCMSPresenter.launchTVVideoPlayer(contentDatum,
+                                0,
+                                rowData.relatedVideoIds,
+                                contentDatum.getGist().getWatchedTime(),
+                                null);
+                    }
                 }
             } else {
                 appCMSPresenter.showLoadingDialog(false);
@@ -242,7 +290,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                     }
                 }
                 itemViewHolder.view.setClickable(false);
-                new Handler().postDelayed(() -> itemViewHolder.view.setClickable(true), 3000);
+                new Handler().postDelayed(() -> itemViewHolder.view.setClickable(true), 2000);
             }
         }
     }

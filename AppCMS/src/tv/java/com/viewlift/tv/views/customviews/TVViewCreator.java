@@ -58,6 +58,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.AppCMSTransactionDataValue;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
@@ -312,7 +313,9 @@ public class TVViewCreator {
             if(module.getBlockName().equalsIgnoreCase("languageSettings01")){
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "language_setting.json"), ModuleList.class);
             }*/
-
+            if(module.getBlockName().equalsIgnoreCase("library01")){
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "myLibrary.json"), ModuleList.class);
+            }
             if(module.getBlockName().equalsIgnoreCase("videoPlayerInfo01")){
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail1.json"), ModuleList.class);
             }
@@ -758,45 +761,43 @@ public class TVViewCreator {
         switch (componentType) {
 
             case PAGE_UPCOMING_TIMER_KEY:
-                if((moduleAPI != null && moduleAPI.getContentData() != null &&
+                if ((moduleAPI != null && moduleAPI.getContentData() != null &&
                         moduleAPI.getContentData().get(0) != null &&
-                        moduleAPI.getContentData().get(0).getGist() != null /*&&
-                        moduleAPI.getContentData().get(0).getGist().getScheduleStartDate() > 0 */)){
+                        moduleAPI.getContentData().get(0).getGist() != null &&
+                        moduleAPI.getContentData().get(0).getGist().getScheduleStartDate() > 0
+                        && moduleAPI.getContentData().get(0).getPricing() != null
+                        && "PPV".equalsIgnoreCase(moduleAPI.getContentData().get(0).getPricing().getType()))) {
                     VisualTimer visualTimer = new VisualTimer(context, moduleAPI, component, appCMSPresenter);
-                    long eventDate = (moduleAPI.getContentData().get(0).getGist().getScheduleStartDate());
-                    eventDate = 1534306500L;
+                    visualTimer.setId(R.id.visualTimer);
 
-                    //calculate remaining time from event date and current date
-                    long remainingTime = AppCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L, "EEE MMM dd HH:mm:ss");
-                    visualTimer.setOnClickListener(v -> appCMSPresenter.showMoreDialog("title", "Description"));
-                    //if event date is greater than current date then start the timer
-                    if (remainingTime > 0) {
-                        visualTimer.startTimer(remainingTime);
-                    } else {
-                        if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
-                            if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off) != null) {
-                                TextView timerTile = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off);
-                                timerTile.setVisibility(View.GONE);
-                            }
-                            if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id) != null) {
-                                LinearLayout linearLayout = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id);
-                                linearLayout.setVisibility(View.GONE);
-                            }
-                            visualTimer.setVisibility(View.GONE);
-                        }
-                    }
+                    /*VisualTimer is just created here, where the start watching button is created,
+                    * the visual timer's visibility is handled there.*/
+                    visualTimer.setVisibility(View.GONE);
                     componentViewResult.componentView = visualTimer;
-                } else {
-                    if (appCMSPresenter != null && appCMSPresenter.getCurrentActivity() != null) {
-                        if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off) != null) {
-                            TextView timerTile = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_until_face_off);
-                            timerTile.setVisibility(View.GONE);
+                }
+                break;
+
+            case PAGE_RENT_ACTIVE_COMPONENT_KEY:
+                if (moduleAPI.getContentData().get(0).getPricing() != null
+                        && "TVOD".equalsIgnoreCase(moduleAPI.getContentData().get(0).getPricing().getType())){
+                    RentActiveComponent rentActiveComponent = new RentActiveComponent(context, appCMSPresenter, moduleAPI.getContentData().get(0));
+                    rentActiveComponent.setVisibility(View.GONE);
+
+                    appCMSPresenter.getRentalData(moduleAPI.getContentData().get(0).getGist().getId(), updatedContentDatum -> {
+                        appCMSPresenter.showLoadingDialog(false);
+
+                        long transactionEndDateMillis = updatedContentDatum.getTransactionEndDate() * 1000L;
+                        Log.d(TAG, "ANAS RENTAL RESPONSE: " + transactionEndDateMillis + ", current: " + System.currentTimeMillis());
+
+                        if (transactionEndDateMillis > System.currentTimeMillis()) {
+                            componentViewResult.componentView.setVisibility(View.VISIBLE);
+                            rentActiveComponent.setRentExpirationMillis(transactionEndDateMillis);
+                        } else {
+
                         }
-                        if (appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id) != null) {
-                            LinearLayout linearLayout = appCMSPresenter.getCurrentActivity().findViewById(R.id.timer_id);
-                            linearLayout.setVisibility(View.GONE);
-                        }
-                    }
+
+                    }, null, false);
+                    componentViewResult.componentView = rentActiveComponent;
                 }
                 break;
             case PAGE_AUTOPLAY_ROTATING_LOADER_VIEW_KEY:
@@ -1109,6 +1110,7 @@ public class TVViewCreator {
 
                     case PAGE_START_WATCHING_BUTTON_KEY:
                         Button startWatchingButton = (Button) componentViewResult.componentView;
+                        View componentView = componentViewResult.componentView;
                         startWatchingButton.setId(R.id.btn_start_watching);
                         if (appCMSPresenter.isUserLoggedIn()) {
 
@@ -1119,8 +1121,7 @@ public class TVViewCreator {
                                         moduleAPI.getContentData().get(0).getGist().getId(),
                                         userVideoStatusResponse -> {
                                             if (null != userVideoStatusResponse) {
-                                                Log.d(TAG, "time = " + userVideoStatusResponse.getWatchedTime()
-                                                );
+                                                Log.d(TAG, "time = " + userVideoStatusResponse.getWatchedTime());
                                                 if (userVideoStatusResponse.getWatchedTime() > 0) {
                                                     startWatchingButton.setText(context.getString(R.string.resume_watching));
                                                 }
@@ -1134,26 +1135,158 @@ public class TVViewCreator {
 
                         }
 
-                        View componentView = componentViewResult.componentView;
-                        long eventDate = (moduleAPI.getContentData().get(0).getGist().getScheduleStartDate());
-                        eventDate = 1534306500L;
-
-                        //calculate remaining time from event date and current date
-                        long remainingTime = (eventDate * 1000L) - System.currentTimeMillis();
-
-                        if (remainingTime > 0){
+                        if (moduleAPI.getContentData().get(0).getPricing() != null) {
                             componentView.setEnabled(false);
                             componentView.setFocusable(false);
+                            if ("TVOD".equalsIgnoreCase(moduleAPI.getContentData().get(0).getPricing().getType())) {
+                                appCMSPresenter.showLoadingDialog(true);
+                                appCMSPresenter.getTransactionData(moduleAPI.getContentData().get(0).getGist().getId(), maps -> {
+                                    appCMSPresenter.showLoadingDialog(false);
+                                    if (maps != null
+                                            && maps.get(0) != null
+                                            && maps.get(0).get(moduleAPI.getContentData().get(0).getGist().getId()) != null) {
+                                        AppCMSTransactionDataValue appCMSTransactionDataValue = maps.get(0).get(moduleAPI.getContentData().get(0).getGist().getId());
+                                        componentView.setEnabled(true);
+                                        componentView.setFocusable(true);
+
+                                        componentView.setOnClickListener(v -> {
+                                            ClearDialogFragment clearDialogFragment = Utils.getClearDialogFragment(
+                                                    context,
+                                                    appCMSPresenter,
+                                                    context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                                    context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height),
+                                                    null,
+                                                    "Once video start you have 48 hours to consume the video.",
+                                                    "Play",
+                                                    "Cancel",
+                                                    13f
+                                            );
+
+                                            clearDialogFragment.setOnPositiveButtonClicked(s -> {
+                                                playVideo(appCMSPresenter, context, component, moduleAPI);
+                                                componentView.setClickable(false);
+
+                                                new Handler().postDelayed(() -> {
+                                                    componentView.setClickable(true);
+                                                }, 2000);
+                                            });
+                                        });
+
+                                    } else {
+                                        Utils.getClearDialogFragment(
+                                                context,
+                                                appCMSPresenter,
+                                                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height),
+                                                null,
+                                                "Unfortunately, you cannot make purchases on this platform. Content you have already purchased will become available here automatically.",
+                                                "BACK TO DESCRIPTION",
+                                                null,
+                                                10f
+                                        );
+                                    }
+
+                                }, null, false);
+
+
+                               /*componentView.setOnClickListener(v -> {
+                                   appCMSPresenter.showLoadingDialog(true);
+                                   appCMSPresenter.getRentalData(moduleAPI.getContentData().get(0).getGist().getId(), updatedContentDatum -> {
+                                       appCMSPresenter.showLoadingDialog(false);
+
+                                       long transactionEndDateMillis = updatedContentDatum.getTransactionEndDate() * 1000L;
+                                       Log.d(TAG, "ANAS RENTAL RESPONSE: " + transactionEndDateMillis + ", current: " + System.currentTimeMillis());
+
+                                       if (transactionEndDateMillis > System.currentTimeMillis()) {
+                                           playVideo(appCMSPresenter, context, component, moduleAPI);
+                                           componentView.setClickable(false);
+
+                                           new Handler().postDelayed(() -> {
+                                               componentView.setClickable(true);
+                                           }, 3000);
+
+                                       } else {
+                                           Utils.getClearDialogFragment(
+                                                   context,
+                                                   appCMSPresenter,
+                                                   context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                                   context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height),
+                                                   null,
+                                                   "Unfortunately, you cannot make purchases on this platform. Content you have already purchased will become available here automatically.",
+                                                   "BACK TO DESCRIPTION",
+                                                   null,
+                                                   10f
+                                           );
+                                       }
+                                   }, null, false);
+                               });*/
+                            } else if ("PPV".equalsIgnoreCase(moduleAPI.getContentData().get(0).getPricing().getType())) {
+                                appCMSPresenter.showLoadingDialog(true);
+                                appCMSPresenter.getTransactionData(moduleAPI.getContentData().get(0).getGist().getId(), maps -> {
+                                    appCMSPresenter.showLoadingDialog(false);
+                                    if (maps != null
+                                            && maps.get(0) != null
+                                            && maps.get(0).get(moduleAPI.getContentData().get(0).getGist().getId()) != null) {
+                                        AppCMSTransactionDataValue appCMSTransactionDataValue = maps.get(0).get(moduleAPI.getContentData().get(0).getGist().getId());
+                                        long eventDate = (moduleAPI.getContentData().get(0).getGist().getScheduleStartDate());
+                                        // eventDate = 1534306500L;
+
+                                        //calculate remaining time from event date and current date
+                                        long remainingTime = eventDate - System.currentTimeMillis();
+
+                                        if (remainingTime > 0) {
+                                            componentView.setEnabled(false);
+                                            componentView.setFocusable(false);
+                                            VisualTimer visualTimer = appCMSPresenter.getCurrentActivity().findViewById(R.id.visualTimer);
+                                            if (visualTimer != null) {
+                                                visualTimer.setVisibility(View.VISIBLE);
+                                                visualTimer.startTimer(remainingTime);
+                                            }
+                                        } else {
+                                            componentView.setEnabled(true);
+                                            componentView.setFocusable(true);
+                                            componentView.setOnClickListener(v -> {
+                                                playVideo(appCMSPresenter, context, component, moduleAPI);
+                                                componentView.setClickable(false);
+
+                                                new Handler().postDelayed(() -> {
+                                                    componentView.setClickable(true);
+                                                }, 2000);
+                                            });
+                                        }
+                                    } else {
+                                        VisualTimer visualTimer = appCMSPresenter.getCurrentActivity().findViewById(R.id.visualTimer);
+                                        if (visualTimer != null) {
+                                            visualTimer.setVisibility(View.GONE);
+                                        }
+                                        Utils.getClearDialogFragment(
+                                                context,
+                                                appCMSPresenter,
+                                                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height),
+                                                null,
+                                                "Unfortunately, you cannot make purchases on this platform. Content you have already purchased will become available here automatically.",
+                                                "BACK TO DESCRIPTION",
+                                                null,
+                                                10f
+                                        );
+                                    }
+
+                                }, null, false);
+                            }
+                        } else { /*Not TVOD/PPV, show & enable Play icon*/
+                            componentView.setEnabled(true);
+                            componentView.setFocusable(true);
+
+                            componentView.setOnClickListener(v -> {
+                                playVideo(appCMSPresenter, context, component, moduleAPI);
+                                componentView.setClickable(false);
+
+                                new Handler().postDelayed(() -> {
+                                    componentView.setClickable(true);
+                                }, 2000);
+                            });
                         }
-
-                        componentView.setOnClickListener(v -> {
-                            playVideo(appCMSPresenter, context, component, moduleAPI);
-                            componentView.setClickable(false);
-
-                            new Handler().postDelayed(() -> {
-                                componentView.setClickable(true);
-                            }, 3000);
-                        });
                         break;
 
                     case PAGE_SHOW_START_WATCHING_BUTTON_KEY:
@@ -2768,6 +2901,12 @@ public class TVViewCreator {
                 }
             }
 
+            if (AppCMSUIKeyType.PAGE_MYLIBRARY_01_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
+                if (appCMSPageAPI.getModules() != null && appCMSPageAPI.getModules().size() > 0) {
+                    return appCMSPageAPI.getModules().get(0);
+                }
+            }
+
             if (AppCMSUIKeyType.PAGE_RESET_PASSWORD_MODULE_KEY == jsonValueKeyMap.get(module.getView())
                     || AppCMSUIKeyType.PAGE_CONTACT_US_MODULE_KEY == jsonValueKeyMap.get(module.getView())
                     || AppCMSUIKeyType.PAGE_LINK_YOUR_ACCOUNT_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
@@ -2905,14 +3044,60 @@ public class TVViewCreator {
                     -1);
 
             ContentDatum contentDatum = moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes().get(0);
-            contentDatum.setSeason(moduleAPI.getContentData().get(0).getSeason());
-            appCMSPresenter.launchTVVideoPlayer(
-                    contentDatum,
-                    0,
-                    relatedVideosIds,
-                    0,
-                    null);
 
+            if (contentDatum.getPricing() != null) {
+                if ("TVOD".equalsIgnoreCase(contentDatum.getPricing().getType())) {
+                    appCMSPresenter.getTransactionData(contentDatum.getGist().getId(), maps -> {
+                        if (maps != null
+                                && maps.get(0) != null
+                                && maps.get(0).get(contentDatum.getGist().getId()) != null) {
+                            AppCMSTransactionDataValue appCMSTransactionDataValue = maps.get(0).get(contentDatum.getGist().getId());
+
+                        } else {
+                            Utils.getClearDialogFragment(
+                                    context,
+                                    appCMSPresenter,
+                                    context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                    context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height),
+                                    null,
+                                    "Unfortunately, you cannot make purchases on this platform. Content you have already purchased will become available here automatically.",
+                                    "BACK TO DESCRIPTION",
+                                    null,
+                                    10f
+                            );
+                        }
+                    }, null, false);
+                } else if ("PPV".equalsIgnoreCase(contentDatum.getPricing().getType())){
+                    appCMSPresenter.getTransactionData(contentDatum.getGist().getId(), maps -> {
+                        if (maps != null
+                                && maps.get(0) != null
+                                && maps.get(0).get(contentDatum.getGist().getId()) != null) {
+                            AppCMSTransactionDataValue appCMSTransactionDataValue = maps.get(0).get(contentDatum.getGist().getId());
+
+                        } else {
+                            Utils.getClearDialogFragment(
+                                    context,
+                                    appCMSPresenter,
+                                    context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                    context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height),
+                                    null,
+                                    "Unfortunately, you cannot make purchases on this platform. Content you have already purchased will become available here automatically.",
+                                    "BACK TO DESCRIPTION",
+                                    null,
+                                    10f
+                            );
+                        }
+                    }, null, false);
+                }
+            } else {
+                contentDatum.setSeason(moduleAPI.getContentData().get(0).getSeason());
+                appCMSPresenter.launchTVVideoPlayer(
+                        contentDatum,
+                        0,
+                        relatedVideosIds,
+                        0,
+                        null);
+            }
         }
     }
 

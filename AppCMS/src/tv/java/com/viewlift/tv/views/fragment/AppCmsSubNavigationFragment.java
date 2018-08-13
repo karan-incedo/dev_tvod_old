@@ -40,6 +40,8 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_HISTORY_NAV_KEY;
+import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_LIBRARY_NAV_KEY;
+import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_LIBRARY_SCREEN_KEY;
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_WATCHLIST_NAV_KEY;
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY;
 
@@ -235,7 +237,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 if (null == navigationSubItemList) {
                     navigationSubItemList = new ArrayList<NavigationSubItem>();
                 }
-                navigationSubItemList.add(navigationSubItem);
+                if (navigationSubItem.title != null) {navigationSubItemList.add(navigationSubItem);}
             }
         }
         if (!appCMSPresenter.isUserLoggedIn()) {
@@ -254,7 +256,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 if (null == navigationSubItemList) {
                     navigationSubItemList = new ArrayList<NavigationSubItem>();
                 }
-                navigationSubItemList.add(navigationSubItem);
+                if (navigationSubItem.title != null) {navigationSubItemList.add(navigationSubItem);}
             }
         }
     }
@@ -391,6 +393,15 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                 navigationSubItem.pageId,
                                 navigationSubItem.title,
                                 navigationSubItem.url,
+                                false);
+                    }  else if (ANDROID_LIBRARY_NAV_KEY.equals(mAppCMSBinder.getJsonValueKeyMap()
+                            .get(navigationSubItem.title))
+                            || ANDROID_LIBRARY_SCREEN_KEY.equals(mAppCMSBinder.getJsonValueKeyMap()
+                            .get(navigationSubItem.title))) {
+                        appCmsPresenter.showLoadingDialog(true);
+                        appCmsPresenter.navigateToLibraryPage(
+                                navigationSubItem.pageId,
+                                navigationSubItem.title,
                                 false);
                     } else {
                         appCmsPresenter.navigateToTVPage(

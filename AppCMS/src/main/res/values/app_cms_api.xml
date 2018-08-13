@@ -81,6 +81,7 @@
 
     <string name="app_cms_photogallery_api_url">%1$s/content/photogallery?id=%2$s&amp;site=%3$s</string>
     <string name="app_cms_roster_data_page_api_url">%1$s/search/v2/list?site=%2$s&amp;type=%3$s</string>
+    <string name="app_cms_library_data_page_api_url">%1$s/transaction/getData?site=%2$s&amp;userId=%3$s</string>
 
     <!--Article API-->
     <string name="app_cms_article_api">http://%1$s%2$s?app=true</string>
@@ -137,6 +138,7 @@
     <string name="app_cms_page_venue_label_key">venueLabel</string>
     <string name="app_cms_page_timer_title_label_key">timerTitle</string>
     <string name="app_cms_page_upcoming_timer_key">timer</string>
+    <string name="app_cms_page_rent_active_component_key">rentActiveComponent</string>
     <string name="app_cms_page_ads_key">adView</string>
     <string name="app_cms_page_collection_grid_key">collectionGrid</string>
     <string name="app_cms_page_table_view_key">tableView</string>
@@ -325,6 +327,8 @@
     <string name="app_cms_page_history_module_key">AC History 01</string>
     <string name="app_cms_page_history_module_key2">AC History 02</string>
     <string name="app_cms_page_watchlist_module_key">AC Watchlist 01</string>
+    <string name="app_cms_page_mylibrary_module_key">AC Library 01</string>
+
     <string name="app_cms_page_watchlist_module_key2">AC Watchlist 02</string>
     <string name="app_cms_page_download_module_key">AC Downloads 01</string>
     <string name="app_cms_page_playlist_module_key">AC PlaylistDetail 01</string>
@@ -493,6 +497,7 @@
     <string name="app_cms_pagename_history_screen_key">History</string>
     <string name="app_cms_pagename_my_watchlistscreen_key">My Watchlist</string>
     <string name="app_cms_pagename_achedule_screen_key">My Watchlist</string>
+    <string name="app_cms_pagename_my_library_screen_key">My Library</string>
 
     <string name="app_cms_pagename_watchlistscreen_key">Watchlist</string>
     <string name="app_cms_pagename_articlescreen_key">Article Page</string>
@@ -640,6 +645,9 @@
     <string name="profile_label">Profile</string>
     <string name="app_cms_team_label">Team</string>
 
+    <string name="app_cms_getrental_api_url">%1$s/transaction/changeStatus?userId=%2$s&amp;videoId=%3$s</string>
+    <string name="app_cms_gettransactiondata_api_url">%1$s/transaction/getData?userId=%2$s&amp;contentId=%3$s&amp;type=%4$s&amp;contentMeta=%5$s&amp;site=%6$s</string>
+
     <!--AppCMS AnonymousAuthToken API -->
     <string name="app_cms_anonymous_auth_token_api_url">%1$s/identity/anonymous-token?site=%2$s</string>
 
@@ -678,6 +686,7 @@
     <string name="app_cms_cellular_data_toggle_switch_key">cellularDataToggle</string>
     <string name="app_cms_logout_button_key">logout button</string>
     <string name="app_cms_title_label">titleLabel</string>
+    <string name="app_cms_library_item_title_label">libraryItemTitleLabel</string>
     <string name="app_cms_description_label">descriptionLabel</string>
     <string name="app_cms_delete_item_button">deleteItemButton</string>
     <string name="app_cms_delete_history_item_button">deleteHistory</string>
@@ -1169,6 +1178,7 @@
         <item>@string/app_cms_page_show_detail_module_key</item>
         <item>AC SubNav 01</item>
         <item>AC LanguageSettings 01</item>
+        <item>AC Library 01</item>
         <item></item>
     </string-array>
     <string-array name="app_cms_detail_module">

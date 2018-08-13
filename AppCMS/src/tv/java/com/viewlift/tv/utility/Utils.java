@@ -476,7 +476,7 @@ public class Utils {
 
         StateListDrawable res = new StateListDrawable();
         res.addState(new int[]{android.R.attr.state_focused}, new ColorDrawable(selectedColor));
-        res.addState(new int[]{android.R.attr.state_pressed}, new ColorDrawable(selectedColor));
+        res.addState(new int[]{android.R.attr.state_pressed}, getButtonDefaultState(context, unFocusStateBorderColor, borderWidth));
         res.addState(new int[]{android.R.attr.state_selected}, new ColorDrawable(selectedColor));
         res.addState(new int[]{android.R.attr.state_enabled}, getButtonNormalState(context, component, unFocusStateBorderColor, borderWidth));
         res.addState(new int[] {-android.R.attr.state_enabled}, new ColorDrawable(context.getResources().getColor(android.R.color.darker_gray)));
