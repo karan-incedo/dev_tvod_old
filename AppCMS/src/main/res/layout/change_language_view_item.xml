@@ -1,0 +1,28 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="20dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:background="@color/transparentColor">
+
+    <TextView
+        android:id="@+id/language_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:textColor="@color/color_white"
+        android:text="ENGLISH"/>
+
+    <Button
+        android:id="@+id/btn_language_select"
+        android:layout_width="80dp"
+        android:layout_height="20dp"
+        android:layout_alignParentRight="true"
+        android:textColor="@color/color_white"
+        android:text="SELECT"
+        android:maxLines="1"
+        android:textSize="13sp"
+        />
+
+</RelativeLayout>

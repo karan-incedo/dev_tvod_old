@@ -1,5 +1,4 @@
 package com.viewlift.views.customviews;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -571,7 +570,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }*/
 
        /* videoPlayerTitle = playerView.findViewById(R.id.app_cms_video_player_title_view);
-
         videoPlayerTitle.setText("");*/
 
         mediaDataSourceFactory = buildDataSourceFactory(true);
@@ -2244,7 +2242,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public void setStreamingQuality(int position, Object obj) {
         try {
-             if (obj instanceof HLSStreamingQuality) {
+            if (obj instanceof HLSStreamingQuality) {
                 int selectedIndex = hlsListViewAdapter.getDownloadQualityPosition();
                 if (selectedIndex == 0) {
                     trackSelector.clearSelectionOverrides(mVideoRendererIndex);

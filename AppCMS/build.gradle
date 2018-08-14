@@ -65,6 +65,8 @@ android {
     def appVersionName
     def clevertapAccId
     def clevertapAccKey
+    def gcmPermission
+    def gcmSenderId
     //def minsdkversion
     //def targetsdkversion
     signingConfigs {
@@ -92,6 +94,8 @@ android {
         appVersionName = versionProps['AppVersionName'].toString()
         clevertapAccId = versionProps['ClevertapAccId'].toString()
         clevertapAccKey = versionProps['ClevertapAccToken'].toString()
+        gcmPermission = versionProps['GCMName'].toString()
+        gcmSenderId = versionProps['GcmSender'].toString()
         //minsdkversion = versionProps['MIN_SDK_VERSION'].toInteger()
         //targetsdkversion = versionProps['TARGET_SDK_VERSION'].toInteger()
 
@@ -119,6 +123,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 26
         renderscriptSupportModeEnabled true
+        manifestPlaceholders = [ gcmPermission:"${packageName}${gcmPermission}"]
         useLibrary 'org.apache.http.legacy'
         project.ext.set("archivesBaseName", customApplicationId+"-" + appVersionName+"-"+appVersionCode)
     }
@@ -244,6 +249,7 @@ android {
             resValue "string", "app_cms_app_version", "${appVersionName}"
             resValue "string", "app_cms_clevertap_acc_id", "${clevertapAccId}"
             resValue "string", "app_cms_clevertap_acc_key", "${clevertapAccKey}"
+            resValue "string", "app_cms_gcm_sender_id", "id:${gcmSenderId}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
             signingConfig signingConfigs.debug
         }
@@ -262,6 +268,7 @@ android {
             resValue "string", "app_cms_app_version", "${appVersionName}"
             resValue "string", "app_cms_clevertap_acc_id", "${clevertapAccId}"
             resValue "string", "app_cms_clevertap_acc_key", "${clevertapAccKey}"
+            resValue "string", "app_cms_gcm_sender_id", "id:${gcmSenderId}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
     }
@@ -316,7 +323,8 @@ afterEvaluate {
 
 dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-//    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    //    implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation "junit:junit:$rootProject.ext.junitVersion"
     testImplementation "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
     androidTestImplementation("com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion", {
@@ -402,17 +410,15 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxandroid:$rootProject.ext.rxandroidVersion"
     implementation "io.reactivex.rxjava2:rxjava:$rootProject.ext.rxjavaVersion"
     implementation "com.github.akarnokd:rxjava2-interop:$rootProject.ext.rxjavainterop"
-   // implementation "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
+
+    // implementation "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
     implementation "com.google.android.gms:play-services-cast-framework:$rootProject.ext.googlePlayServicesVersion"
     implementation "com.google.android.gms:play-services-ads:$rootProject.ext.googlePlayServicesVersion"
     mobileImplementation "com.google.android.gms:play-services-gcm:$rootProject.ext.googlePlayServicesVersion"
     implementation "com.google.android.gms:play-services-auth:$rootProject.ext.googlePlayServicesVersion"
-
-
     implementation "com.google.android.gms:play-services-analytics:$rootProject.ext.fireBasePlayServicesVersion"
     implementation "com.google.android.gms:play-services-tagmanager:$rootProject.ext.fireBasePlayServicesVersion"
     implementation "com.google.firebase:firebase-core:$rootProject.ext.fireBasePlayServicesVersion"
-
     implementation "jp.wasabeef:glide-transformations:$rootProject.ext.glideTransformationVersion"
     implementation("com.crashlytics.sdk.android:crashlytics:$rootProject.ext.crashlyticsVersion") {
         transitive = true
@@ -430,12 +436,9 @@ dependencies {
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
-
-
     implementation "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
     implementation "com.appsflyer:af-android-sdk:$rootProject.ext.appsFlyerVersion"
-
     tvImplementation project(path: ':firetvcustomkeyboard')
     implementation("com.android.support:percent:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'design'
@@ -451,13 +454,12 @@ dependencies {
     implementation project(path: ':exoplayer-extension-vp9')
     kisweImplementation 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000024'
     implementation "com.android.support:appcompat-v7:$rootProject.ext.androidsupportVersion"
-
     compileOnly files('libs/amazon-device-messaging-1.0.1.jar')
     implementation "com.clevertap.android:clevertap-android-sdk:$rootProject.ext.clevertapVersion"
     implementation "com.android.volley:volley:$rootProject.ext.volleyVersion"
     implementation "com.squareup.picasso:picasso:$rootProject.ext.picassoVersion"
     implementation "com.fasterxml.uuid:java-uuid-generator:$rootProject.ext.uuidGeneratorVersion"
-    }
+}
 
 fileTree(dir: 'libs', include: '**/*.aar')
         .each { File file ->

@@ -36,11 +36,12 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
 
     private SearchableInfo searchableInfo;
     AppCMSPresenter appCMSPresenter;
+
     public SearchSuggestionsAdapter(Context context, Cursor c, SearchableInfo searchableInfo,
                                     boolean autoRequery) {
         super(context, c, autoRequery);
         this.searchableInfo = searchableInfo;
-        AppCMSApplication mApplication = ((AppCMSApplication)context.getApplicationContext());
+        AppCMSApplication mApplication = ((AppCMSApplication) context.getApplicationContext());
         appCMSPresenter = ((AppCMSApplication) mApplication).
                 getAppCMSPresenterComponent().appCMSPresenter();
     }
@@ -60,8 +61,8 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
         String songCount = searchHintResult[7];
         String episodeCount = searchHintResult[9];
 
-        String songYear="";
-        if(searchHintResult.length>=9 && searchHintResult[8]!=null){
+        String songYear = "";
+        if (searchHintResult.length >= 9 && searchHintResult[8] != null) {
             songYear = searchHintResult[8];
         }
 
@@ -69,23 +70,23 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
         int runtimeAsInteger = Integer.valueOf(cursor.getString(2));
 
 
-            if (runtimeAsInteger < 60 && runtimeAsInteger > 0) {
-                runtime.setText(new StringBuilder().append(cursor.getString(2))
-                        .append(" ")
-                        .append(context.getString(R.string.runtime_seconds_abbreviation)).toString());
-            } else if (runtimeAsInteger == 0 || runtimeAsInteger / 60 == 0) {
-                // FIXME: Display number of episodes.
-                if(!mediaType.equalsIgnoreCase(context.getString(R.string.content_type_event)))
-                    runtime.setText(episodeCount + " " + new StringBuilder().append(context.getString(R.string.runtime_episodes_abbreviation)).toString());
-            } else if (runtimeAsInteger / 60 < 2) {
-                runtime.setText(new StringBuilder().append(Integer.valueOf(cursor.getString(2)) / 60)
-                        .append(" ")
-                        .append(context.getString(R.string.runtime_minute_abbreviation)).toString());
-            } else {
-                runtime.setText(new StringBuilder().append(Integer.valueOf(cursor.getString(2)) / 60)
-                        .append(" ")
-                        .append(context.getString(R.string.runtime_minutes_abbreviation)).toString());
-            }
+        if (runtimeAsInteger < 60 && runtimeAsInteger > 0) {
+            runtime.setText(new StringBuilder().append(cursor.getString(2))
+                    .append(" ")
+                    .append(context.getString(R.string.runtime_seconds_abbreviation)).toString());
+        } else if (runtimeAsInteger == 0 || runtimeAsInteger / 60 == 0) {
+            // FIXME: Display number of episodes.
+            if (!mediaType.equalsIgnoreCase(context.getString(R.string.content_type_event)))
+                runtime.setText(episodeCount + " " + new StringBuilder().append(context.getString(R.string.runtime_episodes_abbreviation)).toString());
+        } else if (runtimeAsInteger / 60 < 2) {
+            runtime.setText(new StringBuilder().append(Integer.valueOf(cursor.getString(2)) / 60)
+                    .append(" ")
+                    .append(context.getString(R.string.runtime_minute_abbreviation)).toString());
+        } else {
+            runtime.setText(new StringBuilder().append(Integer.valueOf(cursor.getString(2)) / 60)
+                    .append(" ")
+                    .append(context.getString(R.string.runtime_minutes_abbreviation)).toString());
+        }
 
         if (mediaType != null
                 && mediaType.toLowerCase().contains(context.getString(R.string.media_type_playlist).toLowerCase())) {
@@ -107,6 +108,7 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
         String query = ((constraint == null) ? "" : constraint.toString());
         if (query != null && query.length() != 0)
             appCMSPresenter.sendSearchEvent(query);
+
         try {
             cursor = getSearchManagerSuggestions(searchableInfo, query, 5);
             if (cursor != null) {
