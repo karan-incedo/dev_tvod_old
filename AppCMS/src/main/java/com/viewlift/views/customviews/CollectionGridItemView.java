@@ -1794,12 +1794,12 @@ public class CollectionGridItemView extends BaseView {
                                     durationFont = 1.1f;
                                     priceFont = 1.5f;
                                 }
-                                text.setSpan(new RelativeSizeSpan(payFont), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                text.setSpan(new StyleSpan(Typeface.BOLD), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                text.setSpan(new RelativeSizeSpan(priceFont), pay.length(), pay.length() + planAmt.toString().length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                text.setSpan(new StyleSpan(Typeface.BOLD), pay.length(), pay.length() + planAmt.toString().length() + 1,
+//                                text.setSpan(new RelativeSizeSpan(payFont), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                                text.setSpan(new StyleSpan(Typeface.BOLD), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                text.setSpan(new RelativeSizeSpan(priceFont), 0, planAmt.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                text.setSpan(new StyleSpan(Typeface.BOLD), 0, planAmt.toString().length(),
                                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                text.setSpan(new RelativeSizeSpan(durationFont), pay.length() + planAmt.toString().length() + 1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                                text.setSpan(new RelativeSizeSpan(durationFont), planAmt.toString().length() + 1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                                 ((TextView) view).setText(text, TextView.BufferType.SPANNABLE);
 
                                 if (!appCMSPresenter.isSinglePlanFeatureAvailable()) {

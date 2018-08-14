@@ -1235,21 +1235,6 @@ public class AppCMSPresenter {
         timeDifference = eventTimeInMs - currentTimeInMs;
         return timeDifference;
     }
-    public String getRentExpirationFormat(long timeDifference) {
-        long difference = timeDifference;
-        long secondsInMilli = 1000;
-        long minutesInMilli = secondsInMilli * 60;
-        long hoursInMilli = minutesInMilli * 60;
-        long daysInMilli = hoursInMilli * 24;
-
-        long elapsedDays = difference / daysInMilli;
-        difference = difference % daysInMilli;
-
-        long elapsedHours = difference / hoursInMilli;
-        difference = difference % hoursInMilli;
-
-        long elapsedMinutes = difference / minutesInMilli;
-        difference = difference % minutesInMilli;
 
     public String getRentExpirationFormat(long timeDifference) {
         long difference = timeDifference;
@@ -20676,42 +20661,6 @@ public class AppCMSPresenter {
             this.searchQuery = searchQuery;
         }
     }
-
-    private abstract static class AppCMSLibraryAPIAction<T> implements Action1<T> {
-        final boolean appbarPresent;
-        final boolean fullscreenEnabled;
-        final boolean navbarPresent;
-        final AppCMSPageUI appCMSPageUI;
-        final String action;
-        final String pageId;
-        final String pageTitle;
-        final String pagePath;
-        final boolean launchActivity;
-        final Uri searchQuery;
-
-        AppCMSLibraryAPIAction(boolean appbarPresent,
-                        boolean fullscreenEnabled,
-                        boolean navbarPresent,
-                        AppCMSPageUI appCMSPageUI,
-                        String action,
-                        String pageId,
-                        String pageTitle,
-                        String pagePath,
-                        boolean launchActivity,
-                        Uri searchQuery) {
-            this.appbarPresent = appbarPresent;
-            this.fullscreenEnabled = fullscreenEnabled;
-            this.navbarPresent = navbarPresent;
-            this.appCMSPageUI = appCMSPageUI;
-            this.action = action;
-            this.pageId = pageId;
-            this.pageTitle = pageTitle;
-            this.pagePath = pagePath;
-            this.launchActivity = launchActivity;
-            this.searchQuery = searchQuery;
-        }
-    }
-
 
     private String getDeviceDetail() {
         StringBuffer stringBuffer = new StringBuffer();

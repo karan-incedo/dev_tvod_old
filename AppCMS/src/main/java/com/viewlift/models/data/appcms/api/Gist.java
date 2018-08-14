@@ -642,6 +642,16 @@ public class Gist implements Serializable {
         this.rentPerioedendDate = endDate;
     }
 
+    public long getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(long endDate) {
+        this.endDate = endDate;
+    }
+    long endDate;
+
+
     public String getSubscriptionType() {
         return subscriptionType;
     }
@@ -1137,6 +1147,15 @@ public class Gist implements Serializable {
     public void setSeasonNum(String seasonNum) {
         this.seasonNum = seasonNum;
     }
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    String genre;
 
     public List<Map<String, AppCMSTransactionDataValue>> getObjTransactionDataValue() {
         return objTransactionDataValue;
