@@ -183,6 +183,95 @@
       "type": "castView",
       "textColor": "#ffffff",
       "key": "castView"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "fontSizeKey": 11.5,
+          "topMargin": 200,
+          "leftMargin": 1190,
+          "width": 500
+        }
+      },
+      "text": "Content will be available in:",
+      "fontFamilyKey": "OpenSans-ExtraBold",
+      "fontFamilyValue": "OpenSans",
+      "type": "timer",
+      "textColor": "#ffffff",
+      "key": "timer"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "fontSizeKey": 11.5,
+          "yAxis": 250,
+          "xAxis": 1200,
+          "width": 450,
+          "height": 190
+        }
+      },
+      "fontFamilyKey": "Semibold",
+      "fontFamilyValue": "OpenSans",
+      "type": "rentActiveComponent",
+      "textColor": "#ffffff",
+      "key": "rentActiveComponent"
     }
+
+   /* {
+      "layout": {
+        "ftv": {
+          "yAxis": 250,
+          "xAxis": 1200,
+          "width": 2,
+          "height": 190
+        }
+      },
+      "backgroundColor": "f4181c",
+      "type": "separatorView"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "topMargin": 250,
+          "leftMargin": 1210,
+          "fontSize": 15
+        }
+      },
+      "text" : "Thank You",
+      "fontFamily": "OpenSans",
+      "type": "label",
+      "textColor": "#ffffff",
+      "fontWeight": "ExtraBold"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "topMargin": 295,
+          "leftMargin": 1210,
+          "width" : 450,
+          "fontSize": 11.5
+        }
+      },
+      "text" : "Your rental period for Ekla Aakash is active until tomorrow at HH:MM",
+      "fontFamily": "OpenSans",
+      "type": "label",
+      "textColor": "#80ffffff",
+      "fontWeight": "Semibold"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "topMargin": 375,
+          "leftMargin": 1210,
+          "width" : 450,
+          "fontSize": 11.5
+        }
+      },
+      "text" : "An email receipt with your purchase details has been sent to xxxx.yyyy@zzzz.com",
+      "fontFamily": "OpenSans",
+      "type": "label",
+      "textColor": "#80ffffff",
+      "fontWeight": "Semibold"
+    }*/
   ]
 }

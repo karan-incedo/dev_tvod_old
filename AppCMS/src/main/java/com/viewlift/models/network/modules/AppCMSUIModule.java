@@ -41,6 +41,7 @@ import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSHistoryRest;
 import com.viewlift.models.network.rest.AppCMSIPGeoLocatorCall;
 import com.viewlift.models.network.rest.AppCMSIPGeoLocatorRest;
+import com.viewlift.models.network.rest.AppCMSLibraryRest;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSMainUIRest;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
@@ -225,6 +226,11 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_WATCHLIST_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_my_watchlistscreen_key),
                 AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_my_library_screen_key),
+                AppCMSUIKeyType.ANDROID_LIBRARY_SCREEN_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_library_navigation_title),
+                AppCMSUIKeyType.ANDROID_LIBRARY_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_watchlistscreen_key),
                 AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY);
 
@@ -261,6 +267,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_TIMER_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_upcoming_timer_key),
                 AppCMSUIKeyType.PAGE_UPCOMING_TIMER_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_rent_active_component_key),
+                AppCMSUIKeyType.PAGE_RENT_ACTIVE_COMPONENT_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_ads_key),
                 AppCMSUIKeyType.PAGE_ADS_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_article_title_key),
@@ -687,6 +695,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_module_key),
                 AppCMSUIKeyType.PAGE_WATCHLIST_01_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_mylibrary_module_key),
+                AppCMSUIKeyType.PAGE_MYLIBRARY_01_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_history_module_key2),
                 AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_module_key2),
@@ -943,6 +953,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_SHOW_WATCH_TRAILER_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_title_key),
                 AppCMSUIKeyType.PAGE_API_TITLE);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_expire_time_key),
+                AppCMSUIKeyType.PAGE_EXPIRE_TIME_TITLE);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_title_key),
                 AppCMSUIKeyType.PAGE_API_TITLE);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_show_title_key),
@@ -1046,6 +1058,9 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_title_label),
                 AppCMSUIKeyType.PAGE_WATCHLIST_TITLE_LABEL);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_library_item_title_label),
+                AppCMSUIKeyType.PAGE_LIBRARY_ITEM_TITLE_LABEL);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_description_label),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_LABEL);
@@ -1555,6 +1570,12 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSRosterRest providesAppCMSRostRest(Retrofit retrofit) {
         return retrofit.create(AppCMSRosterRest.class);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSLibraryRest providesAppCMSLibraryRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSLibraryRest.class);
     }
     @Provides
     @Singleton
