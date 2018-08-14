@@ -8,11 +8,9 @@ import android.support.annotation.WorkerThread;
 
 import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.api.AppCMSLibraryResult;
-import com.viewlift.models.data.appcms.api.AppCMSRosterResult;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;

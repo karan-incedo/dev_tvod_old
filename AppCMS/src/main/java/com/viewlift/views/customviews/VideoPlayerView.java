@@ -51,6 +51,7 @@ import com.google.android.exoplayer2.drm.HttpMediaDrmCallback;
 import com.google.android.exoplayer2.drm.MediaDrmCallback;
 import com.google.android.exoplayer2.drm.UnsupportedDrmException;
 import com.google.android.exoplayer2.ext.ima.ImaAdsLoader;
+import com.google.android.exoplayer2.source.BehindLiveWindowException;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MediaSourceEventListener;
@@ -148,8 +149,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private Action1<PlayerState> onPlayerStateChanged;
     private Action1<Integer> onPlayerControlsStateChanged;
     private Action1<Boolean> onClosedCaptionButtonClicked;
-    private int resumeWindow;
-    private long resumePosition;
+    protected int resumeWindow;
+    protected long resumePosition;
     private int timeBarColor;
     private long bitrate = 0l;
     private int videoHeight = 0;
@@ -252,8 +253,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     String adsUrl;
-
-    public void setAdsUrl(String adsUrl) {
+    public void setAdsUrl(String adsUrl){
         this.adsUrl = adsUrl;
     }
 
@@ -1299,6 +1299,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     && !getPlayerView().getController().isPlayingLive() /* if video is not Live*/
                     && useHls /*createStreamingQualitySelectorForHLS is only called for HLS stream*/
                     && !streamingQualitySelectorCreated /*making sure the selector isn't already created*/
+                    && !streamingQualitySelector.isLiveStream() /*Create the Quality Selector only if it a non-live content*/
                     && isLiveStreaming()) {
                 createStreamingQualitySelectorForHLS();
                 // Default "Auto" is selected
@@ -1314,7 +1315,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 int res = Integer.parseInt(defaultVideoResolution.replace("p", ""));
 
                 /*For MP4s, by default, the highest resolution is rendered, to honor the setting we
-                 * are telling the player that the max height can only be "res"*/
+                * are telling the player that the max height can only be "res"*/
                 trackSelector.setParameters(trackSelector.getParameters().buildUpon().setMaxVideoSize(Integer.MAX_VALUE, res).build());
             }
             if (closedCaptionSelector != null
@@ -1400,12 +1401,29 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     @Override
     public void onPlayerError(ExoPlaybackException e) {
         mCurrentPlayerPosition = player.getCurrentPosition();
-        if (mErrorEventListener != null) {
+        if (isBehindLiveWindow(e)) {
+            resumeWindow = C.INDEX_UNSET;
+            resumePosition = C.TIME_UNSET;
+            preparePlayer();
+        }else if (mErrorEventListener != null) {
             mErrorEventListener.onRefreshTokenCallback();
             mErrorEventListener.playerError(e);
         }
     }
 
+    protected static boolean isBehindLiveWindow(ExoPlaybackException e) {
+        if (e.type != ExoPlaybackException.TYPE_SOURCE) {
+            return false;
+        }
+        Throwable cause = e.getSourceException();
+        while (cause != null) {
+            if (cause instanceof BehindLiveWindowException) {
+                return true;
+            }
+            cause = cause.getCause();
+        }
+        return false;
+    }
     @Override
     public void onPositionDiscontinuity(int reason) {
 
@@ -1824,7 +1842,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
         /**
          * Returns the HLS url which will be used for playback
-         */
+         * */
         String getVideoUrl();
 
         String getStreamingQualityUrl(String streamingQuality);
@@ -1834,6 +1852,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         int getMpegResolutionIndexFromUrl(String mpegUrl);
 
         String getFilmId();
+
+        boolean isLiveStream();
     }
 
     /**

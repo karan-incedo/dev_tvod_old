@@ -275,6 +275,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_TIMER_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_upcoming_timer_key),
                 AppCMSUIKeyType.PAGE_UPCOMING_TIMER_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_rent_active_component_key),
+                AppCMSUIKeyType.PAGE_RENT_ACTIVE_COMPONENT_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_ads_key),
                 AppCMSUIKeyType.PAGE_ADS_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_article_title_key),
@@ -1066,6 +1068,9 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_title_label),
                 AppCMSUIKeyType.PAGE_WATCHLIST_TITLE_LABEL);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_library_item_title_label),
+                AppCMSUIKeyType.PAGE_LIBRARY_ITEM_TITLE_LABEL);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_description_label),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_LABEL);

@@ -246,7 +246,7 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
             }
         }
         if (0 <= position && position < adapterData.size()) {
-            if (adapterData.size() != 1) {
+            if (adapterData.size() != 0) {
                 createView(holder, position);
             }
 

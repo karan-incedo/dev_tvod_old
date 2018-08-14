@@ -918,11 +918,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
         );
 
-        mShareTopButton.setOnClickListener(v -> {
-                    openShareLink();
-                }
-        );
+        /**
+         * Special CR for RCHDTV, Not supporting Share button.
+         */
+        if(appCMSPresenter != null
+                && !appCMSPresenter.getAppCMSMain().getId().equalsIgnoreCase("8630e831-6557-41a3-95c9-6aad9fea4c7d")) {
 
+
+            mShareTopButton.setOnClickListener(v -> {
+                        openShareLink();
+                    }
+            );
+        }
         //ToDo:  dynamically visible/hide search /profile btn as per API response, currently showing for MSE
         mProfileTopButton.setOnClickListener(v -> {
                     if (appCMSPresenter.isUserLoggedIn()) {
@@ -1552,6 +1559,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             unregisterReceiver(downloadReceiver);
             unregisterReceiver(notifyUpdateListsReceiver);
             unregisterReceiver(processDeeplinkReceiver);
+            unregisterReceiver(networkConnectedReceiver);
             unregisterReceiver(refreshPageDataReceiver);
             unregisterReceiver(uaReceiveChannelIdReceiver);
             unregisterReceiver(uaReceiveAppKeyReceiver);
@@ -3404,10 +3412,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() != null &&
                         appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText() != null) {
 
-                    SpannableString content = new SpannableString(appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText().trim() +" "+
+                    SpannableString content = new SpannableString(appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText().trim() + " " +
                             appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText());
-
-                    content.setSpan(new UnderlineSpan(), appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText().trim().length()+2,
+                    content.setSpan(new UnderlineSpan(), appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText().trim().length() + 1,
                             content.length(), 0);
                     appCMSNavFreeTrialTool.setText(content);
                 }
@@ -3431,7 +3438,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getPlacement() != null &&
                 appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getPlacement().contains(getString(R.string.navigation_settings_primaryCta_placement))) {
 
-            if (appCMSPresenter.isViewPlanPage(pageId) || appCMSPresenter.isPageLoginPage(pageId)) {
+            if (appCMSPresenter.isViewPlanPage(pageId) || appCMSPresenter.isPageLoginPage(pageId) || appCMSPresenter.isPageNavigationPage(pageId)) {
                 appCMSNavFreeTrialTool.setVisibility(View.GONE);
                 return;
             }

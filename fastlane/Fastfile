@@ -60,12 +60,23 @@ platform :android do
          myslackMessageOne = options[:myAppName].to_s + " ANDROID BUILD LANE STARTED. BUILD-ID --> '" + options[:myBuildId].to_s + "'. APP-VERSION-NUMBER --> " + options[:myAppVersion].to_s + ". BUILD TRIGGERED BY -->" +  options[:myEmailId].to_s
          slack_train_start(distance: 11)
          slackSendMessage(my_slack_msg:myslackMessageOne,my_user_name:options[:my_user_name],mySlackUrl:options[:mySlackUrl])
-         
-         slack_train()
-         progress = 30
-         myBuildVersion =0 
-         sh "./PostBuildStatus.sh " + options[:buildid] + " " + options[:posturl] + " " + "'BUILD_PROGRESS'" + " " + "'NO ERROR'" + " " + "'Cleaning the Project'" + " " + progress.to_s + " " + 'false' + " " + myBuildVersion.to_s
 
+          slack_train()
+          progress = 30
+          myBuildVersion =0 
+          sh "./PostBuildStatus.sh " + options[:buildid] + " " + options[:posturl] + " " + "'BUILD_PROGRESS'" + " " + "'NO ERROR'" + " " + "'Cleaning the Project'" + " " + progress.to_s + " " + 'false' + " " + myBuildVersion.to_s
+
+          begin
+              sh "open /Users/fastlane/Desktop/emulators/phoneEmulator"
+          rescue => ex
+               UI.error("Something went wrong: #{ex}")
+          end
+
+          begin
+              sh "open /Users/fastlane/Desktop/emulators/tabEmulator"
+          rescue => ex
+               UI.error("Something went wrong: #{ex}")
+          end
          gradle(task: "clean")
 
          slack_train()
@@ -108,6 +119,17 @@ platform :android do
               rescue => ex
                  UI.error("Something went wrong: #{ex}")
          end
+
+
+          begin
+              sh("adb -s emulator-5554 emu kill")
+              sh("adb -s emulator-5558 emu kill")
+              rescue => ex
+                 UI.error("Something went wrong: #{ex}")
+         end
+
+
+
 
          progress = 55
          sh "./PostBuildStatus.sh " + options[:buildid] + " " + options[:posturl] + " " + "'BUILD_PROGRESS'" + " " + "'NO ERROR'" + " " + "'Creating the Release Build'" + " " + progress.to_s + " " + 'false' + " " + myBuildVersion.to_s
@@ -243,6 +265,10 @@ platform :android do
 
      # ENV["SLACK_URL"] = "https://hooks.slack.com/services/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"
      # ENV["SLACK_URL"] = "https://hooks.slack.com/services/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"
+    
+
+
+     puts options[:apk_path]
      myslackMessageOne = options[:myAppName].to_s + " UPLOADING TO PLAY STORE LANE STARTED . BUILD-ID --> '" + options[:buildId].to_s + "'. APP-VERSION-NUMBER --> " + options[:myAppVersion].to_s + ". BUILD TRIGGERED BY -->" +  options[:myEmailId].to_s
      slackSendMessage(my_slack_msg:myslackMessageOne,my_user_name:options[:my_user_name],mySlackUrl:options[:mySlackUrl])
 
@@ -255,7 +281,7 @@ platform :android do
      sh "./PostBuildStatus.sh " + options[:buildid] + " " + options[:posturl] + " " + "'BUILD_PROGRESS'" + " " + "'NO ERROR'" + " " + "'UPLOADING THE SIGNED BUILD TO THE PLAY STORE'" + " " + progress.to_s + " " + 'false' + " " + value.to_s
 
      supply(
-           track: options[:track],
+           track:'alpha',
            package_name: options[:package_name],
            json_key: options[:json_key_file],
            apk: options[:apk_path]
@@ -280,20 +306,33 @@ platform :android do
 
       sh("adb -s emulator-5554 shell input keyevent 82")
 
-      capture_android_screenshots(
-      clear_previous_screenshots: true,
-      app_package_name: options[:app_package_name],
-      device_type: "phone",
-      app_apk_path: options[:app_apk_path],
-      tests_apk_path: options[:tests_apk_path],
-      specific_device:"emulator-5554"
-      )
+      begin
+              sh("adb -s emulator-5554 uninstall " + options[:app_package_name])
+          rescue => ex
+              UI.error("Something went wrong: #{ex}")
+      end
+
+      # capture_android_screenshots(
+      # clear_previous_screenshots: true,
+      # app_package_name: options[:app_package_name],
+      # device_type: "phone",
+      # app_apk_path: options[:app_apk_path],
+      # tests_apk_path: options[:tests_apk_path],
+      # specific_device:"emulator-5554"
+      # )
+
+      sh("adb -s emulator-5554 emu kill")
     end
 
     desc "Take seven inch tablet screenshots"
     lane :seveninchtablet_screenshots do |options|
 
       sh("adb -s emulator-5558 shell input keyevent 82")
+      begin
+            sh("adb -s emulator-5558 uninstall " + options[:app_package_name])
+      rescue => ex
+            UI.error("Something went wrong: #{ex}")
+      end
 
       capture_android_screenshots(
       clear_previous_screenshots: true,
@@ -303,12 +342,21 @@ platform :android do
       tests_apk_path: options[:tests_apk_path],
       specific_device:"emulator-5558"
       )
+
+      sh("adb -s emulator-5558 emu kill")
+
     end
 
     desc "Take ten inch tablet screenshots"
     lane :teninchtablet_screenshots do |options|
 
       sh("adb -s emulator-5558 shell input keyevent 82")
+      begin
+            sh("adb -s emulator-5558 uninstall " + options[:app_package_name])
+      rescue => ex
+            UI.error("Something went wrong: #{ex}")
+      end
+
       capture_android_screenshots(
       clear_previous_screenshots: true,
       app_package_name: options[:app_package_name],
@@ -317,6 +365,8 @@ platform :android do
       tests_apk_path: options[:tests_apk_path],
       specific_device:"emulator-5558"
      )
+
+     sh("adb -s emulator-5558 emu kill")
     end
 
     desc "Take tv screenshots"
@@ -381,7 +431,7 @@ platform :android do
       puts "Getting Google Version From PlayStore"
       
       myvalue = google_play_track_version_codes(package_name: options[:app_package_name],
-           track: "beta",
+           track: "alpha",
            json_key: options[:json_key_file],
            )
 

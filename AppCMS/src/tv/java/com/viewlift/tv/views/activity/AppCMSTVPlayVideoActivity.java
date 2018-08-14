@@ -78,6 +78,7 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
     private AppCmsResetPasswordFragment appCmsResetPasswordFragment;
     private Map<String, String> availableStreamingFormats;
     private Map<String, String> availableStreamingQualityMap;
+    private boolean isLiveStream;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -368,6 +369,10 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
             }
         }
 
+        if (binder.getContentData() != null &&
+                binder.getContentData().getStreamingInfo() != null) {
+            isLiveStream = binder.getContentData().getStreamingInfo().getIsLiveStream();
+        }
 //        ArrayList<String> ccUrls = new ArrayList<>();
         // TODO: 7/27/2017 Implement CC for multiple languages.
         if (binder.getContentData() != null
@@ -858,6 +863,11 @@ public class AppCMSTVPlayVideoActivity extends AppCompatActivity implements
     @Override
     public String getFilmId() {
         return filmId;
+    }
+
+    @Override
+    public boolean isLiveStream() {
+        return isLiveStream;
     }
 
     @Override

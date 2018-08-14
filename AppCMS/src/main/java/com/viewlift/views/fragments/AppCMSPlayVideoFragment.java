@@ -479,14 +479,15 @@ public class AppCMSPlayVideoFragment extends Fragment
                     }
                     setCurrentWatchProgress(updatedRunTime, watchedTime);
 
-                    if (!isVideoLoaded) {
-                        videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
-                        if (!isTrailer) {
-                            appCMSPresenter.updateWatchedTime(filmId,
-                                    videoPlayerView.getCurrentPosition() / 1000);
-                        }
-                        isVideoLoaded = true;
+
+                if (!isVideoLoaded) {
+                    videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
+                    if (!isTrailer && !isLiveStreaming) {
+                        appCMSPresenter.updateWatchedTime(filmId,
+                                videoPlayerView.getCurrentPosition() / 1000);
                     }
+                    isVideoLoaded = true;
+                }
 
                     if (beaconBuffer != null) {
                         beaconBuffer.sendBeaconBuffering = false;
@@ -1477,7 +1478,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     @Override
     public void onResumeVideo() {
         resumeVideo();
-        if (videoPlayerView != null) {
+        if (videoPlayerView != null && showEntitlementDialog == false) {
             videoPlayerView.startPlayer(true);
         }
     }

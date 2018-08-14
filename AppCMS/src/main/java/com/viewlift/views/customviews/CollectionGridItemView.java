@@ -1517,8 +1517,6 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setSingleLine(true);
                             ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                             ((TextView) view).setVisibility(View.VISIBLE);
-//                            ((TextView) view).setBackground(context.getResources().getDrawable(R.drawable.rectangle_with_round_corners,null));
-//                            ((TextView) view).setTextColor(R.color.color_white);
                         }
                     }  else if (componentKey == AppCMSUIKeyType.PAGE_EXPIRE_TIME_TITLE) {
                     if (data.getGist() != null && data.getGist().getTransactionDateEpoch() > 0) {
@@ -1796,13 +1794,19 @@ public class CollectionGridItemView extends BaseView {
                                     durationFont = 1.1f;
                                     priceFont = 1.5f;
                                 }
-//                                text.setSpan(new RelativeSizeSpan(payFont), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//                                text.setSpan(new StyleSpan(Typeface.BOLD), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                text.setSpan(new RelativeSizeSpan(priceFont), 0, planAmt.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                text.setSpan(new StyleSpan(Typeface.BOLD), 0, planAmt.toString().length(),
+                                text.setSpan(new RelativeSizeSpan(payFont), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                text.setSpan(new StyleSpan(Typeface.BOLD), 0, pay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                text.setSpan(new RelativeSizeSpan(priceFont), pay.length(), pay.length() + planAmt.toString().length() + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                text.setSpan(new StyleSpan(Typeface.BOLD), pay.length(), pay.length() + planAmt.toString().length() + 1,
                                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//                                text.setSpan(new RelativeSizeSpan(durationFont), planAmt.toString().length() + 1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                text.setSpan(new RelativeSizeSpan(durationFont), pay.length() + planAmt.toString().length() + 1, plan.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                                 ((TextView) view).setText(text, TextView.BufferType.SPANNABLE);
+
+                                if (!appCMSPresenter.isSinglePlanFeatureAvailable()) {
+                                    FrameLayout.LayoutParams layPar = (FrameLayout.LayoutParams) ((TextView) view).getLayoutParams();
+                                    layPar.gravity = Gravity.TOP;
+                                    view.setLayoutParams(layPar);
+                                }
                             } else {
                                 StringBuilder plan = new StringBuilder();
                                 plan.append(planAmt.toString());
@@ -2151,10 +2155,11 @@ public class CollectionGridItemView extends BaseView {
     }
 
     public void inVisibleIfSeries(final ContentDatum data, final View view) {
-        if (data != null &&
+        if ((data != null &&
                 data.getGist() != null &&
                 data.getGist().getContentType() != null &&
-                data.getGist().getContentType().equalsIgnoreCase("SERIES")) {
+                data.getGist().getContentType().equalsIgnoreCase("SERIES") )
+        || data.getGist().getRuntime() == 0) {
             view.setVisibility(GONE);
         } /*else {
             view.setVisibility(VISIBLE);
