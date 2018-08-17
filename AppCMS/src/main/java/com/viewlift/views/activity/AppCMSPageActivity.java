@@ -294,6 +294,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        System.out.println("On lifecycle- oncreate");
         if (!BaseView.isTablet(this)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
@@ -847,7 +848,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 //        Log.d(TAG, "onCreate()");
 
     }
-
 
 
     private void keepScreenOn() {
@@ -2935,7 +2935,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
             boolean usePageIdQueryParam = true;
             if (appCMSPresenter.isPageAVideoPage(appCMSBinder.getScreenName()) ||
-                    appCMSPresenter.isPageAShowPage(appCMSBinder.getScreenName())) {
+                    appCMSPresenter.isPageAShowPage(appCMSBinder.getScreenName())||
+                    appCMSPresenter.isPageABundlePage(appCMSBinder.getScreenName())) {
                 endPoint = appCMSPresenter.getPageNameToPageAPIUrl(appCMSBinder.getPageName());
                 usePageIdQueryParam = false;
             }
@@ -2961,6 +2962,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         appCMSBinder.getAppCMSPageUI().getCaching() != null &&
                                 appCMSBinder.getAppCMSPageUI().getCaching().isEnabled(),
                         appCMSPageAPI -> {
+
+                            if (appCMSPageAPI == null) {
+                                return;
+                            }
                             for (int i = 0; i < appCMSPageAPI.getModules().size(); i++) {
                                 if (appCMSPageAPI.getModules().get(i) != null &&
                                         appCMSPageAPI.getModules().get(i).getModuleType() != null) {
@@ -3434,10 +3439,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() != null &&
                         appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText() != null) {
 
-                    SpannableString content = new SpannableString(appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText().trim() +" "+
+                    SpannableString content = new SpannableString(appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText().trim() + " " +
                             appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText());
 
-                    content.setSpan(new UnderlineSpan(), appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText().trim().length()+2,
+                    content.setSpan(new UnderlineSpan(), appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText().trim().length() + 2,
                             content.length(), 0);
                     appCMSNavFreeTrialTool.setText(content);
                 }

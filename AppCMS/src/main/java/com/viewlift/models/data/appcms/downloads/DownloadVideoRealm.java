@@ -58,13 +58,6 @@ public class DownloadVideoRealm extends RealmObject {
     }
 
 
-    public boolean isRentStartTimeUpdated() {
-        return isRentStartTimeUpdated;
-    }
-
-    public void setRentStartTimeUpdated(boolean rentStartTimeUpdated) {
-        isRentStartTimeUpdated = rentStartTimeUpdated;
-    }
 
 
 
@@ -135,14 +128,23 @@ public class DownloadVideoRealm extends RealmObject {
     private long transactionEndDate;
     private String subscriptionType;
     private long rentStartWatchTime;
-    private boolean isRentStartTimeUpdated;
-    private String rentalPeriod;
 
-    public String getRentalPeriod() {
+    public boolean isRentStartTimeSyncedWithServer() {
+        return isRentStartTimeSyncedWithServer;
+    }
+
+    public void setRentStartTimeSyncedWithServer(boolean rentStartTimeSyncedWithServer) {
+        isRentStartTimeSyncedWithServer = rentStartTimeSyncedWithServer;
+    }
+
+    private boolean isRentStartTimeSyncedWithServer;
+    private float rentalPeriod;
+
+    public float getRentalPeriod() {
         return rentalPeriod;
     }
 
-    public void setRentalPeriod(String rentalPeriod) {
+    public void setRentalPeriod(float rentalPeriod) {
         this.rentalPeriod = rentalPeriod;
     }
 
@@ -463,6 +465,10 @@ public class DownloadVideoRealm extends RealmObject {
         gist.setDownloadStatus(getDownloadStatus());
         gist.setRuntime(getVideoDuration());
         gist.setTransactionEndDate(getTransactionEndDate());
+        gist.setRentStartTime(getRentStartWatchTime());
+        gist.setRentalPeriod(getRentalPeriod());
+        gist.setRentStartTimeSyncedWithServer(isRentStartTimeSyncedWithServer());
+
         gist.setSubscriptionType(getSubscriptionType());
         gist.setWatchedTime(getWatchedTime());
 
@@ -493,6 +499,8 @@ public class DownloadVideoRealm extends RealmObject {
          * added to check rent expire time
          */
         downloadVideoRealm.setTransactionEndDate(getTransactionEndDate());
+        downloadVideoRealm.setRentalPeriod(getRentalPeriod());
+
         downloadVideoRealm.setSubscriptionType(getSubscriptionType());
         downloadVideoRealm.setVideo_Downloaded_so_far(getVideo_Downloaded_so_far());
         downloadVideoRealm.setVideoFileURL(getVideoFileURL());

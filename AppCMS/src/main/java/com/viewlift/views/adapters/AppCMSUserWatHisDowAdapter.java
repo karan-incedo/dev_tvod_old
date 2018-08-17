@@ -27,6 +27,7 @@ import com.viewlift.Audio.playback.PlaybackManager;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.AppCMSTransactionDataValue;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
@@ -822,26 +823,69 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 
                                             appCMSPresenter.getTransactionData(data.getGist().getId(), updatedContentDatum -> {
 
+                                                boolean isPlayable = true;
+                                                AppCMSTransactionDataValue objTransactionData = null;
+
 
                                                 if (updatedContentDatum != null &&
-                                                        updatedContentDatum.size() > 0 &&
-                                                        updatedContentDatum.get(0).size() > 0) {
-
-                                                }
-                                                appCMSPresenter.showRentTimeDialog(retry -> {
-                                                    if (retry) {
-                                                        appCMSPresenter.getRentalData(moduleAPI.getContentData().get(0).getGist().getId(), getRentalData -> {
-                                                            appCMSPresenter.launchVideoPlayer(data,
-                                                                    data.getGist().getId(),
-                                                                    finalCurrentPlayingIndex,
-                                                                    finalRelatedVideoIds,
-                                                                    -1,
-                                                                    finalAction);
-                                                        }, null, false);
+                                                        updatedContentDatum.size() > 0) {
+                                                    if (updatedContentDatum.get(0).size() == 0) {
+                                                        isPlayable = false;
                                                     } else {
-//                                                appCMSPresenter.sendCloseOthersAction(null, true, false);
+                                                        objTransactionData = updatedContentDatum.get(0).get(data.getGist().getId());
+
                                                     }
-                                                }, "x");
+                                                }
+                                                if (!isPlayable) {
+                                                    appCMSPresenter.showNoPurchaseDialog(mContext.getString(R.string.rental_title), mContext.getString(R.string.rental_description));
+
+                                                } else {
+
+                                                    String rentalPeriod="";
+                                                    if (data.getPricing()!=null && data.getPricing().getRent() != null &&
+                                                            data.getPricing().getRent().getRentalPeriod() != null) {
+                                                        rentalPeriod=data.getPricing().getRent().getRentalPeriod();
+                                                    }
+                                                    if(objTransactionData!=null){
+                                                        rentalPeriod= String.valueOf(objTransactionData.getRentalPeriod());
+                                                    }
+
+                                                    boolean isShowRentalPeriodDialog=true;
+                                                    /**
+                                                     * if transaction getdata api containf transaction end date .It means Rent API called before
+                                                     * and we have shown rent period dialog before so dont need to show rent dialog again. else sow rent period dilaog
+                                                     */
+                                                    if(objTransactionData.getTransactionEndDate()>0){
+                                                        isShowRentalPeriodDialog=false;
+                                                    }else{
+                                                        isShowRentalPeriodDialog=true;
+                                                    }
+
+                                                    if(isShowRentalPeriodDialog) {
+                                                        appCMSPresenter.showRentTimeDialog(retry -> {
+                                                            if (retry) {
+                                                                appCMSPresenter.getRentalData(moduleAPI.getContentData().get(0).getGist().getId(), getRentalData -> {
+                                                                    appCMSPresenter.launchVideoPlayer(data,
+                                                                            data.getGist().getId(),
+                                                                            finalCurrentPlayingIndex,
+                                                                            finalRelatedVideoIds,
+                                                                            -1,
+                                                                            finalAction);
+                                                                }, null, false, 0);
+                                                            } else {
+//                                                appCMSPresenter.sendCloseOthersAction(null, true, false);
+                                                            }
+                                                        }, rentalPeriod);
+                                                    }else{
+                                                        appCMSPresenter.launchVideoPlayer(data,
+                                                                data.getGist().getId(),
+                                                                finalCurrentPlayingIndex,
+                                                                finalRelatedVideoIds,
+                                                                -1,
+                                                                finalAction);
+                                                    }
+
+                                            }
 
                                             }, null, false);
                                         }

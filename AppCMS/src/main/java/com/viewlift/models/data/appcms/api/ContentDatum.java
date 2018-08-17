@@ -143,6 +143,42 @@ public class ContentDatum implements Serializable {
     @Expose
     List<Seo> seo = null;
 
+    @SerializedName("type")
+    @Expose
+    String type;
+
+    @SerializedName("seriesId")
+    @Expose
+    String seriesId;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getSeriesId() {
+        return seriesId;
+    }
+
+    public void setSeriesId(String seriesId) {
+        this.seriesId = seriesId;
+    }
+
+    public String getSeasonId() {
+        return seasonId;
+    }
+
+    public void setSeasonId(String seasonId) {
+        this.seasonId = seasonId;
+    }
+
+    @SerializedName("seasonId")
+    @Expose
+    String seasonId;
+
     HashMap<String,List<ContentDatum>> monthlySchedule;
 
     @SerializedName("drmEnabled")

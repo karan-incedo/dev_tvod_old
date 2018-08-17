@@ -77,6 +77,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     private String openOptionsAction;
     private String purchasePlanAction;
     private String showAction;
+    private String bundleDetailAction;
+
     private MotionEvent lastTouchDownEvent;
     private String watchVideoAction;
     private String watchTrailerAction;
@@ -135,6 +137,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.defaultAction = getDefaultAction(context);
         this.videoAction = getVideoAction(context);
         this.showAction = getShowAction(context);
+        this.bundleDetailAction = getBundleDetailAction(context);
+
         this.openOptionsAction = getOpenOptionsAction(context);
         this.purchasePlanAction = getPurchasePlanAction(context);
 
@@ -659,7 +663,18 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 } else if (contentType.equals(fullLengthFeatureType)) {
                                     action = action != null && action.equalsIgnoreCase("openOptionDialog") ? action : videoAction;
                                 }
-
+//                                if(data.getGist().getTitle().equalsIgnoreCase("Test Encoding ")){
+//                                    action=bundleDetailAction;
+//                                }
+                                if (data.getGist() != null && data.getGist().getMediaType() != null
+                                        && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_bundle).toLowerCase())) {
+                                    action=bundleDetailAction;
+                                }
+//                                if (data.getGist() != null && data.getGist().getMediaType() != null
+//                                        && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_episode).toLowerCase())) {
+//                                    action = showAction;
+//
+//                                }
                                 if (data.getGist() != null && data.getGist().getMediaType() != null
                                         && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.app_cms_article_key_type).toLowerCase())) {
                                     appCMSPresenter.setCurrentArticleIndex(-1);
@@ -959,6 +974,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         return context.getString(R.string.app_cms_action_showvideopage_key);
     }
 
+    private String getBundleDetailAction(Context context) {
+        return context.getString(R.string.app_cms_action_detailbundlepage_key);
+    }
     private String getOpenOptionsAction(Context context) {
         return context.getString(R.string.app_cms_action_open_option_dialog);
     }

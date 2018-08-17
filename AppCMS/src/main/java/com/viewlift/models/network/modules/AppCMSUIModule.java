@@ -357,6 +357,9 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_PLAY_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_action_showvideopage_key),
                 AppCMSUIKeyType.PAGE_SHOW_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_action_detailbundlepage_key),
+                AppCMSUIKeyType.PAGE_BUNDLE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_action_articlepage_key),
                 AppCMSUIKeyType.PAGE_ARTICLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_action_photo_gallerypage_key),
@@ -705,6 +708,9 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_WATCHLIST_01_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_mylibrary_module_key),
                 AppCMSUIKeyType.PAGE_MYLIBRARY_01_MODULE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_bundle_Detail_module_key),
+                AppCMSUIKeyType.PAGE_BUNDLEDETAIL_01_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_history_module_key2),
                 AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_module_key2),
@@ -853,6 +859,8 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_schedule_module_key),
                 AppCMSUIKeyType.PAGE_AC_TEAM_SCHEDULE_MODULE_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_bundle_module_key),
+                AppCMSUIKeyType.PAGE_AC_BUNDLEDETAIL_TRAY_MODULE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_parent_bg_key),
                 AppCMSUIKeyType.PAGE_AC_TEAM_PARENT_BG_KEY);
@@ -1234,6 +1242,9 @@ public class AppCMSUIModule {
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_videoscreen_key),
                 context.getString(R.string.app_cms_action_detailvideopage_key));
 
+        this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_bundlescreen_key),
+                context.getString(R.string.app_cms_action_detailbundlepage_key));
+
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_showscreen_key),
                 context.getString(R.string.app_cms_action_showvideopage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_articlescreen_key),
@@ -1268,6 +1279,8 @@ public class AppCMSUIModule {
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_forgotpassword_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_link_your_account_action), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_link_change_language_action), null);
+        this.actionToPageMap.put(context.getString(R.string.app_cms_action_detailbundlepage_key), null);
+
     }
 
     private void createActionToPageAPIMap(Context context) {
@@ -1407,6 +1420,9 @@ public class AppCMSUIModule {
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_open_option_dialog),
                 AppCMSActionType.OPEN_OPTION_DIALOG);
+
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_detailbundlepage_key),
+                AppCMSActionType.PAGE_BUNDLE_KEY);
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_banner_detail_button_action_key),
                 AppCMSActionType.BANNER_DETAIL_CLICK);

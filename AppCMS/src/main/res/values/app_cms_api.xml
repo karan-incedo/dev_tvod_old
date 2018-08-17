@@ -275,6 +275,7 @@
     <string name="app_cms_page_tray_03_module_key">AC Tray 03</string>
     <string name="app_cms_page_tray_05_module_key">AC Tray 05</string>
     <string name="app_cms_page_tray_06_module_key">AC Tray 06</string>
+    <string name="app_cms_page_tray_bundle_module_key">AC BundleDetailTray 01</string>
 
     <string name="app_cms_page_schedule_module_key">AC EventCalendar 01</string>
     <string name="app_cms_roster_page_module_key">AC FighterRoster 01</string>
@@ -327,6 +328,7 @@
     <string name="app_cms_page_history_module_key2">AC History 02</string>
     <string name="app_cms_page_watchlist_module_key">AC Watchlist 01</string>
     <string name="app_cms_page_mylibrary_module_key">AC Library 01</string>
+    <string name="app_cms_page_bundle_Detail_module_key">AC BundleDetail 01</string>
 
     <string name="app_cms_page_watchlist_module_key2">AC Watchlist 02</string>
     <string name="app_cms_page_download_module_key">AC Downloads 01</string>
@@ -513,6 +515,7 @@
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
     <string name="app_cms_pagename_eventscreen_key">Event Page</string>
     <string name="app_cms_pagename_rosterscreen_key">Fighter Roster</string>
+    <string name="app_cms_pagename_bundlescreen_key">Bundle</string>
 
     <string name="app_cms_pagename_showscreen_key">Show Page</string>
     <string name="app_cms_pagename_moviescreen_key">Movies Page</string>
@@ -534,6 +537,8 @@
     <string name="app_cms_action_videopage_key">play</string>
     <string name="app_cms_action_detailvideopage_key">lectureDetailPage</string>
     <string name="app_cms_action_showvideopage_key">showDetailPage</string>
+    <string name="app_cms_action_detailbundlepage_key">bundleDetailPage</string>
+
     <string name="app_cms_action_articlepage_key">articleDetailPage</string>
     <string name="app_cms_action_photo_gallerypage_key">PhotoGalleryDetailPage</string>
     <string name="app_cms_action_moviespage_key">showMoviesPage</string>
@@ -655,6 +660,8 @@
     <!--AppCMS TVOD  API -->
 
     <string name="app_cms_getrental_api_url">%1$s/transaction/changeStatus?userId=%2$s&amp;videoId=%3$s</string>
+    <string name="app_cms_update_view_start_api_url">%1$s/transaction/changeStatus?userId=%2$s&amp;videoId=%3$s&amp;viewStart=%4$s</string>
+
     <string name="app_cms_gettransactiondata_api_url">%1$s/transaction/getData?userId=%2$s&amp;contentId=%3$s&amp;type=%4$s&amp;contentMeta=%5$s&amp;site=%6$s</string>
 
 
@@ -888,6 +895,8 @@
     <string name="adm_directive_adjust_seek_position">AdjustSeekPosition</string>
     <string name="audio_fragment_tag_key">audio_fragment</string>
     <string name="media_type_playlist">PLAYLIST</string>
+    <string name="media_type_bundle">BUNDLE</string>
+
     <string name="media_type_audio">AUDIO</string>
     <string name="media_type_episode">EPISODIC</string>
     <string name="media_type_video">VIDEO</string>

@@ -567,6 +567,19 @@ public class Gist implements Serializable {
     @Expose
     String rsvpUrl;
 
+
+    public List<ContentDatum> getBundleList() {
+        return bundleList;
+    }
+
+    public void setBundleList(List<ContentDatum> bundleList) {
+        this.bundleList = bundleList;
+    }
+
+    @SerializedName("bundleList")
+    @Expose
+    List<ContentDatum> bundleList;
+
     public String getExternalUrl() {
         return externalUrl;
     }
@@ -628,6 +641,16 @@ public class Gist implements Serializable {
     }
 
     float rentalPeriod;
+
+    public boolean isRentStartTimeSyncedWithServer() {
+        return isRentStartTimeSyncedWithServer;
+    }
+
+    public void setRentStartTimeSyncedWithServer(boolean rentStartTimeSyncedWithServer) {
+        isRentStartTimeSyncedWithServer = rentStartTimeSyncedWithServer;
+    }
+
+    boolean isRentStartTimeSyncedWithServer;
 
 
     public boolean isRentedDialogShownAlready() {

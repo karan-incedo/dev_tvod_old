@@ -869,6 +869,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     private void updateVideoStartTime(){
         {
+
             if(onUpdateContentDatumEvent.getCurrentContentDatum().getGist().getRentStartTime()==0 &&
                     onUpdateContentDatumEvent.getCurrentContentDatum().getGist().getTransactionEndDate()==0){
                 appCMSPresenter.updateVideoStartTime(onUpdateContentDatumEvent.getCurrentContentDatum().getGist().getId());

@@ -1148,7 +1148,7 @@ public class CollectionGridItemView extends BaseView {
                             publishDate.append(data.getContentDetails().getAuthor().getPublishDate().toString());
                         }
                         ((TextView) view).setText(data.getContentDetails().getAuthor().getName() + publishDate.toString());
-                    } else {
+                    } else if(data.getGist()!=null && data.getGist().getTitle()!=null){
                         ((TextView) view).setText(data.getGist().getTitle());
                     }
                     ((TextView) view).setTextColor(appCMSPresenter.getGeneralTextColor());
@@ -1584,6 +1584,9 @@ public class CollectionGridItemView extends BaseView {
                         String expirationTime=appCMSPresenter.getRentExpirationFormat(remainingTime);
                         ((TextView) view).setBackground(context.getResources().getDrawable(R.drawable.rectangle_with_round_corners,null));
                         ((TextView) view).setText(expirationTime);
+                        if(remainingTime<=0){
+                            ((TextView) view).setVisibility(View.GONE);
+                        }
 
                     }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_DESCRIPTION_KEY ||

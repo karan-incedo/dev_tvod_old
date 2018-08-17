@@ -14,6 +14,8 @@ public enum AppCMSActionType {
     PLAYLIST_PAGE,
     VIDEO_PAGE,
     SHOW_PAGE,
+    PAGE_BUNDLE_KEY,
+
     ARTICLE_PAGE,
     PHOTO_GALLERY_PAGE,
     MUSIC_PAGE,
