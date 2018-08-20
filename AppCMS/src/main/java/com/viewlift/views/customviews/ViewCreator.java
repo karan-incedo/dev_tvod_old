@@ -7940,6 +7940,12 @@ public class ViewCreator {
 
 //                contentDatum.getGist().setRentalPeriod(48);
 //                contentDatum.getGist().setTransactionEndDate(1534247577000L);
+
+                /**
+                 * First check if content is TVOD type and it have pricing info. Then check it purchased info
+                 * by calling getData API.IF it has purchased info than play else show rental message.Else for SVOd
+                 * Content ,Run the flow same as before.
+                 */
                 if ((contentDatum.getPricing() != null &&
                         contentDatum.getPricing().getType() != null &&
                         contentDatum.getPricing().getType().equalsIgnoreCase("TVOD")) ||
@@ -7966,15 +7972,15 @@ public class ViewCreator {
 
                         }
 
-                        if (!appCMSPresenter.isUserLoggedIn()) {
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED,
-                                    () -> {
-                                        appCMSPresenter.setAfterLoginAction(() -> {
-                                            //
-                                        });
-                                    });
-                            return;
-                        }
+//                        if (!appCMSPresenter.isUserLoggedIn()) {
+//                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED,
+//                                    () -> {
+//                                        appCMSPresenter.setAfterLoginAction(() -> {
+//                                            //
+//                                        });
+//                                    });
+//                            return;
+//                        }
                         /**
                          * get the transaction end date and compare with current time if end date is less than current date
                          * playable will be false
