@@ -546,6 +546,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                             && listViewAdapter == null ){
                         appCMSPresenter.showToast(getContext().getString(R.string.no_settings_available), Toast.LENGTH_SHORT);
                     }else if (videoPlayerSettingsEvent != null){
+                        if(streamingQualitySelector != null && listViewAdapter != null){
+                         int streamingQualityIndex = streamingQualitySelector.getMpegResolutionIndexFromUrl(uri.toString());
+
+                            if(listViewAdapter.getItemCount() > streamingQualityIndex)
+                            listViewAdapter.setSelectedIndex(streamingQualityIndex);
+                            listViewAdapter.notifyDataSetChanged();
+                        }
                         videoPlayerSettingsEvent.launchSetting(closedCaptionSelectorAdapter,listViewAdapter);
                         /*videoPlayerSettingsEvent.launchSetting(availableClosedCaptions, closedCaptionSelectorAdapter == null ? 0 : closedCaptionSelectorAdapter.getSelectedIndex(),
                                 availableStreamingQualitiesHLS, hlsListViewAdapter == null ? 0 : hlsListViewAdapter.getSelectedIndex(),
@@ -721,17 +728,21 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             }
         }
 
-        int selectedTrack = getSelectedCCTrack();
-
         /*a mock entry for "Off" option*/
         ClosedCaptions captions = new ClosedCaptions();
         captions.setLanguage("Off");
-
         /*fetch all the available SRTs*/
         availableClosedCaptions = closedCaptionSelector.getAvailableClosedCaptions();
 
         /*add the mock entry at the 0th index*/
         availableClosedCaptions.add(0, captions);
+
+        int selectedTrack = getSelectedCCTrack();
+        for(int i = 0; i < availableClosedCaptions.size(); i++){
+            if(availableClosedCaptions.get(i).getLanguage().equalsIgnoreCase(appCMSPresenter.getPreferredSubtitleLanguage())){
+                selectedTrack = i;
+            }
+        }
 
         /*create adapter*/
         closedCaptionSelectorAdapter = new ClosedCaptionSelectorAdapter(getContext(),
@@ -774,10 +785,16 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             //if (appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.TV) {
             closedCaptionSelectorDialog.show();
             closedCaptionSelectorAdapter.notifyDataSetChanged();
-            closedCaptionSelectorRecyclerView.scrollToPosition(selectedTrack);
+            closedCaptionSelectorRecyclerView.scrollToPosition(0);
             // }
         });
         closedCaptionSelectorCreated = true;
+
+        /*if(useHls){
+            createStreamingQualitySelectorForHLS();
+        }else{
+            createStreamingQualitySelector();
+        }*/
     }
 
     /**
@@ -868,7 +885,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                             e.printStackTrace();
                         }
                     });
-                    settingsButtonVisibility(true);
+                    //settingsButtonVisibility(true);
                 } else {
                     currentStreamingQualitySelector.setVisibility(GONE);
                 }
@@ -1329,16 +1346,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             if (playbackState == Player.STATE_READY /*checking if the playback state is ready*/
                     && !getPlayerView().getController().isPlayingLive() /* if video is not Live*/
                     && useHls /*createStreamingQualitySelectorForHLS is only called for HLS stream*/
-                    && !streamingQualitySelectorCreated /*making sure the selector isn't already created*/
-                    && isLiveStreaming()) {
+                    && !streamingQualitySelectorCreated) {
                 createStreamingQualitySelectorForHLS();
                 // Default "Auto" is selected
                 currentStreamingQualitySelector.setText(getContext().getString(R.string.auto));
                 showStreamingQualitySelector();
             } else if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)
                     && !useHls
-                    && !streamingQualitySelectorCreated
-                    && isLiveStreaming()) {
+                    && !streamingQualitySelectorCreated) {
 
                 createStreamingQualitySelector();
                 String defaultVideoResolution = getContext().getString(R.string.default_video_resolution);
@@ -1362,7 +1377,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                         closedCaptionSelectorAdapter.setSelectedIndex(selectedSubtitleIndex + 1);
                     }
                     toggleCCSelectorVisibility(true);
-                    settingsButtonVisibility(true);
                 }
             }
             if (playbackState == Player.STATE_READY
@@ -1370,7 +1384,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
                 /*Show streaming quality selector only after the player is ready*/
                 showStreamingQualitySelector();
-                settingsButtonVisibility(true);
 
                 String defaultVideoResolution = getContext().getString(R.string.default_video_resolution);
                 int res = Integer.parseInt(defaultVideoResolution.replace("p", ""));
@@ -1382,6 +1395,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 trackSelector.setParameters(trackSelector.getParameters().buildUpon().setMaxVideoSize(Integer.MAX_VALUE, res).build());
             }
 
+            if(playbackState == Player.STATE_READY) {
+                if (streamingQualitySelectorCreated || !closedCaptionSelectorCreated) {
+                    settingsButtonVisibility(true);
+                }
+            }
         }
     }
 
@@ -1489,6 +1507,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             this.uri = Uri.parse(streamingQualitySelector.getStreamingQualityUrl(text));
             setSelectedStreamingQualityIndex();
         } catch (Exception e) {
+
         }
     }
 
@@ -2240,6 +2259,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public void setClosedCaption(int position) {
 
+        if(position == -1){
+            return;
+        }
         System.out.println("setClosedCaption  " + position);
 
         /* if position is anything else other than the mock "off" entry*/
@@ -2273,7 +2295,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public void setStreamingQuality(int position, Object obj) {
         try {
-             if (obj instanceof HLSStreamingQuality) {
+             if (obj instanceof HLSStreamingQuality && position != -1) {
                 int selectedIndex = hlsListViewAdapter.getDownloadQualityPosition();
                 if (selectedIndex == 0) {
                     trackSelector.clearSelectionOverrides(mVideoRendererIndex);
@@ -2287,7 +2309,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 currentStreamingQualitySelector.setText(availableStreamingQualitiesHLS.get(selectedIndex).getValue());
                 hlsListViewAdapter.setSelectedIndex(selectedIndex);
             } else {
-                 if(availableStreamingQualities != null) {
+                 if(availableStreamingQualities != null && position != -1) {
                      TrackGroupArray trackGroups1 = trackSelector.getCurrentMappedTrackInfo().getTrackGroups(mVideoRendererIndex);
                      DefaultTrackSelector.SelectionOverride override = new DefaultTrackSelector.SelectionOverride(
                              position, 0);
@@ -2296,8 +2318,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                      listViewAdapter.setSelectedIndex(position);
                  }
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }

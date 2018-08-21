@@ -10,8 +10,6 @@ import com.amazon.alexa.vsk.clientlib.AlexaClientManager;
 import com.amazon.device.messaging.ADM;
 import com.appsflyer.AppsFlyerConversionListener;
 import com.appsflyer.AppsFlyerLib;
-import com.facebook.stetho.Stetho;
-import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 import com.viewlift.models.data.appcms.downloads.DownloadMediaMigration;
 import com.viewlift.models.network.modules.AppCMSSiteModule;
 import com.viewlift.models.network.modules.AppCMSUIModule;
@@ -55,12 +53,6 @@ public class AppCMSApplication extends MultiDexApplication {
 //                .deleteRealmIfMigrationNeeded()  // for Development purpose
                 .build();
         Realm.setDefaultConfiguration(config);
-
-        Stetho.initialize(
-                Stetho.newInitializerBuilder(this)
-                        .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-                        .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
-                        .build());
     }
 
     @Override

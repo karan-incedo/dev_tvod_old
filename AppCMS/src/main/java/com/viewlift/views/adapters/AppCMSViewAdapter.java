@@ -546,7 +546,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         if (isClickable) {
                             if (data.getGist() != null) {
                                 appCMSPresenter.setPlaySource("");
-                                if (moduleAPI.getContentData().get(0).getGist().getContentType().contains("SERIES"))
+                                if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getContentType()) && moduleAPI.getContentData().get(0).getGist().getContentType().contains("SERIES"))
                                     appCMSPresenter.setPlaySource(moduleAPI.getContentData().get(0).getGist().getTitle());
                                 else
                                     appCMSPresenter.setPlaySource(moduleAPI.getTitle());

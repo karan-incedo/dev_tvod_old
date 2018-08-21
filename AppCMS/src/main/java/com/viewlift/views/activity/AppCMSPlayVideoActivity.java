@@ -154,7 +154,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             launchVideoPlayer(gist, extra, useHls, finalFontColor, defaultVideoResolution,
                                     intent, appCMSPlayVideoPageContainer, null);
                         } catch (Exception e) {
-
+                            e.printStackTrace();
                         }
                     }, 500);
                 } else {
@@ -465,8 +465,16 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     @Override
     public void onBackPressed() {
 //        super.onBackPressed();
-        finish();
-        appCMSPresenter.setEntitlementPendingVideoData(null);
+        Fragment attachedView = getSupportFragmentManager().findFragmentById(R.id.app_cms_play_video_page_container);
+        if(attachedView != null){
+
+            if(((AppCMSPlayVideoFragment)attachedView).getPlayerSettingsView() != null && ((AppCMSPlayVideoFragment)attachedView).getPlayerSettingsView().getVisibility() == View.VISIBLE){
+                ((AppCMSPlayVideoFragment)attachedView).finishPlayerSetting();
+            }else{
+                finish();
+                appCMSPresenter.setEntitlementPendingVideoData(null);
+            }
+        }
     }
 
     @Override

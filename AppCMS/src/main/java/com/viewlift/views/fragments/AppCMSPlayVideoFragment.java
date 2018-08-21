@@ -575,6 +575,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     }
                 } else if (playerState.getPlaybackState() == ExoPlayer.STATE_BUFFERING ||
                         playerState.getPlaybackState() == ExoPlayer.STATE_IDLE) {
+                    videoLoadingProgress.setVisibility(View.VISIBLE);
                     lastPlayType = "BUFFERING";
                     bufferTime++;
                     if ((int) (videoPlayerView.getCurrentPosition() / 1000) == (int) ((videoPlayerView.getDuration() / 1000) * 0.25) ||
@@ -1471,7 +1472,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 break;
 
             case AudioManager.AUDIOFOCUS_LOSS:
-                videoPlayerView.pausePlayer();
+                //videoPlayerView.pausePlayer();
                 abandonAudioFocus();
                 break;
 
@@ -1486,6 +1487,10 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (videoPlayerView != null) {
             videoPlayerView.startPlayer(true);
         }
+    }
+
+    public PlayerSettingsView getPlayerSettingsView(){
+        return playerSettingsView;
     }
 
     @Override
