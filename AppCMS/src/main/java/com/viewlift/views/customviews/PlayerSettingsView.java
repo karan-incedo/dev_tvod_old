@@ -73,15 +73,15 @@ public class PlayerSettingsView extends FrameLayout {
         View recyclerView = findViewById(R.id.item_list);
         ImageButton buttonPlayerSettingSubmit = findViewById(R.id.buttonPlayerSettingSubmit);
 
-        buttonPlayerSettingSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        buttonPlayerSettingSubmit.setOnClickListener(v -> {
 
-                if (playerSettingsEvent != null) {
-                    playerSettingsEvent.finishPlayerSetting();
-                }
+            if (playerSettingsEvent != null) {
 
+                SelectedClosedCaptionIndex = closedCaptionSelectorAdapter != null ? closedCaptionSelectorAdapter.getSelectedIndex() : -1;
+                SelectedStreamingQualityIndex = streamingQualitySelectorAdapter != null ? streamingQualitySelectorAdapter.getSelectedIndex() : -1;
+                playerSettingsEvent.finishPlayerSetting();
             }
+
         });
 
         assert recyclerView != null;

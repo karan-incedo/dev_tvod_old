@@ -49,7 +49,7 @@ public class AppCMSApplication extends MultiDexApplication {
         Realm.init(this);
         RealmConfiguration config = new RealmConfiguration
                 .Builder()
-                .schemaVersion(6)
+                .schemaVersion(8)
                 .migration(new DownloadMediaMigration())
 //                .deleteRealmIfMigrationNeeded()  // for Development purpose
                 .build();

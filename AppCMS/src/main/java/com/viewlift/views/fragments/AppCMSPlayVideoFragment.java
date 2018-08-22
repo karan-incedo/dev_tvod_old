@@ -577,6 +577,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     }
                 } else if (playerState.getPlaybackState() == ExoPlayer.STATE_BUFFERING ||
                         playerState.getPlaybackState() == ExoPlayer.STATE_IDLE) {
+                    videoLoadingProgress.setVisibility(View.VISIBLE);
                     lastPlayType = "BUFFERING";
                     bufferTime++;
                     if ((int) (videoPlayerView.getCurrentPosition() / 1000) == (int) ((videoPlayerView.getDuration() / 1000) * 0.25) ||
@@ -853,7 +854,10 @@ public class AppCMSPlayVideoFragment extends Fragment
                         : View.GONE);
         videoPlayerView.setAdsUrl(adsUrl);
         if (isVideoDownloaded) {
-            videoPlayerView.setOfflineUri(Uri.parse(hlsUrl), null);
+            if (closedCaptionUrl != null)
+                videoPlayerView.setOfflineUri(Uri.parse(hlsUrl), Uri.parse(closedCaptionUrl));
+            else
+                videoPlayerView.setOfflineUri(Uri.parse(hlsUrl), null);
         }
         videoPlayerView.preparePlayer();
         videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
@@ -1497,6 +1501,10 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (videoPlayerView != null && showEntitlementDialog == false) {
             videoPlayerView.startPlayer(true);
         }
+    }
+
+    public PlayerSettingsView getPlayerSettingsView(){
+        return playerSettingsView;
     }
 
     @Override
