@@ -317,7 +317,8 @@ public class WebViewActivity extends AppCompatActivity {
 
             String vPostParams = params.substring(0, params.length() - 1);
             try {
-                webview.postUrl(TRANS_URL, EncodingUtils.getBytes(vPostParams, "UTF-8"));
+//                webview.postUrl(TRANS_URL, EncodingUtils.getBytes(vPostParams, "UTF-8"));
+                webview.postUrl(TRANS_URL,vPostParams.getBytes("UTF-8"));
             } catch (Exception e) {
                 showToast("Exception occured while opening webview.");
             }
