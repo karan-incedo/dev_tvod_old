@@ -36,6 +36,17 @@ public class Gist implements Serializable {
     private String seriesPermalink;
 
 
+    public Pricing getBundlePricing() {
+        return bundlePricing;
+    }
+
+    public void setBundlePricing(Pricing bundlePricing) {
+        this.bundlePricing = bundlePricing;
+    }
+
+    @SerializedName("bundlePricing")
+    @Expose
+    Pricing bundlePricing;
 
     public long getTransactionDateEpoch() {
         return transactionDateEpoch;

@@ -813,13 +813,15 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                     }
                                 } else {
 
-                                    if (isLibraryPage) {
+//                                    if (isLibraryPage) {
 
                                         int finalCurrentPlayingIndex = currentPlayingIndex;
                                         List<String> finalRelatedVideoIds = relatedVideoIds;
                                         String finalAction = action;
 
-                                        if(data.getGist().getPurchaseType().equalsIgnoreCase("RENT") || data.getGist().getScheduleEndDate()==0) {
+                                        if((data.getPricing()!=null && (data.getPricing().getType().equalsIgnoreCase("TVOD") ||
+                                                data.getPricing().getType().equalsIgnoreCase("PPV"))) ||
+                                                (data.getGist().getPurchaseType()!=null && (data.getGist().getPurchaseType().equalsIgnoreCase("RENT") || data.getGist().getScheduleEndDate()==0))) {
 
                                             appCMSPresenter.getTransactionData(data.getGist().getId(), updatedContentDatum -> {
 
@@ -843,8 +845,8 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 
                                                     String rentalPeriod="";
                                                     if (data.getPricing()!=null && data.getPricing().getRent() != null &&
-                                                            data.getPricing().getRent().getRentalPeriod() != null) {
-                                                        rentalPeriod=data.getPricing().getRent().getRentalPeriod();
+                                                            data.getPricing().getRent().getRentalPeriod() > 0) {
+                                                        rentalPeriod= String.valueOf(data.getPricing().getRent().getRentalPeriod());
                                                     }
                                                     if(objTransactionData!=null){
                                                         rentalPeriod= String.valueOf(objTransactionData.getRentalPeriod());
@@ -862,6 +864,11 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                                     }
 
                                                     if(isShowRentalPeriodDialog) {
+
+                                                        if (rentalPeriod == null || TextUtils.isEmpty(rentalPeriod)) {
+                                                            rentalPeriod = "xapi" +
+                                                                    "";
+                                                        }
                                                         appCMSPresenter.showRentTimeDialog(retry -> {
                                                             if (retry) {
                                                                 appCMSPresenter.getRentalData(moduleAPI.getContentData().get(0).getGist().getId(), getRentalData -> {
@@ -875,7 +882,8 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                                             } else {
 //                                                appCMSPresenter.sendCloseOthersAction(null, true, false);
                                                             }
-                                                        }, rentalPeriod);
+                                                        }, mContext.getString(R.string.rent_time_dialog_mssg,
+                                                                rentalPeriod),true);
                                                     }else{
                                                         appCMSPresenter.launchVideoPlayer(data,
                                                                 data.getGist().getId(),
@@ -888,6 +896,13 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             }
 
                                             }, null, false);
+                                        }else{
+                                            appCMSPresenter.launchVideoPlayer(data,
+                                                    data.getGist().getId(),
+                                                    currentPlayingIndex,
+                                                    relatedVideoIds,
+                                                    -1,
+                                                    action);
                                         }
 
 //                                        appCMSPresenter.getRentalData(data.getGist().getId(), updatedContentDatum -> {
@@ -909,15 +924,15 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 //                                                return;
 //                                            }
 //                                        }, null, false);
-                                    }else {
-                                        /*play movie from web URL*/
-                                        appCMSPresenter.launchVideoPlayer(data,
-                                                data.getGist().getId(),
-                                                currentPlayingIndex,
-                                                relatedVideoIds,
-                                                -1,
-                                                action);
-                                    }
+//                                    }else {
+//                                        /*play movie from web URL*/
+//                                        appCMSPresenter.launchVideoPlayer(data,
+//                                                data.getGist().getId(),
+//                                                currentPlayingIndex,
+//                                                relatedVideoIds,
+//                                                -1,
+//                                                action);
+//                                    }
                                 }
                             }
                             else if (action != null && !TextUtils.isEmpty(action)) {

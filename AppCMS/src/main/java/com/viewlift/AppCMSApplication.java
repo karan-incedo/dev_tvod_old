@@ -89,6 +89,7 @@ public class AppCMSApplication extends MultiDexApplication {
                     //
                 }
             };
+
             appCMSPresenterComponent = DaggerAppCMSPresenterComponent
                     .builder()
                     .appCMSUIModule(new AppCMSUIModule(this))

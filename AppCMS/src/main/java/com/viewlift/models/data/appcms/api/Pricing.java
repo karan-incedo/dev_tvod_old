@@ -2,6 +2,7 @@ package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.viewlift.models.billing.utils.Purchase;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
@@ -11,28 +12,28 @@ public class Pricing implements Serializable {
 
     @SerializedName("rent")
     @Expose
-    rent rent;
+    private Rent rent;
 
-    @SerializedName("purchase")
-    @Expose
-    rent purchase;
-
-
-    public com.viewlift.models.data.appcms.api.rent getRent() {
+    public Rent getRent() {
         return rent;
     }
 
-    public void setRent(com.viewlift.models.data.appcms.api.rent rent) {
+    public void setRent(Rent rent) {
         this.rent = rent;
     }
 
-    public com.viewlift.models.data.appcms.api.rent getPurchase() {
+    public Purchase getPurchase() {
         return purchase;
     }
 
-    public void setPurchase(com.viewlift.models.data.appcms.api.rent purchase) {
+    public void setPurchase(Purchase purchase) {
         this.purchase = purchase;
     }
+
+    @SerializedName("purchase")
+    @Expose
+    private Purchase purchase;
+
 
     public String getType() {
         return type;

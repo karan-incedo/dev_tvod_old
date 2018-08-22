@@ -15,6 +15,10 @@
 
 package com.viewlift.models.billing.utils;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+import com.viewlift.models.data.appcms.api.Rent;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,6 +26,18 @@ import org.json.JSONObject;
  * Represents an in-app billing purchase.
  */
 public class Purchase {
+
+    public Rent getRent() {
+        return rent;
+    }
+
+    public void setRent(Rent rent) {
+        this.rent = rent;
+    }
+
+    @SerializedName("rent")
+    @Expose
+    private Rent rent;
     String mItemType;  // ITEM_TYPE_INAPP or ITEM_TYPE_SUBS
     String mOrderId;
     String mPackageName;

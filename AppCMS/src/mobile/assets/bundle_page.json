@@ -274,7 +274,7 @@
               "fontSize": 12
             },
             "tabletPortrait": {
-              "yAxis": 574,
+              "yAxis": 620,
               "xAxis": 285,
               "width": 173,
               "height": 40,
@@ -340,7 +340,7 @@
               "height": 350
             },
             "tabletPortrait": {
-              "yAxis": 620,
+              "yAxis": 670,
               "leftMargin": 0,
               "xAxis": 0,
               "rightMargin": 0,

@@ -488,10 +488,12 @@
     <string name="rental_title">Uh Oh</string>
     <string name="rental_description">Unfortunately you can not purchase on this platform.Content you have already purchased will become available here automatically</string>
     <string name="rent_time_dialog_mssg">Once video start you have %1$s amount of hours to consume the video</string>
+    <string name="content_time_available_in_for_rent">Content will be availabel in : %1$s</string>
 
 
     <string name="no_fight_records">No fight records found</string>
     <string name="no_settings_available">Player settings are not available for now!</string>
 
     <string name="rupee_symbol">\u20B9</string>
+    <string name="thank_you">Thank You</string>
 </resources>

@@ -46,6 +46,7 @@ import com.google.ads.interactivemedia.v3.api.AdsManager;
 import com.google.ads.interactivemedia.v3.api.AdsRequest;
 import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 */
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.mediacodec.MediaCodecRenderer;
 import com.google.android.exoplayer2.mediacodec.MediaCodecUtil;
@@ -1587,20 +1588,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements VideoPlaye
         }
         Log.e("Playback exception", errorString);
 
-    }
-
-    private static boolean isBehindLiveWindow(ExoPlaybackException e) {
-        if (e.type != ExoPlaybackException.TYPE_SOURCE) {
-            return false;
-        }
-        Throwable cause = e.getSourceException();
-        while (cause != null) {
-            if (cause instanceof BehindLiveWindowException) {
-                return true;
-            }
-            cause = cause.getCause();
-        }
-        return false;
     }
 
     private void setBeaconData() {

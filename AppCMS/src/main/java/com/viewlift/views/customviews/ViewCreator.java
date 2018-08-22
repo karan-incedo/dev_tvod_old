@@ -2044,11 +2044,9 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "schedule_page_module.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                }*/ /*else if (moduleInfo.getBlockName().contains("personDetail02")) {
-                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "person_detail.json"),
-                            AppCMSPageUI.class);
-                    module = appCMSPageUI1.getModuleList().get(1);
+                }*/ /*else if (moduleInfo.getBlockName().contains("userManagement01")) {
+
+                    module = appCMSAndroidModules.getModuleListMap().get("userManagement01");
                 }*/ else if (moduleInfo.getSettings() != null &&
                         moduleInfo.getSettings().isHidden()) { // Done for Tampabay Top Module
                     if (isTopModuleCreated) {
@@ -2270,6 +2268,7 @@ public class ViewCreator {
                                     false,
                                     module.getView(),
                                     module.getId());
+
                         } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
@@ -2284,8 +2283,8 @@ public class ViewCreator {
                                 componentViewResult.componentView.setVisibility(View.GONE);
                             }
                             adjustOthers = AdjustOtherState.INITIATED;
-                        } else if (/*!appCMSPresenter.isAppSVOD() &&*/ jsonValueKeyMap.get(component.getKey()) != null &&
-                                jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_DOWNLOADS_MODULE_KEY
+                        } else if (/*!appCMSPresenter.isAppSVOD() &&*/ jsonValueKeyMap.get(component.getKey()) != null
+                                && jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_DOWNLOADS_MODULE_KEY
                                 && appCMSPresenter.getAppCMSMain().getFeatures() != null &&
                                 !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads() && componentViewResult.componentView != null) {
                             componentViewResult.shouldHideComponent = true;
@@ -3649,9 +3648,11 @@ public class ViewCreator {
                         moduleAPI.getContentData().get(0).getPricing() != null &&
                         moduleAPI.getContentData().get(0).getGist() != null &&
                         moduleAPI.getContentData().get(0).getGist().getScheduleStartDate() > 0 &&
-                        moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue() != null &&
-                        moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().size() > 0 &&
-                        moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().get(0).size() > 0
+                        ((moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue() != null &&
+                                moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().size() > 0 &&
+                                moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().get(0).size() > 0) ||
+                                moduleAPI.getContentData().get(0).getPricing().getType().equalsIgnoreCase("FREE")
+                        )
                         ) {
                     componentViewResult.componentView = new LinearLayout(context);
                     ((LinearLayout) componentViewResult.componentView).setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -4230,6 +4231,7 @@ public class ViewCreator {
                                                     null);
                                             return;
                                         }
+
                                         appCMSPlaylistAdapter.startDownloadPlaylist();
 
                                     }
@@ -4458,9 +4460,17 @@ public class ViewCreator {
                             componentViewResult.componentView.setVisibility(View.GONE);
 
                         }
+
+                        /**
+                         * if content has pricing info and content is tvod or ppv type
+                         * or content id bundle type than check prchased status from transactiondata obj. If it has not response then show no purchase dialog
+                         */
                         if ((moduleAPI.getContentData().get(0).getPricing() != null &&
                                 moduleAPI.getContentData().get(0).getPricing().getType() != null &&
-                                (moduleAPI.getContentData().get(0).getPricing().getType().equalsIgnoreCase("TVOD") || moduleAPI.getContentData().get(0).getPricing().getType().equalsIgnoreCase("PPV")))) {
+                                (moduleAPI.getContentData().get(0).getPricing().getType().equalsIgnoreCase("TVOD") || moduleAPI.getContentData().get(0).getPricing().getType().equalsIgnoreCase("PPV"))) ||
+                                (moduleAPI.getContentData().get(0).getGist() != null &&
+                                        moduleAPI.getContentData().get(0).getGist().getBundlePricing() != null &&
+                                        moduleAPI.getContentData().get(0).getGist().getContentType().equalsIgnoreCase("BUNDLE"))) {
 
 
                             if (moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue() != null &&
@@ -4513,14 +4523,15 @@ public class ViewCreator {
                                     (moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets() != null ||
                                             moduleAPI.getContentData().get(0).getGist().getMediaType().equalsIgnoreCase("EPISODIC") )) {
                                 VideoAssets videoAssets=null;
-                                if(moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets()!=null) {
+                                if(moduleAPI.getContentData().get(0)!=null && moduleAPI.getContentData().get(0).getStreamingInfo()!=null &&
+                                        moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets()!=null) {
                                      videoAssets = moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets();
                                 }
                                 String vidUrl="";
                                 if(videoAssets!=null){
                                     vidUrl = videoAssets.getHls();
                                 }
-                                if (TextUtils.isEmpty(vidUrl)) {
+                                if (TextUtils.isEmpty(vidUrl) && videoAssets!=null && videoAssets.getMpeg()!=null) {
                                     for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(vidUrl); i++) {
                                         vidUrl = videoAssets.getMpeg().get(i).getUrl();
                                     }
@@ -4559,8 +4570,8 @@ public class ViewCreator {
 
                                         String rentalPeriod = "";
                                         if (moduleAPI.getContentData().get(0).getPricing().getRent() != null &&
-                                                moduleAPI.getContentData().get(0).getPricing().getRent().getRentalPeriod() != null) {
-                                            rentalPeriod = moduleAPI.getContentData().get(0).getPricing().getRent().getRentalPeriod();
+                                                moduleAPI.getContentData().get(0).getPricing().getRent().getRentalPeriod() > 0) {
+                                            rentalPeriod = String.valueOf(moduleAPI.getContentData().get(0).getPricing().getRent().getRentalPeriod());
                                         }
                                         if(moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue() != null &&
                                                 moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().size() > 0 &&
@@ -4585,6 +4596,11 @@ public class ViewCreator {
                                         }
 
                                         if(isShowRentalPeriodDialog) {
+
+                                            if (rentalPeriod == null || TextUtils.isEmpty(rentalPeriod)) {
+                                                rentalPeriod = "xapi" +
+                                                        "";
+                                            }
                                             appCMSPresenter.showRentTimeDialog(retry -> {
                                                 if (retry) {
                                                     appCMSPresenter.getRentalData(moduleAPI.getContentData().get(0).getGist().getId(), updatedRentalData -> {
@@ -4608,12 +4624,12 @@ public class ViewCreator {
                                                                 finalCurrentPlayingIndex1, finalRelatedVideoIds1,
                                                                 moduleAPI.getContentData().get(0).getGist().getWatchedTime(),
                                                                 component.getAction());
-                                                        System.out.println("response ");
                                                     }, null, false, 0);
                                                 } else {
 //                                                appCMSPresenter.sendCloseOthersAction(null, true, false);
                                                 }
-                                            }, rentalPeriod);
+                                            }, context.getString(R.string.rent_time_dialog_mssg,
+                                                    rentalPeriod),true);
                                         }else{
 
                                             appCMSPresenter.launchVideoPlayer(moduleAPI.getContentData().get(0),
@@ -4749,40 +4765,42 @@ public class ViewCreator {
                         componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
 
                         final String shareAction = component.getAction();
-
-                        componentViewResult.componentView.setOnClickListener(v -> {
-                            AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
-                            if (appCMSMain != null &&
-                                    moduleAPI != null &&
-                                    moduleAPI.getContentData() != null &&
-                                    !moduleAPI.getContentData().isEmpty() &&
-                                    moduleAPI.getContentData().get(0) != null &&
-                                    moduleAPI.getContentData().get(0).getGist() != null &&
-                                    moduleAPI.getContentData().get(0).getGist().getTitle() != null &&
-                                    moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
-                                StringBuilder filmUrl = new StringBuilder();
-                                filmUrl.append(appCMSMain.getDomainName());
-                                filmUrl.append(moduleAPI.getContentData().get(0).getGist().getPermalink());
-                                String[] extraData = new String[1];
-                                extraData[0] = filmUrl.toString();
-                                if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
-                                        shareAction,
-                                        moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                        extraData,
-                                        moduleAPI.getContentData().get(0),
-                                        false,
-                                        0,
-                                        null)) {
-                                    //Log.e(TAG, "Could not launch action: " +
+                        if(appCMSPresenter != null
+                                && !appCMSPresenter.getAppCMSMain().getId().equalsIgnoreCase("8630e831-6557-41a3-95c9-6aad9fea4c7d")) {
+                            componentViewResult.componentView.setOnClickListener(v -> {
+                                AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+                                if (appCMSMain != null &&
+                                        moduleAPI != null &&
+                                        moduleAPI.getContentData() != null &&
+                                        !moduleAPI.getContentData().isEmpty() &&
+                                        moduleAPI.getContentData().get(0) != null &&
+                                        moduleAPI.getContentData().get(0).getGist() != null &&
+                                        moduleAPI.getContentData().get(0).getGist().getTitle() != null &&
+                                        moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
+                                    StringBuilder filmUrl = new StringBuilder();
+                                    filmUrl.append(appCMSMain.getDomainName());
+                                    filmUrl.append(moduleAPI.getContentData().get(0).getGist().getPermalink());
+                                    String[] extraData = new String[1];
+                                    extraData[0] = filmUrl.toString();
+                                    if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
+                                            shareAction,
+                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                            extraData,
+                                            moduleAPI.getContentData().get(0),
+                                            false,
+                                            0,
+                                            null)) {
+                                        //Log.e(TAG, "Could not launch action: " +
 //                                            " permalink: " +
 //                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
 //                                            " action: " +
 //                                            component.getAction() +
 //                                            " film URL: " +
 //                                            filmUrl.toString());
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                         if (moduleAPI != null &&
                                 moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
@@ -4795,7 +4813,8 @@ public class ViewCreator {
                         }
                         if (appCMSPresenter != null &&
                                 appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS &&
-                                appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID) {
+                                appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID)
+                        {
                             componentViewResult.componentView.setVisibility(View.GONE);
                         }
                         break;
@@ -5475,7 +5494,9 @@ public class ViewCreator {
                         ((TextView) componentViewResult.componentView).setTextSize(BaseView.getFontSize(context, component.getLayout()));
                     }
                     if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_PLAN_PRICEINFO_KEY) {
-                        if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY && moduleAPI.getContentData().size() == 1) {
+                        //TODO need to made changes acordingly.
+                        //if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY && moduleAPI.getContentData().size() == 1) { //Single Plan Change
+                        if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY && moduleAPI.getContentData().size() == 0) {
                             ((TextView) componentViewResult.componentView).setVisibility(View.GONE);
                         }
                     }
@@ -5866,8 +5887,12 @@ public class ViewCreator {
                                     if (moduleAPI.getContentData().get(0).getGist().getPublishDate() != null) {
                                         publishDateMillseconds = Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate());
                                         String publishDate = context.getResources().getString(R.string.published_on) + " " + AppCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd, yyyy");
-                                        builder.append(" | ");
-                                        builder.append(publishDate);
+                                        if (runtime == 0) {
+                                            builder.replace(0, secondsToTime.length(), publishDate);
+                                        } else {
+                                            builder.append(" | ");
+                                            builder.append(publishDate);
+                                        }
                                     }
 
                                     ((TextView) componentViewResult.componentView).setText(builder);
@@ -5966,12 +5991,14 @@ public class ViewCreator {
                                     ((TextView) componentViewResult.componentView).setShadowLayer(2, 1, 1, android.R.color.black);
                                 } else if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                         moduleAPI.getContentData().get(0) != null &&
-
                                         moduleAPI.getContentData().get(0).getPricing() != null &&
-                                        moduleAPI.getContentData().get(0).getPricing().getType() != null &&
-                                        moduleAPI.getContentData().get(0).getPricing().getType().equalsIgnoreCase("PPV") &&
                                         moduleAPI.getContentData().get(0).getGist() != null &&
-                                        moduleAPI.getContentData().get(0).getGist().getScheduleStartDate() > 0
+                                        moduleAPI.getContentData().get(0).getGist().getScheduleStartDate() > 0 &&
+                                        ((moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue() != null &&
+                                                moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().size() > 0 &&
+                                                moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().get(0).size() > 0) ||
+                                                moduleAPI.getContentData().get(0).getPricing().getType().equalsIgnoreCase("FREE")
+                                        )
                                         ) {
 
                                     ((TextView) componentViewResult.componentView).setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
@@ -7948,7 +7975,7 @@ public class ViewCreator {
                  */
                 if ((contentDatum.getPricing() != null &&
                         contentDatum.getPricing().getType() != null &&
-                        contentDatum.getPricing().getType().equalsIgnoreCase("TVOD")) ||
+                        (contentDatum.getPricing().getType().equalsIgnoreCase("TVOD") || contentDatum.getPricing().getType().equalsIgnoreCase("PPV"))) ||
                         (contentDatum.getGist()!=null && contentDatum.getGist().getPurchaseType()!=null && contentDatum.getGist().getPurchaseType().equalsIgnoreCase("Rent"))) {
                     contentDatum.setTvodPricing(true);
 

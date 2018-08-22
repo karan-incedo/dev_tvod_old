@@ -343,9 +343,10 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 .setContentText(description.getSubtitle())
                 .setLargeIcon(art);
 
-        if (CastHelper.getInstance(mService.getApplicationContext()) != null &&
-                CastHelper.getInstance(mService.getApplicationContext()).getDeviceName() != null &&
-                !TextUtils.isEmpty(CastHelper.getInstance(mService.getApplicationContext()).getDeviceName())) {
+        if (mService != null
+                && CastHelper.getInstance(mService.getApplicationContext()) != null
+                && CastHelper.getInstance(mService.getApplicationContext()).getDeviceName() != null
+                && !TextUtils.isEmpty(CastHelper.getInstance(mService.getApplicationContext()).getDeviceName())) {
             String castName = CastHelper.getInstance(mService.getApplicationContext()).getDeviceName();
             String castInfo = castName == null ? "" : mService.getResources()
                     .getString(R.string.casting_to_device, castName);

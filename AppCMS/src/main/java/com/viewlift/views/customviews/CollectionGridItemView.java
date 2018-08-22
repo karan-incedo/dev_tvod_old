@@ -965,6 +965,10 @@ public class CollectionGridItemView extends BaseView {
                 } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_AUDIO_DOWNLOAD_BUTTON_KEY) {
 
+                    if(data!=null && data.getPricing()!=null && data.getPricing().getType().equalsIgnoreCase("PPV")){
+                        ((ImageButton) view).setVisibility(View.GONE);
+
+                    }
                     String userId = appCMSPresenter.getLoggedInUser();
 
                     if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_MYLIBRARY_01_MODULE_KEY){
@@ -1016,7 +1020,7 @@ public class CollectionGridItemView extends BaseView {
                  *//*view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
                             childComponent, data, position));*//*
                     if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
-                        ((ImageButton) view). (R.drawable.ic_downloaded_big);
+                        ((ImageButton) view).setImageResource(R.drawable.ic_downloaded_big);
                         view.setOnClickListener(null);
                     } else if (appCMSPresenter.isVideoDownloading(data.getGist().getId())) {
                         int radiusDifference = 5;
@@ -2217,11 +2221,13 @@ public class CollectionGridItemView extends BaseView {
         }
     }
 
+
     public void inVisibleIfSeries(final ContentDatum data, final View view) {
-        if (data != null &&
+        if ((data != null &&
                 data.getGist() != null &&
-                data.getGist().getContentType() != null &&
-                (data.getGist().getContentType().equalsIgnoreCase("SERIES") || data.getGist().getContentType().equalsIgnoreCase("SEASON"))) {
+                data.getGist().getContentType() != null )&&
+                ( data.getGist().getContentType().equalsIgnoreCase("SERIES") || data.getGist().getContentType().equalsIgnoreCase("SEASON"))
+                || (data != null && data.getGist()!=null &&  data.getGist().getRuntime() == 0)) {
             view.setVisibility(GONE);
         } /*else {
             view.setVisibility(VISIBLE);

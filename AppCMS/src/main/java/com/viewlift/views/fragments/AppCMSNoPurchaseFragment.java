@@ -20,6 +20,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -39,6 +40,7 @@ import android.widget.TextView;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.activity.AutoplayActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -110,6 +112,9 @@ public class AppCMSNoPurchaseFragment extends DialogFragment {
                 appCMSPresenter.setNavItemToCurrentAction(getActivity());
                 appCMSPresenter.showMainFragmentView(true);
                 isVisible=false;
+            }
+            if(getActivity() instanceof AutoplayActivity){
+                getActivity().finish();
             }
         });
 
@@ -183,6 +188,9 @@ public class AppCMSNoPurchaseFragment extends DialogFragment {
         dismiss();
         if (appCMSPresenter != null) {
             appCMSPresenter.showMainFragmentView(true);
+        }
+        if(getActivity() instanceof AutoplayActivity){
+            getActivity().finish();
         }
     }
 

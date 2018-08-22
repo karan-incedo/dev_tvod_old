@@ -109,8 +109,8 @@ public class ClearDialogFragment extends AbsDialogFragment {
         String title = arguments.getString(DIALOG_TITLE_KEY, null);
         String description = arguments.getString(DIALOG_MESSAGE_KEY, null);
         String textColor = arguments.getString(DIALOG_MESSAGE_TEXT_COLOR_KEY, null);
-        String positiveBtnText = arguments.getString(DIALOG_POSITIVE_BUTTON_TEXT_KEY, getString(R.string.ok));
-        String negativeBtnText = arguments.getString(DIALOG_NEGATIVE_BUTTON_TEXT_KEY, getString(R.string.close));
+        String positiveBtnText = arguments.getString(DIALOG_POSITIVE_BUTTON_TEXT_KEY,null);
+        String negativeBtnText = arguments.getString(DIALOG_NEGATIVE_BUTTON_TEXT_KEY, null);
         float messageSize = arguments.getFloat(DIALOG_MESSAGE__SIZE_KEY);
 
         positiveButton.setText(positiveBtnText);
@@ -180,12 +180,12 @@ public class ClearDialogFragment extends AbsDialogFragment {
 
         positiveButton.requestFocus();
 
-        if(positiveBtnText.length()==0){
+        if(TextUtils.isEmpty(positiveBtnText)){
             positiveButton.setVisibility(View.GONE);
             negativeButton.requestFocus();
         }
 
-        if(negativeBtnText.length()==0){
+        if(TextUtils.isEmpty(negativeBtnText)){
             negativeButton.setVisibility(View.GONE);
             positiveButton.requestFocus();
         }

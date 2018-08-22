@@ -197,6 +197,8 @@ public class ContentDatum implements Serializable {
     @Expose
     Pricing pricing;
 
+
+
     public boolean isTvodPricing() {
         return isTvodPricing;
     }

@@ -300,8 +300,8 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
 
                                         String rentalPeriod = "";
                                         if (data.getPricing().getRent() != null &&
-                                                data.getPricing().getRent().getRentalPeriod() != null) {
-                                            rentalPeriod = data.getPricing().getRent().getRentalPeriod();
+                                                data.getPricing().getRent().getRentalPeriod() > 0) {
+                                            rentalPeriod = String.valueOf(data.getPricing().getRent().getRentalPeriod());
                                         }
                                         if (objTransactionData != null) {
                                             rentalPeriod = String.valueOf(objTransactionData.getRentalPeriod());
@@ -320,6 +320,11 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                                         }
 
                                         if (isShowRentalPeriodDialog) {
+
+                                            if (rentalPeriod == null || TextUtils.isEmpty(rentalPeriod)) {
+                                                rentalPeriod = "xapi" +
+                                                        "";
+                                            }
                                             appCMSPresenter.showRentTimeDialog(retry -> {
                                                 if (retry) {
                                                     appCMSPresenter.getRentalData(data.getGist().getId(), rentalResponse -> {
@@ -332,7 +337,8 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                                                 } else {
 //                                                appCMSPresenter.sendCloseOthersAction(null, true, false);
                                                 }
-                                            }, rentalPeriod);
+                                            },mContext.getString(R.string.rent_time_dialog_mssg,
+                                                    rentalPeriod),true);
                                         } else {
                                             launchScreeenPlayer(data, finalCurrentPlayingIndex, relatedVideoIds, finalAction, title, permalink);
 
