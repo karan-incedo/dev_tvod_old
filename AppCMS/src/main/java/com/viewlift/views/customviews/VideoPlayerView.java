@@ -254,8 +254,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     String adsUrl;
-
-    public void setAdsUrl(String adsUrl) {
+    public void setAdsUrl(String adsUrl){
         this.adsUrl = adsUrl;
     }
 
@@ -588,7 +587,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }*/
 
        /* videoPlayerTitle = playerView.findViewById(R.id.app_cms_video_player_title_view);
-
         videoPlayerTitle.setText("");*/
 
         mediaDataSourceFactory = buildDataSourceFactory(true);
@@ -1885,7 +1883,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
         /**
          * Returns the HLS url which will be used for playback
-         */
+         * */
         String getVideoUrl();
 
         String getStreamingQualityUrl(String streamingQuality);
@@ -2331,6 +2329,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                      listViewAdapter.setSelectedIndex(position);
                  }
             }
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }

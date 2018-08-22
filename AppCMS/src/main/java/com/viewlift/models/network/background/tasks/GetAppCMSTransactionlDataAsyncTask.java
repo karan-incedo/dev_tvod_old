@@ -2,6 +2,8 @@ package com.viewlift.models.network.background.tasks;
 
 import android.util.Log;
 
+import com.viewlift.models.data.appcms.api.AppCMSRentalResponse;
+import com.viewlift.models.data.appcms.api.AppCMSTransactionDataResponse;
 import com.viewlift.models.data.appcms.api.AppCMSTransactionDataValue;
 import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 
@@ -19,10 +21,10 @@ public class GetAppCMSTransactionlDataAsyncTask {
     private static final String TAG = "VideoDetailAsyncTask";
 
     private final AppCMSVideoDetailCall call;
-    private final Action1<List<Map<String, AppCMSTransactionDataValue>>> readyAction;
+    private final Action1<List<Map<String,AppCMSTransactionDataValue>>> readyAction;
 
     public GetAppCMSTransactionlDataAsyncTask(AppCMSVideoDetailCall call,
-                                              Action1<List<Map<String, AppCMSTransactionDataValue>>> readyAction) {
+                                              Action1<List<Map<String,AppCMSTransactionDataValue>>> readyAction) {
         this.call = call;
         this.readyAction = readyAction;
     }

@@ -151,7 +151,17 @@ public class RealmController {
         }
         return null;
     }
-
+    public RealmResults<DownloadVideoRealm> getAllUnSyncedRentedVideos(String userId) {
+        try {
+            return realm.where(DownloadVideoRealm.class).equalTo("isRentStartTimeSyncedWithServer", false)
+                    .equalTo("userId", userId).greaterThanOrEqualTo("rentStartWatchTime",0).lessThanOrEqualTo("transactionEndDate",0).notEqualTo("mediaType", "AUDIO", Case.INSENSITIVE).findAll();
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Failed to get server sync status: " + e.getMessage());
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get server sync status: " + e.getMessage());
+        }
+        return null;
+    }
     public RealmResults<DownloadVideoRealm> getAllUnfinishedDownloades(String userId) {
         try {
             String[] status = {String.valueOf(DownloadStatus.STATUS_FAILED),

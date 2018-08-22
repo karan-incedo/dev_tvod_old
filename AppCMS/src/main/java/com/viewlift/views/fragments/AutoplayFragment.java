@@ -30,6 +30,7 @@ import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.AppCMSTransactionDataValue;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.components.AppCMSViewComponent;
@@ -61,6 +62,7 @@ public class AutoplayFragment extends Fragment {
     private OnPageCreation onPageCreation;
     private CountDownTimer countdownTimer;
     private TextView tvCountdown;
+    Context mContext;
 
     public AutoplayFragment() {
         // Required empty public constructor
@@ -76,6 +78,8 @@ public class AutoplayFragment extends Fragment {
 
     @Override
     public void onAttach(Context context) {
+        mContext = context;
+
         if (context instanceof OnPageCreation) {
             try {
                 onPageCreation = (OnPageCreation) context;
@@ -137,9 +141,8 @@ public class AutoplayFragment extends Fragment {
             if (playButton != null) {
                 playButton.setTextColor(appCMSPresenter.getBrandPrimaryCtaTextColor());
                 playButton.setOnClickListener(v -> {
-                    if (isAdded() && isVisible()) {
-                        fragmentInteractionListener.onCountdownFinished();
-                    }
+                    checkForTvodContent();
+
                 });
             }
 
@@ -187,8 +190,8 @@ public class AutoplayFragment extends Fragment {
                 } else {
                     loadImageFromLocalSystem = false;
                     imageUrl = binder.getContentData().getGist().getPosterImageUrl();
-                    if(imageUrl == null)
-                     imageUrl = binder.getContentData().getGist().getVideoImageUrl();
+                    if (imageUrl == null)
+                        imageUrl = binder.getContentData().getGist().getVideoImageUrl();
                 }
             }
 
@@ -209,7 +212,7 @@ public class AutoplayFragment extends Fragment {
                 RequestOptions requestOptions = new RequestOptions()
                         .transform(new AutoplayBlurTransformation(getContext(), imageUrl));
                 Glide.with(getContext()).load(imageUrl)
-                       .apply(requestOptions)
+                        .apply(requestOptions)
                         .into(new SimpleTarget<Drawable>() {
                             @Override
                             public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
@@ -220,7 +223,68 @@ public class AutoplayFragment extends Fragment {
                         });
             }
         }
+        if (isPurchaseDialog) {
+            checkForTvodContent();
+        }
         return pageView;
+    }
+
+    boolean isPurchaseDialog = false;
+
+    private void checkForTvodContent() {
+        if ((binder.getContentData() != null && binder.getContentData().getPricing() != null && (binder.getContentData().getPricing().getType().equalsIgnoreCase("TVOD") ||
+                binder.getContentData().getPricing().getType().equalsIgnoreCase("PPV")))) {
+            appCMSPresenter.getTransactionData(binder.getContentData().getGist().getId(), updatedContentDatum -> {
+                boolean isPlayable = false;
+                if (updatedContentDatum != null &&
+                        updatedContentDatum.size() > 0 &&
+                        updatedContentDatum.get(0).size() > 0) {
+                    AppCMSTransactionDataValue objTransactionData = updatedContentDatum.get(0).get(binder.getContentData().getGist().getId());
+                    long expirationDate = objTransactionData.getTransactionEndDate();
+                    long remainingTime = appCMSPresenter.getTimeIntervalForEvent(expirationDate, "EEE MMM dd HH:mm:ss");
+
+                    long scheduleStartDate = 0;
+                    long scheduleEndDate = 0;
+                    long scheduleRemainTime = 0;
+
+                    if (binder.getContentData().getGist() != null && binder.getContentData().getGist().getScheduleStartDate() > 0) {
+                        scheduleStartDate = binder.getContentData().getGist().getScheduleStartDate();
+                        scheduleRemainTime = appCMSPresenter.getTimeIntervalForEvent(scheduleStartDate, "YYYY MMM dd HH:mm:ss");
+
+                    }
+
+                    if (scheduleRemainTime > 0) {
+                        String scheduleRemianTime = (AppCMSPresenter.geTimeFormat(scheduleRemainTime));
+
+                        appCMSPresenter.showRentTimeDialog(retry -> {
+                            if (retry) {
+
+                                getActivity().finish();
+                            }
+                        }, mContext.getString(R.string.content_time_available_in_for_rent,
+                                scheduleRemianTime), true);
+                        return;
+                    }
+
+                    if (remainingTime < 0 && expirationDate > 0) {
+                        isPlayable = false;
+                    } else {
+                        isPlayable = true;
+                    }
+
+                }
+
+                if (isPlayable) {
+                    callCountDownFinished();
+                } else {
+                    isPurchaseDialog = true;
+                    appCMSPresenter.showNoPurchaseDialog(mContext.getString(R.string.rental_title), mContext.getString(R.string.rental_description));
+
+                }
+            }, null, false);
+        } else {
+            callCountDownFinished();
+        }
     }
 
     private void startCountdown() {
@@ -239,9 +303,8 @@ public class AutoplayFragment extends Fragment {
 
             @Override
             public void onFinish() {
-                if (isAdded() && isVisible()) {
-                    fragmentInteractionListener.onCountdownFinished();
-                }
+
+                checkForTvodContent();
             }
         }.start();
     }
@@ -262,6 +325,15 @@ public class AutoplayFragment extends Fragment {
         }
     }
 
+    boolean isTvod = false;
+    boolean isPlayble = true;
+
+    private void callCountDownFinished() {
+        if (isAdded() && isVisible()) {
+            fragmentInteractionListener.onCountdownFinished();
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -279,6 +351,8 @@ public class AutoplayFragment extends Fragment {
         if (appCMSPresenter != null) {
             appCMSPresenter.dismissOpenDialogs(null);
         }
+
+
     }
 
     private void handleOrientation(int orientation) {

@@ -104,11 +104,20 @@ public class DownloadMediaMigration implements RealmMigration {
             realmObjectSchema.addField("genre",String.class);
         }
 
-        if(!realmObjectSchema.hasField("endDate")){
-            realmObjectSchema.addField("endDate",long.class);
+        if(!realmObjectSchema.hasField("transactionEndDate")){
+            realmObjectSchema.addField("transactionEndDate",long.class);
         }
         if(!realmObjectSchema.hasField("subscriptionType")){
             realmObjectSchema.addField("subscriptionType",String.class);
+        }
+        if(!realmObjectSchema.hasField("rentStartWatchTime")){
+            realmObjectSchema.addField("rentStartWatchTime",long.class);
+        }
+        if(!realmObjectSchema.hasField("rentalPeriod")){
+            realmObjectSchema.addField("rentalPeriod",float.class);
+        }
+        if(!realmObjectSchema.hasField("isRentStartTimeSyncedWithServer")){
+            realmObjectSchema.addField("isRentStartTimeSyncedWithServer",boolean.class);
         }
         oldVersion++;
         Log.e("Migration","Migration Done");

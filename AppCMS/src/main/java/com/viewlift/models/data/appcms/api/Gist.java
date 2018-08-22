@@ -36,6 +36,18 @@ public class Gist implements Serializable {
     private String seriesPermalink;
 
 
+    public Pricing getBundlePricing() {
+        return bundlePricing;
+    }
+
+    public void setBundlePricing(Pricing bundlePricing) {
+        this.bundlePricing = bundlePricing;
+    }
+
+    @SerializedName("bundlePricing")
+    @Expose
+    Pricing bundlePricing;
+
     public long getTransactionDateEpoch() {
         return transactionDateEpoch;
     }
@@ -59,6 +71,17 @@ public class Gist implements Serializable {
     @SerializedName("transactionEndDate")
     @Expose
     private long transactionEndDate;
+
+    public long getRentStartTime() {
+        return rentStartTime;
+    }
+
+    public void setRentStartTime(long rentStartTime) {
+        this.rentStartTime = rentStartTime;
+    }
+
+    private long rentStartTime;
+
 
     public String getTransactionType() {
         return transactionType;
@@ -118,9 +141,9 @@ public class Gist implements Serializable {
         this.scheduleEndDate = scheduleEndDate;
     }
 
-    private long scheduleStartDate;
+    private long scheduleStartDate    ;
 
-    private long scheduleEndDate;
+    private long scheduleEndDate    ;
 
 
     public String getPurchaseStatus() {
@@ -138,6 +161,7 @@ public class Gist implements Serializable {
     public void setContentId(String contentId) {
         this.contentId = contentId;
     }
+
 
 
     public String getUserId() {
@@ -320,6 +344,7 @@ public class Gist implements Serializable {
     @SerializedName("seriesId")
     @Expose
     private String seriesId;
+
 
 
     boolean selectedPosition;
@@ -553,6 +578,19 @@ public class Gist implements Serializable {
     @Expose
     String rsvpUrl;
 
+
+    public List<ContentDatum> getBundleList() {
+        return bundleList;
+    }
+
+    public void setBundleList(List<ContentDatum> bundleList) {
+        this.bundleList = bundleList;
+    }
+
+    @SerializedName("bundleList")
+    @Expose
+    List<ContentDatum> bundleList;
+
     public String getExternalUrl() {
         return externalUrl;
     }
@@ -605,6 +643,38 @@ public class Gist implements Serializable {
     @Expose
     Pricing pricing;
 
+    public float getRentalPeriod() {
+        return rentalPeriod;
+    }
+
+    public void setRentalPeriod(float rentalPeriod) {
+        this.rentalPeriod = rentalPeriod;
+    }
+
+    float rentalPeriod;
+
+    public boolean isRentStartTimeSyncedWithServer() {
+        return isRentStartTimeSyncedWithServer;
+    }
+
+    public void setRentStartTimeSyncedWithServer(boolean rentStartTimeSyncedWithServer) {
+        isRentStartTimeSyncedWithServer = rentStartTimeSyncedWithServer;
+    }
+
+    boolean isRentStartTimeSyncedWithServer;
+
+
+    public boolean isRentedDialogShownAlready() {
+        return isRentedDialogShownAlready;
+    }
+
+    public void setRentedDialogShow(boolean rentedDialogShow) {
+        isRentedDialogShownAlready = rentedDialogShow;
+    }
+
+    boolean isRentedDialogShownAlready;
+
+
     public String getSeasonTitle() {
         return seasonTitle;
     }
@@ -634,23 +704,6 @@ public class Gist implements Serializable {
     long currentPlayingPosition;
     Boolean isCastingConnected;
 
-    public long getrentPerioedendDate() {
-        return rentPerioedendDate;
-    }
-
-    public void setrentPerioedendDate(long endDate) {
-        this.rentPerioedendDate = endDate;
-    }
-
-    public long getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(long endDate) {
-        this.endDate = endDate;
-    }
-    long endDate;
-
 
     public String getSubscriptionType() {
         return subscriptionType;
@@ -660,7 +713,6 @@ public class Gist implements Serializable {
         this.subscriptionType = subscriptionType;
     }
 
-    long rentPerioedendDate;
     String subscriptionType;
 
 
@@ -672,7 +724,7 @@ public class Gist implements Serializable {
         isDataLoaded = dataLoaded;
     }
 
-    Boolean isDataLoaded = false;
+    Boolean isDataLoaded=false;
 
     public String getLandscapeImageUrl() {
         return landscapeImageUrl;
@@ -914,7 +966,6 @@ public class Gist implements Serializable {
     public void setCastingConnected(Boolean castingConnected) {
         isCastingConnected = castingConnected;
     }
-
     public String getArtistName() {
         return artistName;
     }
@@ -930,6 +981,7 @@ public class Gist implements Serializable {
     public void setDirectorName(String directorName) {
         this.directorName = directorName;
     }
+
 
 
     public boolean isSelectedPosition() {
@@ -1147,6 +1199,17 @@ public class Gist implements Serializable {
     public void setSeasonNum(String seasonNum) {
         this.seasonNum = seasonNum;
     }
+
+    public List<Map<String,AppCMSTransactionDataValue>> getObjTransactionDataValue() {
+        return objTransactionDataValue;
+    }
+
+    public void setObjTransactionDataValue(List<Map<String,AppCMSTransactionDataValue>> objTransactionDataValue) {
+        this.objTransactionDataValue = objTransactionDataValue;
+    }
+
+    List<Map<String,AppCMSTransactionDataValue>> objTransactionDataValue;
+
     public String getGenre() {
         return genre;
     }
@@ -1156,14 +1219,5 @@ public class Gist implements Serializable {
     }
 
     String genre;
-
-    public List<Map<String, AppCMSTransactionDataValue>> getObjTransactionDataValue() {
-        return objTransactionDataValue;
-    }
-
-    public void setObjTransactionDataValue(List<Map<String, AppCMSTransactionDataValue>> objTransactionDataValue) {
-        this.objTransactionDataValue = objTransactionDataValue;
-    }
-
-    List<Map<String, AppCMSTransactionDataValue>> objTransactionDataValue;
 }
+

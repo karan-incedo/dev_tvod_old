@@ -102,6 +102,8 @@
     <!-- AppCMS Login values -->
     <string name="app_cms_log_in_pager_title">LOG IN</string>
     <string name="app_cms_subscribe_now">SUBSCRIBE NOW</string>
+    <string name="back_to_description">BACK</string>
+
     <string name="app_cms_sign_up_pager_title">SIGN UP</string>
     <string name="app_cms_video_page_page_name">Video Page</string>
     <string name="app_cms_watchlist_navigation_title">Watchlist</string>
@@ -395,6 +397,11 @@
         <item quantity="other">EPISODES</item>
     </plurals>
 
+    <plurals name="film_subtitle_text">
+        <item quantity="one">FILM</item>
+        <item quantity="other">FILMS</item>
+    </plurals>
+
     <plurals name="no_of_photos">
         <item quantity="one">%1$s photo</item>
         <item quantity="other">%1$s photos</item>
@@ -436,6 +443,7 @@
     <string name="ssl_commerz_transaction_successful">Thank you for subscribing! Please visit your account for billing information.</string>
     <string name="entitlement_api_server_error">Server Error %1$s. Please try again.</string>
     <string name="timer_until_face_off">TIME UNTIL FACEOFF</string>
+    <string name="timer_until_pay_per_view_event">Content will be available in:</string>
 
     <!-- AppCMS JSON data input keys -->
     <string-array name="timer_text">
@@ -479,6 +487,8 @@
 
     <string name="rental_title">Uh Oh</string>
     <string name="rental_description">Unfortunately you can not purchase on this platform.Content you have already purchased will become available here automatically</string>
+    <string name="rent_time_dialog_mssg">Once video start you have %1$s amount of hours to consume the video</string>
+    <string name="content_time_available_in_for_rent">Content will be availabel in : %1$s</string>
 
 
     <string name="no_fight_records">No fight records found</string>

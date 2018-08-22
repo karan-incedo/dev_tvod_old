@@ -2,7 +2,8 @@ package com.viewlift.models.network.background.tasks;
 
 import android.util.Log;
 
-import com.viewlift.models.data.appcms.api.AppCMSRentalAPIResponse;
+import com.viewlift.models.data.appcms.api.AppCMSEntitlementResponse;
+import com.viewlift.models.data.appcms.api.AppCMSRentalResponse;
 import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 
 import hu.akarnokd.rxjava.interop.RxJavaInterop;
@@ -17,10 +18,10 @@ public class GetAppCMSRentalVideoAsyncTask {
     private static final String TAG = "VideoDetailAsyncTask";
 
     private final AppCMSVideoDetailCall call;
-    private final Action1<AppCMSRentalAPIResponse> readyAction;
+    private final Action1<AppCMSRentalResponse> readyAction;
 
     public GetAppCMSRentalVideoAsyncTask(AppCMSVideoDetailCall call,
-                                         Action1<AppCMSRentalAPIResponse> readyAction) {
+                                         Action1<AppCMSRentalResponse> readyAction) {
         this.call = call;
         this.readyAction = readyAction;
     }

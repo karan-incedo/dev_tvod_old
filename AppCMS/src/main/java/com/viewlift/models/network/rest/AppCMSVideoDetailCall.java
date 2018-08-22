@@ -6,8 +6,9 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.viewlift.models.data.appcms.api.AppCMSEntitlementResponse;
-import com.viewlift.models.data.appcms.api.AppCMSRentalAPIResponse;
+import com.viewlift.models.data.appcms.api.AppCMSRentalResponse;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
+import com.viewlift.models.data.appcms.api.AppCMSTransactionDataResponse;
 import com.viewlift.models.data.appcms.api.AppCMSTransactionDataValue;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 
@@ -19,7 +20,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import okhttp3.Headers;
-import retrofit2.Call;
 import retrofit2.Response;
 
 /**
@@ -40,7 +40,7 @@ public class AppCMSVideoDetailCall {
     }
 
     @WorkerThread
-    public AppCMSVideoDetail call(String url, String authToken, String xApi) throws IOException {
+    public AppCMSVideoDetail call(String url, String authToken,String xApi) throws IOException {
         try {
 
             authHeaders.clear();
@@ -50,24 +50,20 @@ public class AppCMSVideoDetailCall {
         } catch (JsonSyntaxException e) {
             Log.e(TAG, "DialogType parsing input JSON - " + url + ": " + e.toString());
         } catch (Exception e) {
-            // e.printStackTrace();
+           // e.printStackTrace();
             Log.e(TAG, "Network error retrieving site data - " + url + ": " + e.toString());
         }
         return null;
     }
 
     @WorkerThread
-    public AppCMSRentalAPIResponse callRentalApiData(String url, String authToken, String xApi) throws IOException {
+    public AppCMSRentalResponse callRentalApiData(String url, String authToken, String xApi) throws IOException {
         try {
 
-            url = "https://release-api.viewlift.com/transaction/changeStatus?userId=e94c0540-942e-11e8-9176-2de6c1a4d094&videoId=cb89adef-b261-4d20-8875-b7f0848849b3";
             authHeaders.clear();
             authHeaders.put("Authorization", authToken);
 //            authHeaders.put("x-api-key", xApi);
-            Call<AppCMSRentalAPIResponse> rentalVideoRespose = appCMSVideoDetailRest.getRentalVideoRespose(url, authHeaders);
-            Response<AppCMSRentalAPIResponse> execute = rentalVideoRespose.execute();
-            AppCMSRentalAPIResponse body = execute.body();
-            return body;
+            return appCMSVideoDetailRest.getRentalVideoRespose(url, authHeaders).execute().body();
         } catch (JsonSyntaxException e) {
             Log.e(TAG, "DialogType parsing input JSON - " + url + ": " + e.toString());
         } catch (Exception e) {
@@ -78,7 +74,7 @@ public class AppCMSVideoDetailCall {
     }
 
     @WorkerThread
-    public List<Map<String, AppCMSTransactionDataValue>> callTransactionalData(String url, String authToken, String xApi) throws IOException {
+    public List<Map<String,AppCMSTransactionDataValue>> callTransactionalData(String url, String authToken, String xApi) throws IOException {
         try {
 
             authHeaders.clear();
@@ -101,7 +97,7 @@ public class AppCMSVideoDetailCall {
             authHeaders.clear();
             authHeaders.put("Authorization", authToken);
             //    authHeaders.put("x-api-key", xApi);
-            Response<AppCMSEntitlementResponse> response = appCMSVideoDetailRest.getEntitlementVideo(url, authHeaders).execute();
+            Response<AppCMSEntitlementResponse> response= appCMSVideoDetailRest.getEntitlementVideo(url, authHeaders).execute();
             Headers headers = response.headers();
 
             if (response.isSuccessful()) {
@@ -122,7 +118,7 @@ public class AppCMSVideoDetailCall {
                 }
 
                 return appCMSEntitlementResponse;
-            } else if (response.code() != 200) {
+            } else if (response.code() != 200){
                 try {
                     AppCMSEntitlementResponse appCMSEntitlementResponse =
                             new Gson().fromJson(response.errorBody().string(),

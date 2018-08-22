@@ -108,6 +108,7 @@ import com.viewlift.views.fragments.AppCMSChangePasswordFragment;
 import com.viewlift.views.fragments.AppCMSEditProfileFragment;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
+import com.viewlift.views.fragments.AppCMSNoPurchaseFragment;
 import com.viewlift.views.fragments.AppCMSPageFragment;
 import com.viewlift.views.fragments.AppCMSResetPasswordFragment;
 import com.viewlift.views.fragments.AppCMSSearchFragment;
@@ -848,7 +849,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
 
-
     private void keepScreenOn() {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
@@ -921,7 +921,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         /**
          * Special CR for RCHDTV, Not supporting Share button.
          */
-        if(appCMSPresenter != null
+        if(appCMSPresenter != null && appCMSPresenter.getAppCMSMain() !=null&& appCMSPresenter.getAppCMSMain().getId()!=null
                 && !appCMSPresenter.getAppCMSMain().getId().equalsIgnoreCase("8630e831-6557-41a3-95c9-6aad9fea4c7d")) {
 
 
@@ -1136,6 +1136,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 for (Fragment fragment : getSupportFragmentManager().getFragments()) {
                     if (fragment instanceof AppCMSMoreFragment) {
                         ((AppCMSMoreFragment) fragment).sendDismissAction();
+                    }
+                    if (fragment instanceof AppCMSNoPurchaseFragment) {
+                        ((AppCMSNoPurchaseFragment) fragment).sendDismissAction();
                     }
                 }
                 return;
@@ -2939,7 +2942,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
             boolean usePageIdQueryParam = true;
             if (appCMSPresenter.isPageAVideoPage(appCMSBinder.getScreenName()) ||
-                    appCMSPresenter.isPageAShowPage(appCMSBinder.getScreenName())) {
+                    appCMSPresenter.isPageAShowPage(appCMSBinder.getScreenName())||
+                    appCMSPresenter.isPageABundlePage(appCMSBinder.getScreenName())) {
                 endPoint = appCMSPresenter.getPageNameToPageAPIUrl(appCMSBinder.getPageName());
                 usePageIdQueryParam = false;
             }
@@ -2965,6 +2969,36 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         appCMSBinder.getAppCMSPageUI().getCaching() != null &&
                                 appCMSBinder.getAppCMSPageUI().getCaching().isEnabled(),
                         appCMSPageAPI -> {
+
+                            if (appCMSPageAPI == null) {
+                                return;
+                            }
+                            for (int i = 0; i < appCMSPageAPI.getModules().size(); i++) {
+                                if (appCMSPageAPI.getModules().get(i) != null &&
+                                        appCMSPageAPI.getModules().get(i).getModuleType() != null) {
+
+                                    if (appCMSPageAPI.getModules().get(i).getModuleType().equalsIgnoreCase("VideoDetailModule")) {
+                                        int position = i;
+
+                                        if ((appCMSPageAPI.getModules().get(i).getContentData().get(0).getPricing() != null &&
+                                                appCMSPageAPI.getModules().get(i).getContentData().get(0).getPricing().getType() != null)) {
+                                            appCMSPresenter.getTransactionData(appCMSPageAPI.getModules().get(i).getContentData().get(0).getGist().getId(), updatedContentDatum -> {
+
+                                                appCMSPageAPI.getModules().get(position).getContentData().get(0).getGist().setObjTransactionDataValue(updatedContentDatum);
+                                                appCMSPageAPI.getModules().get(position).getContentData().get(0).getGist().setRentedDialogShow(false);
+                                                if (appCMSPageAPI != null) {
+                                                    appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
+                                                }
+                                                if (readyAction != null) {
+                                                    readyAction.call();
+                                                }
+                                            }, null, false);
+                                        }
+
+
+                                    }
+                                }
+                            }
                             Log.w(TAG, "Retrieved page content");
                             if (appCMSPageAPI != null) {
                                 appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);

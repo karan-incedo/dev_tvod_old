@@ -181,14 +181,14 @@ public class AppCMSAndroidModuleCall {
             } else {
                 moduleListResponse = appCMSAndroidModuleRest.get(blocksBaseUrl, authTokenMap).execute();
             }
-            System.out.println("Retrieving module list from Network "+blocksBaseUrl);
+            System.out.println("Retrieving module list from Network " + blocksBaseUrl);
             if (moduleListResponse != null &&
                     moduleListResponse.body() != null) {
 
                 moduleDataMap.appCMSAndroidModule = gson.fromJson(moduleListResponse.body(),
                         new TypeToken<Map<String, ModuleList>>() {
                         }.getType());
-                System.out.println("Retrieving module list from Network "+moduleDataMap.appCMSAndroidModule.size());
+                System.out.println("Retrieving module list from Network " + moduleDataMap.appCMSAndroidModule.size());
                 moduleDataMap.loadedFromNetwork = true;
                 new Thread(() -> {
                     deletePreviousFiles(getResourceFilenameWithJsonOnly(blocksBaseUrl));
@@ -204,7 +204,7 @@ public class AppCMSAndroidModuleCall {
                         new TypeToken<Map<String, ModuleList>>() {
                         }.getType());
                 System.out.println("Retrieving module list from Network in the catch : " + moduleDataMap.appCMSAndroidModule.size());
-            }catch(Exception e){
+            } catch (Exception e) {
 
             }
 
@@ -254,12 +254,12 @@ public class AppCMSAndroidModuleCall {
 
             return moduleDataMap;
         })
-        .subscribeOn(Schedulers.io())
-        .observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread()))
-        .onErrorResumeNext(throwable -> Observable.empty())
-        .subscribe((result) -> Observable.just(result)
+                .subscribeOn(Schedulers.io())
+                .observeOn(RxJavaInterop.toV1Scheduler(AndroidSchedulers.mainThread()))
                 .onErrorResumeNext(throwable -> Observable.empty())
-                .subscribe(readyAction));
+                .subscribe((result) -> Observable.just(result)
+                        .onErrorResumeNext(throwable -> Observable.empty())
+                        .subscribe(readyAction));
     }
 
     private String getResourceFilenameWithJsonOnly(String url) {
@@ -295,7 +295,7 @@ public class AppCMSAndroidModuleCall {
     public static Map<String, ModuleList> jsonToMap(JSONObject json) throws JSONException {
         Map<String, ModuleList> retMap = new HashMap<String, ModuleList>();
 
-        if(json != JSONObject.NULL) {
+        if (json != JSONObject.NULL) {
             retMap = toMap(json);
         }
         return retMap;
@@ -306,33 +306,30 @@ public class AppCMSAndroidModuleCall {
         Map<String, ModuleList> map = new HashMap<String, ModuleList>();
 
         Iterator<String> keysItr = object.keys();
-        while(keysItr.hasNext()) {
+        while (keysItr.hasNext()) {
             String key = keysItr.next();
             Object value = object.get(key);
 
-            if(value instanceof JSONArray) {
+            if (value instanceof JSONArray) {
                 value = toList((JSONArray) value);
-            }
-
-            else if(value instanceof JSONObject) {
+            } else if (value instanceof JSONObject) {
                 value = toMap((JSONObject) value);
             }
-            map.put(key, (ModuleList)value);
+            map.put(key, (ModuleList) value);
         }
         return map;
     }
+
     public static List<ModuleList> toList(JSONArray array) throws JSONException {
         List<ModuleList> list = new ArrayList<ModuleList>();
-        for(int i = 0; i < array.length(); i++) {
+        for (int i = 0; i < array.length(); i++) {
             Object value = array.get(i);
-            if(value instanceof JSONArray) {
+            if (value instanceof JSONArray) {
                 value = toList((JSONArray) value);
-            }
-
-            else if(value instanceof JSONObject) {
+            } else if (value instanceof JSONObject) {
                 value = toMap((JSONObject) value);
             }
-            list.add((ModuleList)value);
+            list.add((ModuleList) value);
         }
         return list;
     }

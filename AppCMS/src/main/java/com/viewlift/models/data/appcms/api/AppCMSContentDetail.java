@@ -42,6 +42,18 @@ public class AppCMSContentDetail {
     @Expose
     private String parentalRating;
 
+    public Pricing getPricing() {
+        return pricing;
+    }
+
+    public void setPricing(Pricing pricing) {
+        this.pricing = pricing;
+    }
+
+    @SerializedName("pricing")
+    @Expose
+    Pricing pricing;
+
     public Gist getGist() {
         return gist;
     }
@@ -125,6 +137,7 @@ public class AppCMSContentDetail {
         contentDatum.setStatistics(this.statistics);
         contentDatum.setChannels(this.channels);
         contentDatum.setParentalRating(this.parentalRating);
+        contentDatum.setPricing(this.pricing);
         return contentDatum;
     }
 
