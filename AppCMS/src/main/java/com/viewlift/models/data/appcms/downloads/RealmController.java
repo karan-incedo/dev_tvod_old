@@ -2,6 +2,7 @@ package com.viewlift.models.data.appcms.downloads;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.support.annotation.UiThread;
 import android.support.annotation.WorkerThread;
 import android.support.v4.app.Fragment;
@@ -12,12 +13,18 @@ import com.viewlift.models.data.appcms.api.SubscriptionPlan;
 import com.viewlift.models.data.appcms.beacon.OfflineBeaconData;
 import com.viewlift.models.data.appcms.subscriptions.UserSubscriptionPlan;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmAsyncTask;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 import io.realm.RealmQuery;
+import rx.Observable;
+import rx.functions.Action1;
 
 /**
  * Created by sandeep.singh on 7/18/2017.
@@ -187,6 +194,15 @@ public class RealmController {
         return null;
     }
 
+    public DownloadClosedCaptionRealm getDownloadedByIdCCFile(String gistId){
+        try {
+            return realm.where(DownloadClosedCaptionRealm.class).equalTo("gistId", gistId).findFirst();
+        } catch (Exception e) {
+            //Log.e(TAG, "Failed to get download by ID " + videoId + ": " + e.getMessage());
+        }
+        return null;
+    }
+
     public DownloadVideoRealm getDownloadByDMId(long dm_id) {
         try {
             return realm.where(DownloadVideoRealm.class).equalTo("videoId_DM", dm_id).findFirst();
@@ -218,6 +234,20 @@ public class RealmController {
         try {
             DownloadVideoRealm downloadById = getDownloadById(videoId);
             return downloadById != null && getDownloadById(videoId).getDownloadStatus()
+                    .equals(DownloadStatus.STATUS_SUCCESSFUL);
+        } catch (Exception e) {
+            //Log.e(TAG, "Failed to get video ready to play offline: " + e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean isCCFileAvailableForOffLine(String gistId){
+        if (TextUtils.isEmpty(gistId)) {
+            return false;
+        }
+        try {
+            DownloadClosedCaptionRealm downloadById = getDownloadedByIdCCFile(gistId);
+            return downloadById != null && getDownloadById(gistId).getDownloadStatus()
                     .equals(DownloadStatus.STATUS_SUCCESSFUL);
         } catch (Exception e) {
             //Log.e(TAG, "Failed to get video ready to play offline: " + e.getMessage());
@@ -279,6 +309,27 @@ public class RealmController {
             //Log.e(TAG, "Failed to add download: " + e.getMessage());
         }
 
+    }
+
+    public void addDownloadedCCFile(DownloadClosedCaptionRealm downloadClosedCaptionRealm){
+        try{
+            realm.beginTransaction();
+            realm.insert(downloadClosedCaptionRealm);
+            realm.commitTransaction();
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
+
+    public RealmResults<DownloadClosedCaptionRealm> getAllDownloadedCCFiles(String gistId) {
+        try {
+            if (realm.where(DownloadClosedCaptionRealm.class).count() > 0) {
+                return realm.where(DownloadClosedCaptionRealm.class).equalTo("gistId",gistId).findAll();
+            }
+        } catch (Exception e) {
+            //Log.e(TAG, "Failed to get all subscription plans: " + e.getMessage());
+        }
+        return null;
     }
 
     public void updateDownload(DownloadVideoRealm downloadVideoRealm) {
@@ -401,7 +452,7 @@ public class RealmController {
         }
     }
 
-    public void removeFromDB(DownloadVideoRealm downloadVideoRealm) {
+    public void removeFromDB(DownloadVideoRealm downloadVideoRealm,Action1 ccAction) {
         try {
             DownloadVideoRealm toEdit = realm.where(DownloadVideoRealm.class)
                     .beginGroup()
@@ -413,12 +464,32 @@ public class RealmController {
             if (!realm.isInTransaction())
                 realm.beginTransaction();
 
+            deleteVideoCCFiles(downloadVideoRealm.getVideoId(),ccAction);
             toEdit.deleteFromRealm();
 
             realm.commitTransaction();
+
         } catch (Exception e) {
-            //Log.e(TAG, "Failed to to remove video from database: " + e.getMessage());
+            Log.e(TAG, "Failed to to remove video from database: " + e.getMessage());
         }
+    }
+
+    private void deleteVideoCCFiles(String gistId,Action1 ccAction){
+
+        try {
+            RealmResults<DownloadClosedCaptionRealm> all = realm.where(DownloadClosedCaptionRealm.class)
+                    .equalTo("gistId", gistId)
+                    .findAll();
+            List<Long> enquelistData = new ArrayList<>();
+            for(DownloadClosedCaptionRealm dc : all)
+                enquelistData.add(dc.getCcFileEnqueueId());
+
+            all.deleteAllFromRealm();
+            Observable.just(enquelistData).doOnError(null).subscribe(ccAction);
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+
     }
 
     public void addOfflineBeaconData(OfflineBeaconData offlineBeaconData) {

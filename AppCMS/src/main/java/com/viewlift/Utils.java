@@ -7,7 +7,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.Season_;
+import com.viewlift.models.data.appcms.downloads.DownloadClosedCaptionRealm;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -106,4 +108,38 @@ public class Utils {
         }
         return relatedVids;
     }
+
+    public static DownloadClosedCaptionRealm convertClosedCaptionToDownloadClosedCaption(ClosedCaptions cc,String gistId){
+        DownloadClosedCaptionRealm downloadClosedCaptionRealm = new DownloadClosedCaptionRealm();
+        downloadClosedCaptionRealm.setId(cc.getId());
+        downloadClosedCaptionRealm.setAddedDate(cc.getAddedDate());
+        downloadClosedCaptionRealm.setFormat(cc.getFormat());
+        downloadClosedCaptionRealm.setLanguage(cc.getLanguage());
+        downloadClosedCaptionRealm.setPermalink(cc.getPermalink());
+        downloadClosedCaptionRealm.setPublishDate(cc.getPublishDate());
+        downloadClosedCaptionRealm.setRegisteredDate(cc.getRegisteredDate());
+        downloadClosedCaptionRealm.setSiteOwner(cc.getSiteOwner());
+        downloadClosedCaptionRealm.setSize(cc.getSize());
+        downloadClosedCaptionRealm.setUpdateDate(cc.getUpdateDate());
+        downloadClosedCaptionRealm.setUrl(cc.getUrl());
+        downloadClosedCaptionRealm.setGistId(gistId);
+        return downloadClosedCaptionRealm;
+    }
+
+    public static ClosedCaptions convertDownloadClosedCaptionToClosedCaptions(DownloadClosedCaptionRealm dc){
+        ClosedCaptions closedCaptions = new ClosedCaptions();
+        closedCaptions.setAddedDate(dc.getAddedDate());
+        closedCaptions.setFormat(dc.getFormat());
+        closedCaptions.setId(dc.getId());
+        closedCaptions.setLanguage(dc.getLanguage());
+        closedCaptions.setPermalink(dc.getPermalink());
+        closedCaptions.setPublishDate(dc.getPublishDate());
+        closedCaptions.setRegisteredDate(dc.getRegisteredDate());
+        closedCaptions.setSiteOwner(dc.getSiteOwner());
+        closedCaptions.setSize(dc.getSize());
+        closedCaptions.setUpdateDate(dc.getUpdateDate());
+        closedCaptions.setUrl(dc.getUrl());
+        return closedCaptions;
+    }
+
 }
