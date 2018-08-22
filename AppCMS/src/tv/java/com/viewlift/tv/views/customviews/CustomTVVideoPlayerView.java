@@ -932,6 +932,11 @@ public class CustomTVVideoPlayerView
         }
     }
 
+    @Override
+    public void playerError(ExoPlaybackException ex) {
+
+    }
+
     /**
      * Method is used to hide the progress bar, timer, rewind and forward button when a live stream
      * playing

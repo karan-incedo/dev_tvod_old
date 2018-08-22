@@ -12,6 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.AppCMSTransactionDataValue;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Language;
 import com.viewlift.models.data.appcms.api.Module;
@@ -119,8 +120,12 @@ public class AppCMSTVTrayAdapter
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         this.recyclerView = recyclerView;
-        if (viewType != null && viewType.equalsIgnoreCase(context.getResources().getString(R.string.languageSetting_module))) {
-            recyclerView.smoothScrollToPosition(currentSelectedLanguageIndex);
+        try {
+            if (viewType != null && viewType.equalsIgnoreCase(context.getResources().getString(R.string.languageSetting_module))) {
+                recyclerView.smoothScrollToPosition(currentSelectedLanguageIndex);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -271,7 +276,12 @@ public class AppCMSTVTrayAdapter
                     if (isClickable) {
                         //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                         String permalink = data.getGist().getPermalink();
-                        String action = "SERIES".equalsIgnoreCase(data.getGist().getContentType()) ? "showDetailPage" : defaultAction;
+                        boolean typeSeries = "SERIES".equalsIgnoreCase(data.getGist().getContentType())
+                                || "SEASON".equalsIgnoreCase(data.getGist().getContentType());
+                        String action = typeSeries ? "showDetailPage" : defaultAction;
+                        if (permalink == null && typeSeries) {
+                            permalink = data.getGist().getSeriesPermalink();
+                        }
                         String title = data.getGist().getTitle();
                         String hlsUrl = getHlsUrl(data);
                         String[] extraData = new String[4];
@@ -307,15 +317,67 @@ public class AppCMSTVTrayAdapter
                 }
 
                 @Override
-                public void play(Component childComponent, ContentDatum data) {
+                public void play(Component childComponent, ContentDatum contentDatum) {
                     if (isClickable) {
-                        //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
-                        appCMSPresenter.launchTVVideoPlayer(
-                                data,
-                                0,
-                                null,
-                                data.getGist().getWatchedTime(),
-                                null);
+                        //Log.d(TAG, "Clicked on item: " + contentDatum.getGist().getTitle());
+                        boolean typeSeries = "SERIES".equalsIgnoreCase(contentDatum.getGist().getContentType())
+                                || "SEASON".equalsIgnoreCase(contentDatum.getGist().getContentType());
+                        if (typeSeries) {
+                            click(itemView, childComponent, contentDatum);
+                        } else {
+                            if (contentDatum.getPricing() != null){
+                                if ("TVOD".equalsIgnoreCase(contentDatum.getPricing().getType())) {
+                                    appCMSPresenter.getTransactionData(contentDatum.getGist().getId(), maps -> {
+                                        if (maps != null
+                                                && maps.get(0) != null
+                                                && maps.get(0).get(contentDatum.getGist().getId()) != null) {
+                                            AppCMSTransactionDataValue appCMSTransactionDataValue = maps.get(0).get(contentDatum.getGist().getId());
+
+                                        } else {
+                                            Utils.getClearDialogFragment(
+                                                    context,
+                                                    appCMSPresenter,
+                                                    context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                                    context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height),
+                                                    null,
+                                                    "Unfortunately, you cannot make purchases on this platform. Content you have already purchased will become available here automatically.",
+                                                    "BACK TO DESCRIPTION",
+                                                    null,
+                                                    10f
+                                            );
+                                        }
+                                    }, null, false);
+                                } else if ("PPV".equalsIgnoreCase(contentDatum.getPricing().getType())) {
+                                    appCMSPresenter.getTransactionData(contentDatum.getGist().getId(), maps -> {
+                                        if (maps != null
+                                                && maps.get(0) != null
+                                                && maps.get(0).get(contentDatum.getGist().getId()) != null) {
+                                            AppCMSTransactionDataValue appCMSTransactionDataValue = maps.get(0).get(contentDatum.getGist().getId());
+
+                                        } else {
+                                            Utils.getClearDialogFragment(
+                                                    context,
+                                                    appCMSPresenter,
+                                                    context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                                    context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height),
+                                                    null,
+                                                    "Unfortunately, you cannot make purchases on this platform. Content you have already purchased will become available here automatically.",
+                                                    "BACK TO DESCRIPTION",
+                                                    null,
+                                                    10f
+                                            );
+                                        }
+                                    }, null, false);
+                                }
+                            } else {
+                                appCMSPresenter.launchTVVideoPlayer(
+                                        contentDatum,
+                                        0,
+                                        null,
+                                        contentDatum.getGist().getWatchedTime(),
+                                        null);
+                            }
+                        }
                     }
                 }
 

@@ -138,6 +138,7 @@
     <string name="app_cms_page_venue_label_key">venueLabel</string>
     <string name="app_cms_page_timer_title_label_key">timerTitle</string>
     <string name="app_cms_page_upcoming_timer_key">timer</string>
+    <string name="app_cms_page_rent_active_component_key">rentActiveComponent</string>
     <string name="app_cms_page_ads_key">adView</string>
     <string name="app_cms_page_collection_grid_key">collectionGrid</string>
     <string name="app_cms_page_table_view_key">tableView</string>
@@ -467,6 +468,7 @@
     <string name="app_cms_page_article_tray_key">AC ArticleTray 01</string>
     <string name="app_cms_plan_title_key">planTitle</string>
     <string name="app_cms_plan_priceinfo_key">planPriceInfo</string>
+    <string name="app_cms_plan_description_key">planDescription</string>
     <string name="app_cms_plan_bestvalue_key">planBestValueLabel</string>
     <string name="app_cms_plan_purchase_button_key">planPurchaseButton</string>
     <string name="app_cms_plan_meta_dataview_key">planMetaDataView</string>
@@ -650,6 +652,9 @@
     <string name="profile_label">Profile</string>
     <string name="app_cms_team_label">Team</string>
 
+    <string name="app_cms_getrental_api_url">%1$s/transaction/changeStatus?userId=%2$s&amp;videoId=%3$s</string>
+    <string name="app_cms_gettransactiondata_api_url">%1$s/transaction/getData?userId=%2$s&amp;contentId=%3$s&amp;type=%4$s&amp;contentMeta=%5$s&amp;site=%6$s</string>
+
     <!--AppCMS AnonymousAuthToken API -->
     <string name="app_cms_anonymous_auth_token_api_url">%1$s/identity/anonymous-token?site=%2$s</string>
 
@@ -688,6 +693,7 @@
     <string name="app_cms_cellular_data_toggle_switch_key">cellularDataToggle</string>
     <string name="app_cms_logout_button_key">logout button</string>
     <string name="app_cms_title_label">titleLabel</string>
+    <string name="app_cms_library_item_title_label">libraryItemTitleLabel</string>
     <string name="app_cms_description_label">descriptionLabel</string>
     <string name="app_cms_delete_item_button">deleteItemButton</string>
     <string name="app_cms_delete_history_item_button">deleteHistory</string>
@@ -783,7 +789,7 @@
     <string name="plan_type_monthly">monthly</string>
     <string name="app_cms_plan_renewal_cycle_type_yearly">YEAR</string>
     <string name="plan_type_year">year</string>
-    <string name="plan_type_yearly">annually</string>
+    <string name="plan_type_yearly">annual</string>
     <string name="app_cms_plan_renewal_cycle_type_daily">DAY</string>
     <string name="plan_type_day">day</string>
     <string name="plan_type_daily">daily</string>
@@ -1096,7 +1102,6 @@
     <string name="app_cms_download_setting_binder_key">app_cms_download_setting_binder_key</string>
     <string name="default_app_name">@string/app_name</string>
 
-
     <!--FireTV Keys.-->
     <string name="title_activity_app_cms_tv_error">AppCmsTvErrorActivity</string>
     <string name="carousel_nodule">AC Carousel 01</string>
@@ -1178,6 +1183,7 @@
         <item>@string/app_cms_page_show_detail_module_key</item>
         <item>AC SubNav 01</item>
         <item>AC LanguageSettings 01</item>
+        <item>AC Library 01</item>
         <item></item>
     </string-array>
     <string-array name="app_cms_detail_module">

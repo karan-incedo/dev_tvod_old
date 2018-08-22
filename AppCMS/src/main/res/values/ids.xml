@@ -65,10 +65,8 @@
     <item name="videoDescriptionOnHover" type="id">videoDescriptionOnHover</item>
     <item name="videoBackgroundOnHover" type="id">videoBackgroundOnHover</item>
     <item name="sesaontab" type="id">sesaontab</item>
-
-
-
-
+    <item name="btn_start_watching" type="id">btn_start_watching</item>
+    <item name="visualTimer" type="id">visualTimer</item>
 
 
 </resources>

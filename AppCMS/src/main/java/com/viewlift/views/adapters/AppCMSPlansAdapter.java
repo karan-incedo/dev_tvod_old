@@ -186,22 +186,32 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
         StringBuilder planDuration = new StringBuilder();
 
         if (adapterData.get(0).getRenewalCycleType().contains(mContext.getString(R.string.app_cms_plan_renewal_cycle_type_monthly))) {
-//            planDuration.append(" ");
             planDuration.append(mContext.getString(R.string.forward_slash));
-//            planDuration.append(" ");
-            planDuration.append(mContext.getString(R.string.plan_type_month));
+            if (adapterData.get(0).getRenewalCyclePeriodMultiplier() == 1) {
+                planDuration.append(mContext.getString(R.string.plan_type_month));
+            } else {
+                planDuration.append(adapterData.get(0).getRenewalCyclePeriodMultiplier());
+                planDuration.append(" ");
+                planDuration.append(mContext.getString(R.string.plan_type_month));
+                if (adapterData.get(0).getRenewalCyclePeriodMultiplier() > 1)
+                    planDuration.append("s");
+            }
         }
         if (adapterData.get(0).getRenewalCycleType().contains(mContext.getString(R.string.app_cms_plan_renewal_cycle_type_yearly))) {
-//            planDuration.append(" ");
             planDuration.append(mContext.getString(R.string.forward_slash));
-//            planDuration.append(" ");
             planDuration.append(mContext.getString(R.string.plan_type_year));
         }
         if (adapterData.get(0).getRenewalCycleType().contains(mContext.getString(R.string.app_cms_plan_renewal_cycle_type_daily))) {
-//            planDuration.append(" ");
             planDuration.append(mContext.getString(R.string.forward_slash));
-//            planDuration.append(" ");
-            planDuration.append(mContext.getString(R.string.plan_type_day));
+            if (adapterData.get(0).getRenewalCyclePeriodMultiplier() == 1) {
+                planDuration.append(mContext.getString(R.string.plan_type_day));
+            } else {
+                planDuration.append(adapterData.get(0).getRenewalCyclePeriodMultiplier());
+                planDuration.append(" ");
+                planDuration.append(mContext.getString(R.string.plan_type_day));
+                if (adapterData.get(0).getRenewalCyclePeriodMultiplier() > 1)
+                    planDuration.append("s");
+            }
         }
         planDuration.append("*");
         StringBuilder plan = new StringBuilder();
@@ -214,9 +224,7 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
             durationFont = 3.0f;
             priceFont = 4.0f;
         }
-        text.setSpan(new RelativeSizeSpan(priceFont), 0, planAmt.toString().length() /*+ 1*/, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//        text.setSpan(new StyleSpan(Typeface.BOLD), 0, planAmt.toString().length() + 1,
-//                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        text.setSpan(new RelativeSizeSpan(priceFont), 0, planAmt.toString().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         text.setSpan(new ForegroundColorSpan(ContextCompat.getColor(mContext, R.color.splashbackgroundColor)), 0, planAmt.toString().length()/* + 1*/,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
@@ -238,7 +246,7 @@ public class AppCMSPlansAdapter extends RecyclerView.Adapter<AppCMSPlansAdapter.
             }
         }
         if (0 <= position && position < adapterData.size()) {
-            if (adapterData.size() != 1) {
+            if (adapterData.size() != 0) {
                 createView(holder, position);
             }
 

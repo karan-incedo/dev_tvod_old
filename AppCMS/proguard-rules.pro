@@ -140,3 +140,6 @@
   public static *** v(...);
   public static *** i(...);
 }
+
+-dontwarn com.clevertap.android.sdk.**
+

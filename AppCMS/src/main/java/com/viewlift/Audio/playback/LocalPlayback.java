@@ -152,6 +152,7 @@ public final class LocalPlayback implements Playback {
     private long mStartBufferMilliSec = 0l;
     private long mStopBufferMilliSec;
     private static double ttfirstframe = 0d;
+    String streamId;
 
     public static LocalPlayback getInstance(Context context, MetadataUpdateListener listener) {
         if (localPlaybackInstance == null) {
@@ -204,6 +205,7 @@ public final class LocalPlayback implements Playback {
                 null,
                 null);
         audioData = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
+        streamId=getStreamId();
         sentBeaconPlay = false;
         sentBeaconFirstFrame = false;
         if (beaconBuffer != null) {
@@ -356,6 +358,7 @@ public final class LocalPlayback implements Playback {
 
             AudioPlaylistHelper.getInstance().setCurrentMediaId(mCurrentMediaId);
             audioData = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
+            streamId=getStreamId();
             sentBeaconPlay = false;
             sentBeaconFirstFrame = false;
             mStartBufferMilliSec = new Date().getTime();
@@ -438,7 +441,7 @@ public final class LocalPlayback implements Playback {
                     null,
                     null,
                     null,
-                    getStreamId(),
+                    streamId,
                     0d,
                     0,
                     appCMSPresenter.isVideoDownloaded(audioData.getGist().getId()));
@@ -725,7 +728,7 @@ public final class LocalPlayback implements Playback {
                                         null,
                                         null,
                                         null,
-                                        getStreamId(),
+                                        streamId,
                                         ttfirstframe,
                                         0,
                                         appCMSPresenter.isVideoDownloaded(audioData.getGist().getId()));
@@ -865,7 +868,7 @@ public final class LocalPlayback implements Playback {
         }
 
         if (audioData != null && audioData.getGist() != null) {
-            beaconPing.setStreamId(getStreamId());
+            beaconPing.setStreamId(streamId);
             beaconPing.setFilmId(audioData.getGist().getId());
             beaconPing.setPermaLink(audioData.getGist().getPermalink());
             audioData.getGist().setCastingConnected(false);
@@ -889,7 +892,7 @@ public final class LocalPlayback implements Playback {
         }
 
         if (audioData != null && audioData.getGist() != null) {
-            beaconBuffer.setStreamId(getStreamId());
+            beaconBuffer.setStreamId(streamId);
             beaconBuffer.setFilmId(audioData.getGist().getId());
             beaconBuffer.setPermaLink(audioData.getGist().getPermalink());
             audioData.getGist().setCastingConnected(false);

@@ -1,0 +1,150 @@
+{
+  "id": "b3214a4e-adaf-4c88-b9d3-f6b83be5d76a",
+  "settings": {
+    "columns": {
+      "tablet": 4,
+      "desktop": 6,
+      "mobile": 3,
+      "ott": 6
+    }
+  },
+  "view": "AC Watchlist 01",
+  "type": "AC Watchlist 01",
+  "blockName": "watchlist01",
+  "layout": {
+    "ftv": {
+      "yAxis": 0,
+      "xAxis": 0,
+      "width": 1920,
+      "height": 1080
+    }
+  },
+  "components": [
+    {
+      "layout": {
+        "ftv": {
+          "yAxis": 51,
+          "leftMargin": 95,
+          "rightMargin": 4.9,
+          "fontSize": 20,
+          "height": 55
+        }
+      },
+      "fontFamily": "OpenSans",
+      "numberOfLines": 1,
+      "textAlignment": "left",
+      "letterSpacing": 4.5,
+      "text": "MY LIBRARY",
+      "type": "label",
+      "fontWeight": "Semibold",
+      "key": "pageTitle"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "yAxis": 106,
+          "xAxis": 85,
+          "width": 1750,
+          "height": 2
+        }
+      },
+      "backgroundColor": "#808080",
+      "type": "separatorView"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "trayPadding": 10,
+          "padding": 150,
+          "leftMargin": 4.9,
+          "yAxis": 123,
+          "rightMargin": 2.67,
+          "itemHeight": 118,
+          "itemWidth": 1920,
+          "height": 757
+        }
+      },
+      "components": [
+        {
+          "layout": {
+            "ftv": {
+              "leftMargin": 95,
+              "yAxis": 0,
+              "xAxis": 0,
+              "width": 210,
+              "height": 118
+            }
+          },
+          "type": "image",
+          "key": "thumbnailImage"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "yAxis": 35,
+              "xAxis": 179,
+              "width": 42,
+              "height": 47
+            }
+          },
+          "type": "button",
+          "key": "playImage"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "leftMargin": 325,
+              "fontSize": 12.5
+            }
+          },
+          "fontFamily": "OpenSans",
+          "textAlignment": "left",
+          "type": "label",
+          "textColor": "#ffffff",
+          "fontWeight": "SemiBold",
+          "key": "libraryItemTitleLabel"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "leftMargin": 325,
+              "topMargin": 35,
+              "width": 730,
+              "fontSize": 11.5,
+              "height": 74
+            }
+          },
+          "fontFamily": "OpenSans",
+          "numberOfLines": 2,
+          "textAlignment": "left",
+          "lineHeight": 36,
+          "type": "label",
+          "textColor": "#ffffff",
+          "key": "descriptionLabel"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "isVerticallyCentered": true,
+              "leftMargin": 1615,
+              "topMargin": 30,
+              "width": 200,
+              "fontSize": 9,
+              "height": 30
+            }
+          },
+          "gravity": "center",
+          "fontFamily": "OpenSans",
+          "text": "REMOVE",
+          "type": "label",
+          "textColor": "#ffffff",
+          "fontWeight": "ExtraBold",
+          "key": "expiretime"
+        }
+      ],
+      "itemClickAction": "lectureDetailPage",
+      "type": "tableView",
+      "key": "tableView"
+    }
+  ]
+}

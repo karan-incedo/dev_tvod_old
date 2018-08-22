@@ -36,11 +36,12 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
 
     private SearchableInfo searchableInfo;
     AppCMSPresenter appCMSPresenter;
+
     public SearchSuggestionsAdapter(Context context, Cursor c, SearchableInfo searchableInfo,
                                     boolean autoRequery) {
         super(context, c, autoRequery);
         this.searchableInfo = searchableInfo;
-        AppCMSApplication mApplication = ((AppCMSApplication)context.getApplicationContext());
+        AppCMSApplication mApplication = ((AppCMSApplication) context.getApplicationContext());
         appCMSPresenter = ((AppCMSApplication) mApplication).
                 getAppCMSPresenterComponent().appCMSPresenter();
     }
@@ -60,8 +61,8 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
         String songCount = searchHintResult[7];
         String episodeCount = searchHintResult[9];
 
-        String songYear="";
-        if(searchHintResult.length>=9 && searchHintResult[8]!=null){
+        String songYear = "";
+        if (searchHintResult.length >= 9 && searchHintResult[8] != null) {
             songYear = searchHintResult[8];
         }
 
@@ -75,7 +76,9 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
                         .append(context.getString(R.string.runtime_seconds_abbreviation)).toString());
             } else if (runtimeAsInteger == 0 || runtimeAsInteger / 60 == 0) {
                 // FIXME: Display number of episodes.
-                if(!mediaType.equalsIgnoreCase(context.getString(R.string.content_type_event)))
+                if(!mediaType.equalsIgnoreCase(context.getString(R.string.content_type_event))
+                        && episodeCount != null
+                        && Integer.parseInt(episodeCount) > 0)
                     runtime.setText(episodeCount + " " + new StringBuilder().append(context.getString(R.string.runtime_episodes_abbreviation)).toString());
             } else if (runtimeAsInteger / 60 < 2) {
                 runtime.setText(new StringBuilder().append(Integer.valueOf(cursor.getString(2)) / 60)
@@ -94,7 +97,7 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
                 && mediaType.toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase()) && !TextUtils.isEmpty(songYear)) {
             runtime.append(" | " + songYear);
         }
-        if (mediaType.toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())) {
+       if (mediaType.toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())) {
             runtime.setText("");
         } else if (mediaType.toLowerCase().contains(context.getString(R.string.app_cms_photo_gallery_key_type).toLowerCase())) {
             runtime.setText("");
@@ -107,6 +110,7 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
         String query = ((constraint == null) ? "" : constraint.toString());
         if (query != null && query.length() != 0)
             appCMSPresenter.sendSearchEvent(query);
+
         try {
             cursor = getSearchManagerSuggestions(searchableInfo, query, 5);
             if (cursor != null) {

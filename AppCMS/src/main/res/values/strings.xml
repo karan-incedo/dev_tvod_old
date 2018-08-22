@@ -477,19 +477,13 @@
     <string name="privacy_policy">privacy policy</string>
     <string name="season">Season</string>
 
-    
+    <string name="rental_title">Uh Oh</string>
+    <string name="rental_description">Unfortunately you can not purchase on this platform.Content you have already purchased will become available here automatically</string>
+
+
     <string name="no_fight_records">No fight records found</string>
     <string name="no_settings_available">Player settings are not available for now!</string>
 
     <string name="rupee_symbol">\u20B9</string>
+    <string name="thank_you">Thank You</string>
 </resources>
-
-
-
-
-
-
-
-
-
-
