@@ -821,7 +821,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 
                                         if((data.getPricing()!=null && (data.getPricing().getType().equalsIgnoreCase("TVOD") ||
                                                 data.getPricing().getType().equalsIgnoreCase("PPV"))) ||
-                                                (data.getGist().getPurchaseType()!=null && (data.getGist().getPurchaseType().equalsIgnoreCase("RENT") || data.getGist().getScheduleEndDate()==0))) {
+                                                (data.getGist().getPurchaseType()!=null && (data.getGist().getPurchaseType().equalsIgnoreCase("RENT") ))) {
 
                                             appCMSPresenter.getTransactionData(data.getGist().getId(), updatedContentDatum -> {
 

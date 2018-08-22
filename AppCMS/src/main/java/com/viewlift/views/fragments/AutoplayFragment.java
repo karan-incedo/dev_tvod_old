@@ -231,6 +231,10 @@ public class AutoplayFragment extends Fragment {
 
     boolean isPurchaseDialog = false;
 
+    /**
+     * check If content is TVOD /PPV or SVOD or FREE
+     * If content is TVOD than show purchase dialog
+     */
     private void checkForTvodContent() {
         if ((binder.getContentData() != null && binder.getContentData().getPricing() != null && (binder.getContentData().getPricing().getType().equalsIgnoreCase("TVOD") ||
                 binder.getContentData().getPricing().getType().equalsIgnoreCase("PPV")))) {
@@ -325,8 +329,6 @@ public class AutoplayFragment extends Fragment {
         }
     }
 
-    boolean isTvod = false;
-    boolean isPlayble = true;
 
     private void callCountDownFinished() {
         if (isAdded() && isVisible()) {

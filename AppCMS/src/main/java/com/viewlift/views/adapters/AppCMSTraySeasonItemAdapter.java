@@ -269,10 +269,10 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                              * if pricing type is TVOD than first call rental API and check video end date
                              * if video end date is greater than current date than play video else show message
                              */
-                            if (data != null &&
+                            if ((data != null &&
                                     data.getPricing() != null &&
-                                    data.getPricing().getType() != null)
-//                                    data.getPricing().getType().equalsIgnoreCase("TVOD")))
+                                    data.getPricing().getType() != null) &&
+                            (data.getPricing().getType().equalsIgnoreCase("TVOD") || data.getPricing().getType().equalsIgnoreCase("PPV")))
                             {
                                 int finalCurrentPlayingIndex = currentPlayingIndex;
                                 List<String> finalRelatedVideoIds = relatedVideoIds;
