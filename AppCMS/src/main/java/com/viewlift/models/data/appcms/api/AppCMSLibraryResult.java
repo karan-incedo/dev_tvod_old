@@ -57,9 +57,9 @@ public class AppCMSLibraryResult {
         List<ContentDatum> data = new ArrayList<>();
 
         if (getRecords() != null) {
-            for (Record record : getRecords()) {
-                if (record.getContentResponse() !=null) {
-                    data.add(record.convertToContentDatum());
+            for (Record records : getRecords()) {
+                if (records.getContentResponse() !=null) {
+                    data.add(records.convertToContentDatum());
                 }
             }
         }

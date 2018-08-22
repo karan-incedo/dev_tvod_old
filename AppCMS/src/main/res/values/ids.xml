@@ -18,6 +18,8 @@
     <item name="timer_id" type="id">timer_id</item>
     <item name="watch_live_button" type="id">watch_live_button</item>
     <item name="timer_until_face_off" type="id">timer_until_face_off</item>
+    <item name="video_play_icon" type="id">video_play_icon</item>
+
     <item name="recyclerview_tray" type="id"/>
     <item name="video_play_image" type="id"/>
     <item name="play_live_image_id" type="id"/>

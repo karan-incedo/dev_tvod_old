@@ -27,6 +27,7 @@ import com.viewlift.Audio.playback.PlaybackManager;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.AppCMSTransactionDataValue;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
@@ -105,6 +106,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
     private boolean isHistoryPage;
     private boolean isDonwloadPage;
     private boolean isWatchlistPage;
+    private boolean isLibraryPage;
     private Map<String, Boolean> filmDownloadIconUpdatedMap;
 
     public AppCMSUserWatHisDowAdapter(Context context,
@@ -131,11 +133,6 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         this.hideRemoveAllButtonEvent = new InternalEvent<>(View.GONE);
         this.showRemoveAllButtonEvent = new InternalEvent<>(View.VISIBLE);
 
-//        for(int i=0;i<moduleAPI.getContentData().size();i++){
-//            if(moduleAPI.getContentData().get(i).getGist().getSubscriptionType()!=null && moduleAPI.getContentData().get(i).getGist().getSubscriptionType().equalsIgnoreCase("test")){
-//                moduleAPI.getContentData().remove(i);
-//            }
-//        }
         if (moduleAPI != null && moduleAPI.getContentData() != null) {
             this.adapterData = moduleAPI.getContentData();
         } else {
@@ -224,6 +221,10 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
             case PAGE_WATCHLIST_02_MODULE_KEY:
                 this.isWatchlistPage = true;
                 break;
+
+            case PAGE_MYLIBRARY_01_MODULE_KEY:
+                this.isLibraryPage = true;
+
 
             default:
                 break;
@@ -788,6 +789,9 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                     data.getGist().getContentType() != null &&
                                     (data.getGist().getContentType().equalsIgnoreCase("SERIES") || data.getGist().getContentType().equalsIgnoreCase(mContext.getResources().getString(R.string.app_cms_episodic_season_prefix)))) {
                                 action = mContext.getString(R.string.app_cms_action_showvideopage_key);
+                                if (data.getGist().getSeriesPermalink() != null) {
+                                    permalink = data.getGist().getSeriesPermalink();
+                                }
                             }
 
                             if (action.contains(videoAction)) {
@@ -808,16 +812,130 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                         return;
                                     }
                                 } else {
-                                    /*play movie from web URL*/
-                                    appCMSPresenter.launchVideoPlayer(data,
-                                            data.getGist().getId(),
-                                            currentPlayingIndex,
-                                            relatedVideoIds,
-                                            -1,
-                                            action);
+
+//                                    if (isLibraryPage) {
+
+                                        int finalCurrentPlayingIndex = currentPlayingIndex;
+                                        List<String> finalRelatedVideoIds = relatedVideoIds;
+                                        String finalAction = action;
+
+                                        if((data.getPricing()!=null && (data.getPricing().getType().equalsIgnoreCase("TVOD") ||
+                                                data.getPricing().getType().equalsIgnoreCase("PPV"))) ||
+                                                (data.getGist().getPurchaseType()!=null && (data.getGist().getPurchaseType().equalsIgnoreCase("RENT") || data.getGist().getScheduleEndDate()==0))) {
+
+                                            appCMSPresenter.getTransactionData(data.getGist().getId(), updatedContentDatum -> {
+
+                                                boolean isPlayable = true;
+                                                AppCMSTransactionDataValue objTransactionData = null;
+
+
+                                                if (updatedContentDatum != null &&
+                                                        updatedContentDatum.size() > 0) {
+                                                    if (updatedContentDatum.get(0).size() == 0) {
+                                                        isPlayable = false;
+                                                    } else {
+                                                        objTransactionData = updatedContentDatum.get(0).get(data.getGist().getId());
+
+                                                    }
+                                                }
+                                                if (!isPlayable) {
+                                                    appCMSPresenter.showNoPurchaseDialog(mContext.getString(R.string.rental_title), mContext.getString(R.string.rental_description));
+
+                                                } else {
+
+                                                    String rentalPeriod="";
+                                                    if (data.getPricing()!=null && data.getPricing().getRent() != null &&
+                                                            data.getPricing().getRent().getRentalPeriod() > 0) {
+                                                        rentalPeriod= String.valueOf(data.getPricing().getRent().getRentalPeriod());
+                                                    }
+                                                    if(objTransactionData!=null){
+                                                        rentalPeriod= String.valueOf(objTransactionData.getRentalPeriod());
+                                                    }
+
+                                                    boolean isShowRentalPeriodDialog=true;
+                                                    /**
+                                                     * if transaction getdata api containf transaction end date .It means Rent API called before
+                                                     * and we have shown rent period dialog before so dont need to show rent dialog again. else sow rent period dilaog
+                                                     */
+                                                    if(objTransactionData.getTransactionEndDate()>0){
+                                                        isShowRentalPeriodDialog=false;
+                                                    }else{
+                                                        isShowRentalPeriodDialog=true;
+                                                    }
+
+                                                    if(isShowRentalPeriodDialog) {
+
+                                                        if (rentalPeriod == null || TextUtils.isEmpty(rentalPeriod)) {
+                                                            rentalPeriod = "xapi" +
+                                                                    "";
+                                                        }
+                                                        appCMSPresenter.showRentTimeDialog(retry -> {
+                                                            if (retry) {
+                                                                appCMSPresenter.getRentalData(moduleAPI.getContentData().get(0).getGist().getId(), getRentalData -> {
+                                                                    appCMSPresenter.launchVideoPlayer(data,
+                                                                            data.getGist().getId(),
+                                                                            finalCurrentPlayingIndex,
+                                                                            finalRelatedVideoIds,
+                                                                            -1,
+                                                                            finalAction);
+                                                                }, null, false, 0);
+                                                            } else {
+//                                                appCMSPresenter.sendCloseOthersAction(null, true, false);
+                                                            }
+                                                        }, mContext.getString(R.string.rent_time_dialog_mssg,
+                                                                rentalPeriod),true);
+                                                    }else{
+                                                        appCMSPresenter.launchVideoPlayer(data,
+                                                                data.getGist().getId(),
+                                                                finalCurrentPlayingIndex,
+                                                                finalRelatedVideoIds,
+                                                                -1,
+                                                                finalAction);
+                                                    }
+
+                                            }
+
+                                            }, null, false);
+                                        }else{
+                                            appCMSPresenter.launchVideoPlayer(data,
+                                                    data.getGist().getId(),
+                                                    currentPlayingIndex,
+                                                    relatedVideoIds,
+                                                    -1,
+                                                    action);
+                                        }
+
+//                                        appCMSPresenter.getRentalData(data.getGist().getId(), updatedContentDatum -> {
+//
+//                                            boolean isPlayable = false;
+//
+//                                            /**
+//                                             * get the transaction end date and compare with current time if end date is less than current date
+//                                             * playable will be false
+//                                             */
+//                                            long expirationDate = data.getGist().getrentPerioedendDate();
+//                                            long remainingTime = appCMSPresenter.getTimeIntervalForEvent(expirationDate, "EEE MMM dd HH:mm:ss");
+//
+//                                            if (remainingTime < 0) {
+//                                                isPlayable = false;
+//                                            }
+//                                            if (!isPlayable) {
+//                                                appCMSPresenter.showNoPurchaseDialog(appCMSPresenter.getCurrentContext().getString(R.string.rental_title), appCMSPresenter.getCurrentContext().getString(R.string.rental_description));
+//                                                return;
+//                                            }
+//                                        }, null, false);
+//                                    }else {
+//                                        /*play movie from web URL*/
+//                                        appCMSPresenter.launchVideoPlayer(data,
+//                                                data.getGist().getId(),
+//                                                currentPlayingIndex,
+//                                                relatedVideoIds,
+//                                                -1,
+//                                                action);
+//                                    }
                                 }
                             }
-                            if (action != null && !TextUtils.isEmpty(action)) {
+                            else if (action != null && !TextUtils.isEmpty(action)) {
 
                                 if (isDonwloadPage && action.contains(trayAction)) {
                                     if (data.getGist() != null &&

@@ -152,7 +152,9 @@ public class AppCMSMoreFragment extends DialogFragment {
             int height = ViewGroup.LayoutParams.MATCH_PARENT;
             Window window = dialog.getWindow();
             window.setLayout(width, height);
+
             window.setGravity(Gravity.START);
+
         }
     }
 }

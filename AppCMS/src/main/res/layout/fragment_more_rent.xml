@@ -50,15 +50,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/app_cms_more_title_text" />
 
-   <!-- <Button
-        android:id="@+id/app_cms_nav_free_trial_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/app_cms_subscribe_now"
-        android:textSize="@dimen/nav_item_text_size"
-
-        android:layout_marginTop="8dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"/>-->
-
 </android.support.constraint.ConstraintLayout>

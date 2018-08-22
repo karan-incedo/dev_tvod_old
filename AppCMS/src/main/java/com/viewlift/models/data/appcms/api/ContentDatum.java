@@ -143,15 +143,73 @@ public class ContentDatum implements Serializable {
     @Expose
     List<Seo> seo = null;
 
+    @SerializedName("type")
+    @Expose
+    String type;
+
+    @SerializedName("seriesId")
+    @Expose
+    String seriesId;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getSeriesId() {
+        return seriesId;
+    }
+
+    public void setSeriesId(String seriesId) {
+        this.seriesId = seriesId;
+    }
+
+    public String getSeasonId() {
+        return seasonId;
+    }
+
+    public void setSeasonId(String seasonId) {
+        this.seasonId = seasonId;
+    }
+
+    @SerializedName("seasonId")
+    @Expose
+    String seasonId;
+
     HashMap<String,List<ContentDatum>> monthlySchedule;
 
     @SerializedName("drmEnabled")
     @Expose
     boolean isDRMEnabled = false;
 
+    public Pricing getPricing() {
+        return pricing;
+    }
+
+    public void setPricing(Pricing pricing) {
+        this.pricing = pricing;
+    }
+
     @SerializedName("pricing")
     @Expose
-    public Pricing pricing;
+    Pricing pricing;
+
+
+
+    public boolean isTvodPricing() {
+        return isTvodPricing;
+    }
+
+    public void setTvodPricing(boolean tvodPricing) {
+        isTvodPricing = tvodPricing;
+    }
+
+    boolean isTvodPricing;
+
+
     Players players;
 
     private AppCMSSignedURLResult appCMSSignedURLResult;
@@ -567,11 +625,7 @@ public class ContentDatum implements Serializable {
         return contentData;
     }
 
-    public Pricing getPricing() {
-        return pricing;
-    }
 
-    public void setPricing(Pricing pricing) {
-        this.pricing = pricing;
-    }
+
+
 }

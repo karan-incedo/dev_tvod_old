@@ -16,6 +16,8 @@
     <dimen name="menu_item_height">36dp</dimen>
     <dimen name="bottom_navbar_height">58dp</dimen>
     <dimen name="nav_item_text_size">12sp</dimen>
+    <dimen name="button_text_size">16sp</dimen>
+
     <dimen name="nav_item_margin">5dp</dimen>
     <dimen name="nav_image_height">24dp</dimen>
     <dimen name="nav_image_width">24dp</dimen>
@@ -40,6 +42,8 @@
     <dimen name="close_button_size">24dp</dimen>
     <dimen name="new_version_available_close_button_size">24dp</dimen>
     <dimen name="app_cms_search_bar_width">480dp</dimen>
+    <dimen name="mssg_btn_margin">60dp</dimen>
+
     <dimen name="app_cms_searchbar_top_margin">300dp</dimen>
     <dimen name="app_cms_searchbar_top_margin_land">140dp</dimen>
     <dimen name="app_cms_logged_out_message_textsize">10sp</dimen>
@@ -76,7 +80,7 @@
     <dimen name="app_cms_close_button_margin">24dp</dimen>
     <dimen name="nav_item_container_padding">24dp</dimen>
     <dimen name="nav_item_login_container_padding">48dp</dimen>
-    <dimen name="app_cms_more_title_text_size">18sp</dimen>
+    <dimen name="app_cms_more_title_text_size">22sp</dimen>
 
     <dimen name="app_cms_content_rating_title_header_text_size">12sp</dimen>
     <dimen name="app_cms_content_rating_title_text_size">18sp</dimen>

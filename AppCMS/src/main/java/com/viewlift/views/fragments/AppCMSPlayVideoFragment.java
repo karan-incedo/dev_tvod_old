@@ -44,6 +44,7 @@ import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.beacon.BeaconBuffer;
 import com.viewlift.models.data.appcms.beacon.BeaconPing;
+import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.playersettings.HLSStreamingQuality;
@@ -851,6 +852,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                         ? View.VISIBLE
                         : View.GONE);
         videoPlayerView.setAdsUrl(adsUrl);
+        if (isVideoDownloaded) {
+            videoPlayerView.setOfflineUri(Uri.parse(hlsUrl), null);
+        }
         videoPlayerView.preparePlayer();
         videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
 
@@ -858,9 +862,21 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         requestAudioFocus();
         resumeVideo();
+        //update rental start time
+        updateVideoStartTime();
         super.onResume();
     }
 
+
+    private void updateVideoStartTime(){
+        {
+
+            if(onUpdateContentDatumEvent.getCurrentContentDatum().getGist().getRentStartTime()==0 &&
+                    onUpdateContentDatumEvent.getCurrentContentDatum().getGist().getTransactionEndDate()==0){
+                appCMSPresenter.updateVideoStartTime(onUpdateContentDatumEvent.getCurrentContentDatum().getGist().getId());
+            }
+        }
+    }
     @Override
     public void onPause() {
         pauseVideo();
@@ -1465,10 +1481,10 @@ public class AppCMSPlayVideoFragment extends Fragment
                 }
                 break;
 
-            case AudioManager.AUDIOFOCUS_LOSS:
+           /* case AudioManager.AUDIOFOCUS_LOSS:
                 videoPlayerView.pausePlayer();
                 abandonAudioFocus();
-                break;
+                break;*/
 
             default:
                 break;

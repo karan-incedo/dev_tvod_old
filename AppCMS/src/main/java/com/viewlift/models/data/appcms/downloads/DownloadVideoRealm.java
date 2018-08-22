@@ -8,7 +8,6 @@ import com.viewlift.models.data.appcms.api.ContentDetails;
 import com.viewlift.models.data.appcms.api.Gist;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -49,6 +48,19 @@ public class DownloadVideoRealm extends RealmObject {
     private String posterFileURL;
     private String subtitlesFileURL;
     private String userId;
+
+    public long getRentStartWatchTime() {
+        return rentStartWatchTime;
+    }
+
+    public void setRentStartWatchTime(long rentStartWatchTime) {
+        this.rentStartWatchTime = rentStartWatchTime;
+    }
+
+
+
+
+
     private long watchedTime;
     private boolean isSyncedWithServer;
     public String contentType;
@@ -97,12 +109,12 @@ public class DownloadVideoRealm extends RealmObject {
         this.seasonNum = seasonNum;
     }
 
-    public long getEndDate() {
-        return endDate;
+    public long getTransactionEndDate() {
+        return transactionEndDate;
     }
 
-    public void setEndDate(long endDate) {
-        this.endDate = endDate;
+    public void setTransactionEndDate(long transactionEndDate) {
+        this.transactionEndDate = transactionEndDate;
     }
 
     public String getSubscriptionType() {
@@ -113,8 +125,29 @@ public class DownloadVideoRealm extends RealmObject {
         this.subscriptionType = subscriptionType;
     }
 
-    private long endDate;
+    private long transactionEndDate;
     private String subscriptionType;
+    private long rentStartWatchTime;
+
+    public boolean isRentStartTimeSyncedWithServer() {
+        return isRentStartTimeSyncedWithServer;
+    }
+
+    public void setRentStartTimeSyncedWithServer(boolean rentStartTimeSyncedWithServer) {
+        isRentStartTimeSyncedWithServer = rentStartTimeSyncedWithServer;
+    }
+
+    private boolean isRentStartTimeSyncedWithServer;
+    private float rentalPeriod;
+
+    public float getRentalPeriod() {
+        return rentalPeriod;
+    }
+
+    public void setRentalPeriod(float rentalPeriod) {
+        this.rentalPeriod = rentalPeriod;
+    }
+
 
 
     public String getPlayListName() {
@@ -431,7 +464,11 @@ public class DownloadVideoRealm extends RealmObject {
         gist.setPermalink(getPermalink());
         gist.setDownloadStatus(getDownloadStatus());
         gist.setRuntime(getVideoDuration());
-        gist.setEndDate(getEndDate());
+        gist.setTransactionEndDate(getTransactionEndDate());
+        gist.setRentStartTime(getRentStartWatchTime());
+        gist.setRentalPeriod(getRentalPeriod());
+        gist.setRentStartTimeSyncedWithServer(isRentStartTimeSyncedWithServer());
+
         gist.setSubscriptionType(getSubscriptionType());
         gist.setWatchedTime(getWatchedTime());
 
@@ -461,7 +498,9 @@ public class DownloadVideoRealm extends RealmObject {
         /**
          * added to check rent expire time
          */
-        downloadVideoRealm.setEndDate(getEndDate());
+        downloadVideoRealm.setTransactionEndDate(getTransactionEndDate());
+        downloadVideoRealm.setRentalPeriod(getRentalPeriod());
+
         downloadVideoRealm.setSubscriptionType(getSubscriptionType());
         downloadVideoRealm.setVideo_Downloaded_so_far(getVideo_Downloaded_so_far());
         downloadVideoRealm.setVideoFileURL(getVideoFileURL());
