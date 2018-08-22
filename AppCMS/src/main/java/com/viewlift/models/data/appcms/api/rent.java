@@ -2,28 +2,24 @@ package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.vimeo.stag.UseStag;
 
-import java.io.Serializable;
-
-@UseStag
-public class    rent implements Serializable {
+public class Rent {
 
     @SerializedName("sd")
     @Expose
-    float sd;
-
+    private float sd;
     @SerializedName("hd")
     @Expose
-    float hd;
-
+    private float hd;
     @SerializedName("uhd")
     @Expose
-    String uhd;
-
+    private float uhd;
     @SerializedName("rentalPeriod")
     @Expose
-    String rentalPeriod;
+    private int rentalPeriod;
+    @SerializedName("startingPeriod")
+    @Expose
+    private int startingPeriod;
 
     public float getSd() {
         return sd;
@@ -41,33 +37,27 @@ public class    rent implements Serializable {
         this.hd = hd;
     }
 
-    public String getUhd() {
+    public float getUhd() {
         return uhd;
     }
 
-    public void setUhd(String uhd) {
+    public void setUhd(float uhd) {
         this.uhd = uhd;
     }
 
-    public String getRentalPeriod() {
+    public int getRentalPeriod() {
         return rentalPeriod;
     }
 
-    public void setRentalPeriod(String rentalPeriod) {
+    public void setRentalPeriod(int rentalPeriod) {
         this.rentalPeriod = rentalPeriod;
     }
 
-    public String getStartingPeriod() {
+    public int getStartingPeriod() {
         return startingPeriod;
     }
 
-    public void setStartingPeriod(String startingPeriod) {
+    public void setStartingPeriod(int startingPeriod) {
         this.startingPeriod = startingPeriod;
     }
-
-    @SerializedName("startingPeriod")
-    @Expose
-    String startingPeriod;
-
-
 }
