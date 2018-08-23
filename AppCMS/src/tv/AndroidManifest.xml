@@ -40,7 +40,7 @@
     <application
         android:banner="@drawable/androidtv_banner_image"
         android:label="@string/default_app_name"
-        android:icon="@drawable/app_logo"
+        android:icon="@mipmap/app_logo"
          tools:replace="android:label">
 
         <amazon:enable-feature

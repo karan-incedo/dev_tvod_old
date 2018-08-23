@@ -551,7 +551,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         if (isClickable) {
                             if (data.getGist() != null) {
                                 appCMSPresenter.setPlaySource("");
-                                if (moduleAPI.getTitle() != null)
+                                if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getContentType()) && moduleAPI.getContentData().get(0).getGist().getContentType().contains("SERIES"))
+                                    appCMSPresenter.setPlaySource(moduleAPI.getContentData().get(0).getGist().getTitle());
+                                else
                                     appCMSPresenter.setPlaySource(moduleAPI.getTitle());
                                 //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                                 String permalink = data.getGist().getPermalink();

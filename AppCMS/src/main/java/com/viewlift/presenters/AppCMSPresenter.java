@@ -144,6 +144,7 @@ import com.viewlift.models.data.appcms.api.AppCMSStandingResult;
 import com.viewlift.models.data.appcms.api.AppCMSTeamRoasterResult;
 import com.viewlift.models.data.appcms.api.AppCMSTransactionDataValue;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
@@ -170,6 +171,7 @@ import com.viewlift.models.data.appcms.beacon.AppCMSBeaconRequest;
 import com.viewlift.models.data.appcms.beacon.BeaconRequest;
 import com.viewlift.models.data.appcms.beacon.OfflineBeaconData;
 import com.viewlift.models.data.appcms.ccavenue.RSAKeyResponse;
+import com.viewlift.models.data.appcms.downloads.DownloadClosedCaptionRealm;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
 import com.viewlift.models.data.appcms.downloads.RealmController;
@@ -1134,6 +1136,7 @@ public class AppCMSPresenter {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     /**
@@ -5532,14 +5535,14 @@ public class AppCMSPresenter {
             if (downloadVideoRealm == null) {
                 return;
             } else if (downloadVideoRealm != null && downloadVideoRealmList.size() > 1) {
-                realmController.removeFromDB(downloadVideoRealm);
+                realmController.removeFromDB(downloadVideoRealm,deleteCCFileActionListener);
                 return;
             }
             downloadManager.remove(downloadVideoRealm.getVideoId_DM());
             downloadManager.remove(downloadVideoRealm.getVideoThumbId_DM());
             downloadManager.remove(downloadVideoRealm.getPosterThumbId_DM());
             downloadManager.remove(downloadVideoRealm.getSubtitlesId_DM());
-            realmController.removeFromDB(downloadVideoRealm);
+            realmController.removeFromDB(downloadVideoRealm,deleteCCFileActionListener);
         }
     }
 
@@ -6288,27 +6291,34 @@ public class AppCMSPresenter {
         return enqueueId;
     }
 
-    private long downloadVideoSubtitles(String downloadURL, String filename) {
+    private long downloadVideoSubtitles(DownloadClosedCaptionRealm downloadClosedCaptionRealm) {
 
         long enqueueId = 0L;
         try {
-
-            DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL))
-                    .setTitle(filename)
-                    .setDescription(filename)
+            DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadClosedCaptionRealm.getUrl()))
+                    .setTitle(downloadClosedCaptionRealm.getGistId())
+                    .setDescription(downloadClosedCaptionRealm.getGistId())
                     .setAllowedOverRoaming(false)
                     .setVisibleInDownloadsUi(false)
                     .setShowRunningNotification(false);
 
+            String fileName = downloadClosedCaptionRealm.getUrl().substring(downloadClosedCaptionRealm.getUrl().lastIndexOf("/") + 1);
+
             if (getUserDownloadLocationPref()) {
                 downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity, "closedCaptions"),
-                        filename + MEDIA_SUFFIX_SRT)));
+                        fileName )));
             } else {
                 downloadRequest.setDestinationInExternalFilesDir(currentActivity, "closedCaptions",
-                        filename + MEDIA_SUFFIX_SRT);
+                        fileName);
             }
 
+            fileName = currentActivity.getFilesDir().getAbsolutePath() + File.separator
+                    + "closedCaptions" + File.separator + fileName;
             enqueueId = downloadManager.enqueue(downloadRequest);
+
+            downloadClosedCaptionRealm.setCcFileEnqueueId(enqueueId);
+           // downloadClosedCaptionRealm.setUrl(downloadedMediaLocalURI(enqueueId));
+            realmController.addDownloadedCCFile(downloadClosedCaptionRealm);
 
         } catch (Exception e) {
             //Log.e(TAG, "Error downloading video subtitles for download " + downloadURL + ": " + e.getMessage());
@@ -6605,24 +6615,31 @@ public class AppCMSPresenter {
 
     private void enqueueDownloadContent(ContentDatum updateContentDatum, boolean isFromPlaylistDownload) {
 
-
-        long ccEnqueueId = 0L;
-        if (updateContentDatum.getContentDetails() != null &&
-                updateContentDatum.getContentDetails().getClosedCaptions() != null &&
-                !updateContentDatum.getContentDetails().getClosedCaptions().isEmpty() &&
-                updateContentDatum.getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
-            ccEnqueueId = downloadVideoSubtitles(updateContentDatum.getContentDetails()
-                    .getClosedCaptions().get(0).getUrl(), updateContentDatum.getGist().getId());
-        }
-
         String downloadURL;
-
-        int bitrate = updateContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
+        long ccEnqueueId = 0L;
 
         downloadURL = getDownloadURL(updateContentDatum);
         downloadMediaFile(updateContentDatum, downloadURL, ccEnqueueId, isFromPlaylistDownload);
 
+        if (updateContentDatum.getContentDetails() != null &&
+                updateContentDatum.getContentDetails().getClosedCaptions() != null &&
+                !updateContentDatum.getContentDetails().getClosedCaptions().isEmpty() &&
+                updateContentDatum.getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
+            for(ClosedCaptions cc : updateContentDatum.getContentDetails()
+                    .getClosedCaptions()) {
+
+                if("SRT".equalsIgnoreCase(cc.getFormat())) {
+                    DownloadClosedCaptionRealm downloadClosedCaptionRealm = Utils.convertClosedCaptionToDownloadClosedCaption(cc, updateContentDatum.getGist().getId());
+                    downloadVideoSubtitles(downloadClosedCaptionRealm);
+                }
+            }
+        }
     }
+
+    private Action1<List<Long>> deleteCCFileActionListener = dataList -> {
+        for(Long enqueId : dataList)
+        downloadManager.remove(enqueId);
+    };
 
     private synchronized void downloadMediaFile(ContentDatum contentDatum, String downloadURL, long ccEnqueueId, boolean isFromPlaylistDownload) {
         if (!isVideoDownloadedByOtherUser(contentDatum.getGist().getId())) {
