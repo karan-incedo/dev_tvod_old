@@ -895,7 +895,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 
                                             }
 
-                                            }, null, false);
+                                            }, null, false,"Video");
                                         }else{
                                             appCMSPresenter.launchVideoPlayer(data,
                                                     data.getGist().getId(),

@@ -12,11 +12,14 @@ public class DownloadClosedCaptionRealm extends RealmObject {
     private String permalink;
     private String siteOwner;
     private String registeredDate;
+
     private String url;
+
     private String format;
     private String language;
     private float size;
     private String gistId;
+
     @PrimaryKey
     private long ccFileEnqueueId;
 

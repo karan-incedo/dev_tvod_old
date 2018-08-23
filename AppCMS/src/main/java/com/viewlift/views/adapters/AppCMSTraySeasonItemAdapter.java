@@ -298,56 +298,90 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
 
                                     } else {
 
-                                        String rentalPeriod = "";
-                                        if (data.getPricing().getRent() != null &&
-                                                data.getPricing().getRent().getRentalPeriod() > 0) {
-                                            rentalPeriod = String.valueOf(data.getPricing().getRent().getRentalPeriod());
-                                        }
-                                        if (objTransactionData != null) {
-                                            rentalPeriod = String.valueOf(objTransactionData.getRentalPeriod());
-                                        }
-
-
-                                        boolean isShowRentalPeriodDialog = true;
-                                        /**
-                                         * if transaction getdata api containf transaction end date .It means Rent API called before
-                                         * and we have shown rent period dialog before so dont need to show rent dialog again. else sow rent period dilaog
+                                        /*
+                                        Check if schedule start date is greater then current date than show message and cannot play
                                          */
-                                        if (objTransactionData.getTransactionEndDate() > 0) {
-                                            isShowRentalPeriodDialog = false;
-                                        } else {
-                                            isShowRentalPeriodDialog = true;
-                                        }
+                                        if (data != null &&
+                                                data.getGist() != null && data.getGist().getScheduleStartDate() > 0) {
+                                            long remainingTime = appCMSPresenter.getTimeIntervalForEvent(data.getGist().getScheduleStartDate(), "EEE MMM dd HH:mm:ss");
 
-                                        if (isShowRentalPeriodDialog) {
+                                            if (remainingTime > 0) {
+                                                String scheduleRemianTime = appCMSPresenter.getTimeDifference(remainingTime);
 
-                                            if (rentalPeriod == null || TextUtils.isEmpty(rentalPeriod)) {
-                                                rentalPeriod = "xapi" +
-                                                        "";
+                                                appCMSPresenter.showRentTimeDialog(retry -> {
+                                                    if (retry) {
+
+                                                    }
+                                                }, mContext.getString(R.string.content_time_available_in_for_rent,
+                                                        scheduleRemianTime), false);
                                             }
-                                            appCMSPresenter.showRentTimeDialog(retry -> {
-                                                if (retry) {
-                                                    appCMSPresenter.getRentalData(data.getGist().getId(), rentalResponse -> {
-
-
-                                                        launchScreeenPlayer(data, finalCurrentPlayingIndex, relatedVideoIds, finalAction, title, permalink);
-
-                                                        System.out.println("response ");
-                                                    }, null, false, 0);
-                                                } else {
-//                                                appCMSPresenter.sendCloseOthersAction(null, true, false);
-                                                }
-                                            },mContext.getString(R.string.rent_time_dialog_mssg,
-                                                    rentalPeriod),true);
                                         } else {
-                                            launchScreeenPlayer(data, finalCurrentPlayingIndex, relatedVideoIds, finalAction, title, permalink);
+                                            String rentalPeriod = "";
+                                            if (data.getPricing().getRent() != null &&
+                                                    data.getPricing().getRent().getRentalPeriod() > 0) {
+                                                rentalPeriod = String.valueOf(data.getPricing().getRent().getRentalPeriod());
+                                            }
+                                            if (objTransactionData != null) {
+                                                rentalPeriod = String.valueOf(objTransactionData.getRentalPeriod());
+                                            }
 
+
+                                            boolean isShowRentalPeriodDialog = true;
+                                            /**
+                                             * if transaction getdata api containf transaction end date .It means Rent API called before
+                                             * and we have shown rent period dialog before so dont need to show rent dialog again. else sow rent period dilaog
+                                             */
+                                            if (objTransactionData.getTransactionEndDate() > 0) {
+                                                isShowRentalPeriodDialog = false;
+                                            } else {
+                                                isShowRentalPeriodDialog = true;
+                                            }
+
+                                            if (isShowRentalPeriodDialog) {
+
+                                                if (rentalPeriod == null || TextUtils.isEmpty(rentalPeriod)) {
+                                                    rentalPeriod = "xapi" +
+                                                            "";
+                                                }
+                                                appCMSPresenter.showRentTimeDialog(retry -> {
+                                                    if (retry) {
+                                                        appCMSPresenter.getRentalData(data.getGist().getId(), rentalResponse -> {
+
+
+                                                            launchScreeenPlayer(data, finalCurrentPlayingIndex, relatedVideoIds, finalAction, title, permalink);
+
+                                                            System.out.println("response ");
+                                                        }, null, false, 0);
+                                                    } else {
+//                                                appCMSPresenter.sendCloseOthersAction(null, true, false);
+                                                    }
+                                                }, mContext.getString(R.string.rent_time_dialog_mssg,
+                                                        rentalPeriod), true);
+                                            } else {
+                                                launchScreeenPlayer(data, finalCurrentPlayingIndex, relatedVideoIds, finalAction, title, permalink);
+
+                                            }
                                         }
-
                                     }
                                     System.out.println("response ");
-                                }, null, false);
-                            } else if (data.getGist() == null ||
+                                }, null, false,"Video");
+                            } else if(data != null &&
+                                    data.getGist() != null && data.getGist().getScheduleStartDate()>0 ){
+                                long remainingTime = appCMSPresenter.getTimeIntervalForEvent(data.getGist().getScheduleStartDate() , "EEE MMM dd HH:mm:ss");
+
+                                if(remainingTime>0){
+                                    String scheduleRemianTime = appCMSPresenter.getTimeDifference(remainingTime);
+
+                                    appCMSPresenter.showRentTimeDialog(retry -> {
+                                        if (retry) {
+
+                                        }
+                                    }, mContext.getString(R.string.content_time_available_in_for_rent,
+                                            scheduleRemianTime), false);
+                                }
+                            }
+
+                            else if (data.getGist() == null ||
                                     data.getGist().getContentType() == null) {
                                 if (!appCMSPresenter.launchVideoPlayer(data,
                                         data.getGist().getId(),
@@ -355,11 +389,6 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                                         relatedVideoIds,
                                         -1,
                                         action)) {
-                                    //Log.e(TAG, "Could not launch action: " +
-                                    //                                                " permalink: " +
-                                    //                                                permalink +
-                                    //                                                " action: " +
-                                    //                                                action);
                                 }
                             } else {
                                 if (!appCMSPresenter.launchButtonSelectedAction(permalink,

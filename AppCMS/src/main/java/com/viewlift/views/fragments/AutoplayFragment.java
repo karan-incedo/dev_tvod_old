@@ -266,7 +266,7 @@ public class AutoplayFragment extends Fragment {
                                 getActivity().finish();
                             }
                         }, mContext.getString(R.string.content_time_available_in_for_rent,
-                                scheduleRemianTime), true);
+                                scheduleRemianTime), false);
                         return;
                     }
 
@@ -285,7 +285,7 @@ public class AutoplayFragment extends Fragment {
                     appCMSPresenter.showNoPurchaseDialog(mContext.getString(R.string.rental_title), mContext.getString(R.string.rental_description));
 
                 }
-            }, null, false);
+            }, null, false,"Video");
         } else {
             callCountDownFinished();
         }

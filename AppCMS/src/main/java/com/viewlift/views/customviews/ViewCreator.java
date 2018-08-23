@@ -196,7 +196,7 @@ public class ViewCreator {
     }
 
     static void setViewWithBundleSubtitle(Context context, ContentDatum data, View view,
-                                        boolean isJumbotron) {
+                                          boolean isJumbotron) {
         StringBuilder subtitleSb;
 
         if (isJumbotron) {
@@ -216,7 +216,6 @@ public class ViewCreator {
 
             String primaryCategory = data.getGist().getPrimaryCategory() != null ?
                     data.getGist().getPrimaryCategory().getTitle() : null;
-
 
 
             if (!TextUtils.isEmpty(primaryCategory)) {
@@ -1957,7 +1956,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "library_page.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
-                }  else if (moduleInfo.getBlockName().contains("bundleDetail01")) {
+                } else if (moduleInfo.getBlockName().contains("bundleDetail01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "bundle_page.json"),
                             AppCMSPageUI.class);
@@ -3317,7 +3316,7 @@ public class ViewCreator {
                                     .build());
                         }
 
-                    }*/ else{
+                    }*/ else {
                         parentViewType = jsonValueKeyMap.get(viewType);
 
                         if (parentViewType == AppCMSUIKeyType.PAGE_GRID_MODULE_KEY ||
@@ -3453,7 +3452,7 @@ public class ViewCreator {
                             }
                         } else {
 
-                            if (parentViewType == AppCMSUIKeyType.PAGE_AC_BUNDLEDETAIL_TRAY_MODULE_KEY){
+                            if (parentViewType == AppCMSUIKeyType.PAGE_AC_BUNDLEDETAIL_TRAY_MODULE_KEY) {
                                 Module module = new Module();
                                 module.setContentData(moduleAPI.getContentData().get(0).getGist().getBundleList());
                                 appCMSViewAdapter = new AppCMSViewAdapter(context,
@@ -3478,7 +3477,8 @@ public class ViewCreator {
                                             .listview((RecyclerView) componentViewResult.componentView)
                                             .id(moduleId + component.getKey())
                                             .build());
-                            }}else{
+                                }
+                            } else {
                                 appCMSViewAdapter = new AppCMSViewAdapter(context,
                                         this,
                                         appCMSPresenter,
@@ -3501,7 +3501,7 @@ public class ViewCreator {
                                             .listview((RecyclerView) componentViewResult.componentView)
                                             .id(moduleId + component.getKey())
                                             .build());
-                            }
+                                }
 
                             }
                         }
@@ -3619,7 +3619,7 @@ public class ViewCreator {
                     long eventDate = moduleAPI.getContentData().get(0).getGist().getEventSchedule().get(0).getEventTime();
 
                     //calculate remaining time from event date and current date
-                    long remainingTime = appCMSPresenter.getTimeIntervalForEvent(eventDate * 1000L, "EEE MMM dd HH:mm:ss");
+                    long remainingTime = appCMSPresenter.getTimeIntervalForEvent(eventDate, "EEE MMM dd HH:mm:ss");
 
                     //if event date is greater than current date then start the timer
                     if (remainingTime > 0) {
@@ -3694,10 +3694,8 @@ public class ViewCreator {
                             appCMSPresenter.getRentalData(moduleAPI.getContentData().get(0).getGist().getId(), updatedContentDatum -> {
 
 
-                            }, null, false,0);
+                            }, null, false, 0);
 
-//                            appCMSPresenter.showNoPurchaseDialog("Uh Oh", "Unfortunately you can not purchase on this platform.Content you have already purchased" +
-//                                    "will become available here automatically");
 
                         }
                     });
@@ -4284,8 +4282,8 @@ public class ViewCreator {
                                 if (moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue() != null &&
                                         moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().size() > 0) {
                                     if (moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().get(0).size() == 0) {
-                                        AppCMSTransactionDataValue obj=moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().get(0).get(moduleAPI.getContentData().get(0).getGist().getId());
-                                        System.out.println("Rental value"+obj.getRentalPeriod());
+                                        AppCMSTransactionDataValue obj = moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().get(0).get(moduleAPI.getContentData().get(0).getGist().getId());
+                                        System.out.println("Rental value" + obj.getRentalPeriod());
                                         componentViewResult.componentView.setVisibility(View.GONE);
                                         break;
 //
@@ -4456,7 +4454,7 @@ public class ViewCreator {
 
                         componentViewResult.componentView.setVisibility(View.VISIBLE);
 
-                        if(moduleAPI.getModuleType().equalsIgnoreCase("BundleDetailModule")){
+                        if (moduleAPI.getModuleType().equalsIgnoreCase("BundleDetailModule")) {
                             componentViewResult.componentView.setVisibility(View.GONE);
 
                         }
@@ -4492,8 +4490,7 @@ public class ViewCreator {
 //                                        Observable.just("One").delay(500, TimeUnit.MILLISECONDS).subscribe(appCMSPresenter.displayDialog);
 
 
-                                    if (!moduleAPI.getContentData().get(0).getGist().isRentedDialogShownAlready())
-                                    {
+                                    if (!moduleAPI.getContentData().get(0).getGist().isRentedDialogShownAlready()) {
                                         appCMSPresenter.getCurrentActivity().runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
@@ -4521,17 +4518,17 @@ public class ViewCreator {
                                     moduleAPI.getContentData().get(0) != null &&
                                     moduleAPI.getContentData().get(0).getStreamingInfo() != null &&
                                     (moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets() != null ||
-                                            moduleAPI.getContentData().get(0).getGist().getMediaType().equalsIgnoreCase("EPISODIC") )) {
-                                VideoAssets videoAssets=null;
-                                if(moduleAPI.getContentData().get(0)!=null && moduleAPI.getContentData().get(0).getStreamingInfo()!=null &&
-                                        moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets()!=null) {
-                                     videoAssets = moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets();
+                                            moduleAPI.getContentData().get(0).getGist().getMediaType().equalsIgnoreCase("EPISODIC"))) {
+                                VideoAssets videoAssets = null;
+                                if (moduleAPI.getContentData().get(0) != null && moduleAPI.getContentData().get(0).getStreamingInfo() != null &&
+                                        moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets() != null) {
+                                    videoAssets = moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets();
                                 }
-                                String vidUrl="";
-                                if(videoAssets!=null){
+                                String vidUrl = "";
+                                if (videoAssets != null) {
                                     vidUrl = videoAssets.getHls();
                                 }
-                                if (TextUtils.isEmpty(vidUrl) && videoAssets!=null && videoAssets.getMpeg()!=null) {
+                                if (TextUtils.isEmpty(vidUrl) && videoAssets != null && videoAssets.getMpeg() != null) {
                                     for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(vidUrl); i++) {
                                         vidUrl = videoAssets.getMpeg().get(i).getUrl();
                                     }
@@ -4562,7 +4559,7 @@ public class ViewCreator {
                                         int finalCurrentPlayingIndex = currentPlayingIndex;
                                         List<String> finalRelatedVideoIds = relatedVideoIds;
 
-                                        boolean isShowRentalPeriodDialog=true;
+                                        boolean isShowRentalPeriodDialog = true;
 
                                         int finalCurrentPlayingIndex1 = currentPlayingIndex;
                                         List<String> finalRelatedVideoIds1 = relatedVideoIds;
@@ -4573,13 +4570,13 @@ public class ViewCreator {
                                                 moduleAPI.getContentData().get(0).getPricing().getRent().getRentalPeriod() > 0) {
                                             rentalPeriod = String.valueOf(moduleAPI.getContentData().get(0).getPricing().getRent().getRentalPeriod());
                                         }
-                                        if(moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue() != null &&
+                                        if (moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue() != null &&
                                                 moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().size() > 0 &&
-                                                moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().get(0).size()>0){
-                                            AppCMSTransactionDataValue obj=moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().get(0).get(moduleAPI.getContentData().get(0).getGist().getId());
+                                                moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().get(0).size() > 0) {
+                                            AppCMSTransactionDataValue obj = moduleAPI.getContentData().get(0).getGist().getObjTransactionDataValue().get(0).get(moduleAPI.getContentData().get(0).getGist().getId());
 
-                                            if(obj.getRentalPeriod()>0){
-                                                rentalPeriod= String.valueOf(obj.getRentalPeriod());
+                                            if (obj.getRentalPeriod() > 0) {
+                                                rentalPeriod = String.valueOf(obj.getRentalPeriod());
                                             }
 
 
@@ -4587,15 +4584,15 @@ public class ViewCreator {
                                              * if transaction getdata api containf transaction end date .It means Rent API called before
                                              * and we have shown rent period dialog before so dont need to show rent dialog again. else sow rent period dilaog
                                              */
-                                            if(obj.getTransactionEndDate()>0){
-                                                isShowRentalPeriodDialog=false;
-                                            }else{
-                                                isShowRentalPeriodDialog=true;
+                                            if (obj.getTransactionEndDate() > 0) {
+                                                isShowRentalPeriodDialog = false;
+                                            } else {
+                                                isShowRentalPeriodDialog = true;
                                             }
 
                                         }
 
-                                        if(isShowRentalPeriodDialog) {
+                                        if (isShowRentalPeriodDialog) {
 
                                             if (rentalPeriod == null || TextUtils.isEmpty(rentalPeriod)) {
                                                 rentalPeriod = "xapi" +
@@ -4629,8 +4626,8 @@ public class ViewCreator {
 //                                                appCMSPresenter.sendCloseOthersAction(null, true, false);
                                                 }
                                             }, context.getString(R.string.rent_time_dialog_mssg,
-                                                    rentalPeriod),true);
-                                        }else{
+                                                    rentalPeriod), true);
+                                        } else {
 
                                             appCMSPresenter.launchVideoPlayer(moduleAPI.getContentData().get(0),
                                                     moduleAPI.getContentData().get(0).getGist().getId(),
@@ -4765,7 +4762,7 @@ public class ViewCreator {
                         componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
 
                         final String shareAction = component.getAction();
-                        if(appCMSPresenter != null
+                        if (appCMSPresenter != null
                                 && !appCMSPresenter.getAppCMSMain().getId().equalsIgnoreCase("8630e831-6557-41a3-95c9-6aad9fea4c7d")) {
                             componentViewResult.componentView.setOnClickListener(v -> {
                                 AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
@@ -4813,8 +4810,7 @@ public class ViewCreator {
                         }
                         if (appCMSPresenter != null &&
                                 appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS &&
-                                appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID)
-                        {
+                                appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID) {
                             componentViewResult.componentView.setVisibility(View.GONE);
                         }
                         break;
@@ -5851,8 +5847,8 @@ public class ViewCreator {
                                     } else if (moduleAPI.getContentData().get(0).getSeason() != null) {
                                         setViewWithShowSubtitle(context, moduleAPI.getContentData().get(0),
                                                 componentViewResult.componentView, false);
-                                    }else if (moduleAPI.getContentData().get(0) != null && moduleAPI.getContentData().get(0).getGist() != null &&
-                                              moduleAPI.getContentData().get(0).getGist().getBundleList() != null ) {
+                                    } else if (moduleAPI.getContentData().get(0) != null && moduleAPI.getContentData().get(0).getGist() != null &&
+                                            moduleAPI.getContentData().get(0).getGist().getBundleList() != null) {
                                         setViewWithBundleSubtitle(context, moduleAPI.getContentData().get(0),
                                                 componentViewResult.componentView, false);
                                     }
@@ -6399,17 +6395,17 @@ public class ViewCreator {
                                             .into((ImageView) componentViewResult.componentView);
                                 }
                             } else if (viewWidth > 0) {
-                                String videoImageUrl="";
-                                if(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()!=null || moduleAPI.getContentData().get(0).getGist().getLandscapeImageUrl()!=null) {
+                                String videoImageUrl = "";
+                                if (moduleAPI.getContentData().get(0).getGist().getVideoImageUrl() != null || moduleAPI.getContentData().get(0).getGist().getLandscapeImageUrl() != null) {
                                     videoImageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                             moduleAPI.getContentData().get(0).getGist().getVideoImageUrl() == null ?
                                                     moduleAPI.getContentData().get(0).getGist().getLandscapeImageUrl() :
                                                     moduleAPI.getContentData().get(0).getGist().getVideoImageUrl(),
                                             viewWidth,
                                             viewHeight);
-                                }else if(moduleAPI.getContentData().get(0).getGist().getImageGist()!=null){
+                                } else if (moduleAPI.getContentData().get(0).getGist().getImageGist() != null) {
 
-                                    if(moduleAPI.getContentData().get(0).getGist().getImageGist().get_16x9()!=null && !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getImageGist().get_16x9())){
+                                    if (moduleAPI.getContentData().get(0).getGist().getImageGist().get_16x9() != null && !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getImageGist().get_16x9())) {
                                         videoImageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                                 moduleAPI.getContentData().get(0).getGist().getImageGist().get_16x9(),
                                                 viewWidth,
@@ -7976,7 +7972,7 @@ public class ViewCreator {
                 if ((contentDatum.getPricing() != null &&
                         contentDatum.getPricing().getType() != null &&
                         (contentDatum.getPricing().getType().equalsIgnoreCase("TVOD") || contentDatum.getPricing().getType().equalsIgnoreCase("PPV"))) ||
-                        (contentDatum.getGist()!=null && contentDatum.getGist().getPurchaseType()!=null && contentDatum.getGist().getPurchaseType().equalsIgnoreCase("Rent"))) {
+                        (contentDatum.getGist() != null && contentDatum.getGist().getPurchaseType() != null && contentDatum.getGist().getPurchaseType().equalsIgnoreCase("Rent"))) {
                     contentDatum.setTvodPricing(true);
 
                     appCMSPresenter.getTransactionData(contentDatum.getGist().getId(), updatedContentDatum -> {
@@ -7987,27 +7983,12 @@ public class ViewCreator {
                         if (updatedContentDatum != null &&
                                 updatedContentDatum.size() > 0 &&
                                 updatedContentDatum.get(0).size() > 0) {
-                            AppCMSTransactionDataValue objTransactionData=updatedContentDatum.get(0).get(contentDatum.getGist().getId());
+                            AppCMSTransactionDataValue objTransactionData = updatedContentDatum.get(0).get(contentDatum.getGist().getId());
                             contentDatum.getGist().setRentalPeriod(objTransactionData.getRentalPeriod());
                             contentDatum.getGist().setTransactionEndDate(objTransactionData.getTransactionEndDate());
 
-//                            contentDatum.getGist().setRentalPeriod(48);
-//                            contentDatum.getGist().setTransactionEndDate(1534247577000L);
-//                            contentDatum.getGist().setTransactionStartDate(objTransactionData.getTransactionStartDate());
-
-//                                    System.out.println("Rental value"+obj.getRentalPeriod());
-
                         }
 
-//                        if (!appCMSPresenter.isUserLoggedIn()) {
-//                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_PREMIUM_CONTENT_REQUIRED,
-//                                    () -> {
-//                                        appCMSPresenter.setAfterLoginAction(() -> {
-//                                            //
-//                                        });
-//                                    });
-//                            return;
-//                        }
                         /**
                          * get the transaction end date and compare with current time if end date is less than current date
                          * playable will be false
@@ -8025,30 +8006,28 @@ public class ViewCreator {
                             updateForDownload(contentDatum, appCMSPresenter, imageButton, this, addClickListener);
 
                         }
-                    }, null, false);
+                    }, null, false, "Video");
 
-//                    appCMSPresenter.getRentalData(contentDatum.getGist().getId(), updatedContentDatum -> {
-//
-//                        boolean isPlayable = false;
-//
-//                        /**
-//                         * get the transaction end date and compare with current time if end date is less than current date
-//                         * playable will be false
-//                         */
-//                        long expirationDate = contentDatum.getGist().getrentPerioedendDate();
-//                        long remainingTime = appCMSPresenter.getTimeIntervalForEvent(expirationDate, "EEE MMM dd HH:mm:ss");
-//
-//                        if (remainingTime < 0) {
-//                            isPlayable = false;
-//                        }
-//                        if (!isPlayable) {
-//                            appCMSPresenter.showNoPurchaseDialog(appCMSPresenter.getCurrentContext().getString(R.string.rental_title), appCMSPresenter.getCurrentContext().getString(R.string.rental_description));
-//
-//                        } else {
-//                            updateForDownload(contentDatum, appCMSPresenter, imageButton, this, addClickListener);
-//
-//                        }
-//                    }, null, false);
+
+                }
+
+                /**
+                 * Check if event start date is in future date
+                 */
+                else if (contentDatum != null &&
+                        contentDatum.getGist() != null && contentDatum.getGist().getScheduleStartDate() > 0) {
+                    long remainingTime = appCMSPresenter.getTimeIntervalForEvent(contentDatum.getGist().getScheduleStartDate(), "EEE MMM dd HH:mm:ss");
+
+                    if (remainingTime > 0) {
+                        String scheduleRemianTime = appCMSPresenter.getTimeDifference(remainingTime);
+
+                        appCMSPresenter.showRentTimeDialog(retry -> {
+                            if (retry) {
+
+                            }
+                        }, appCMSPresenter.getCurrentContext().getString(R.string.content_time_available_in_for_rent,
+                                scheduleRemianTime), false);
+                    }
                 } else {
                     updateForDownload(contentDatum, appCMSPresenter, imageButton, this, addClickListener);
 

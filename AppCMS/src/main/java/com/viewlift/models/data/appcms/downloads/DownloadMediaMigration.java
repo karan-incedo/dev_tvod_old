@@ -46,7 +46,7 @@ public class DownloadMediaMigration implements RealmMigration {
         }
 
         if(!downloadClosedCaption.hasField("url")){
-            downloadClosedCaption.addField("url",String.class, FieldAttribute.PRIMARY_KEY);
+            downloadClosedCaption.addField("url",String.class);
         }
 
         if(!downloadClosedCaption.hasField("format")){
@@ -65,7 +65,7 @@ public class DownloadMediaMigration implements RealmMigration {
             downloadClosedCaption.addField("gistId",String.class);
         }
         if(!downloadClosedCaption.hasField("ccFileEnqueueId")){
-            downloadClosedCaption.addField("ccFileEnqueueId",long.class);
+            downloadClosedCaption.addField("ccFileEnqueueId",long.class, FieldAttribute.PRIMARY_KEY);
         }
 
         if(!realmObjectSchema.hasField("artistName")){

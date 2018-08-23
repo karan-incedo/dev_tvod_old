@@ -2982,6 +2982,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                                         if ((appCMSPageAPI.getModules().get(i).getContentData().get(0).getPricing() != null &&
                                                 appCMSPageAPI.getModules().get(i).getContentData().get(0).getPricing().getType() != null)) {
+
+                                            String contentType=appCMSPageAPI.getModules().get(i).getContentData().get(0).getGist().getContentType();
                                             appCMSPresenter.getTransactionData(appCMSPageAPI.getModules().get(i).getContentData().get(0).getGist().getId(), updatedContentDatum -> {
 
                                                 appCMSPageAPI.getModules().get(position).getContentData().get(0).getGist().setObjTransactionDataValue(updatedContentDatum);
@@ -2992,7 +2994,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                                 if (readyAction != null) {
                                                     readyAction.call();
                                                 }
-                                            }, null, false);
+                                            }, null, false,contentType);
                                         }
 
 

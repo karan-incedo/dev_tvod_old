@@ -1200,6 +1200,8 @@ public class AppCMSPresenter {
         return differenceFormat;
     }
 
+
+
     public static String getDateFormatByTimeZone(long timeMilliSeconds, String dateFormat, String timeZone) {
         SimpleDateFormat formatter = new SimpleDateFormat(dateFormat, Locale.US);
         // Create a calendar object that will convert the date and time value in milliseconds to date.
@@ -1254,6 +1256,13 @@ public class AppCMSPresenter {
     }
 
     public String getRentExpirationFormat(long timeDifference) {
+
+        String differenceFormat=getTimeDifference(timeDifference);
+        differenceFormat = differenceFormat + " Remaining";
+        return differenceFormat;
+    }
+
+    public String getTimeDifference(long timeDifference){
         long difference = timeDifference;
         long secondsInMilli = 1000;
         long minutesInMilli = secondsInMilli * 60;
@@ -1289,8 +1298,8 @@ public class AppCMSPresenter {
             differenceFormat = String.format("%02d", elapsedSeconds) + " Sec";
         }
 
-        differenceFormat = differenceFormat + " Remaining";
         return differenceFormat;
+
     }
 
     private static long getMillisecondFromDaeString(String dateFormat, String date) {
@@ -1837,15 +1846,19 @@ public class AppCMSPresenter {
     }
 
     public void getTransactionData(String id, Action1<List<Map<String, AppCMSTransactionDataValue>>> readyAction, Action1<Boolean> downloadNotProcessedAction,
-                                   Boolean isDownload) {
+                                   Boolean isDownload,String contentType) {
         if (currentActivity != null) {
             String url = "";
             int endPoint = R.string.app_cms_gettransactiondata_api_url;
 
+            String contentTypeArg=contentType;
+            if(contentType!=null && !TextUtils.isEmpty(contentType)){
+                contentTypeArg="Video";
+            }
             //dynamic url
             url = currentActivity.getString(endPoint,
                     appCMSMain.getApiBaseUrl(), getLoggedInUser(),
-                    id, "VIDEO", "false", appCMSSite.getGist().getSiteInternalName());
+                    id, contentTypeArg, "false", appCMSSite.getGist().getSiteInternalName());
 
 
 //            url = currentActivity.getString(endPoint,
@@ -3177,13 +3190,14 @@ public class AppCMSPresenter {
                                                                             appCMSPageAPI.getModules().get(i).getContentData().get(0).getGist().getBundlePricing() != null &&
                                                                             appCMSPageAPI.getModules().get(i).getContentData().get(0).getGist().getContentType().equalsIgnoreCase("BUNDLE"))) {
                                                                 isSelectedModuleFound=true;
+                                                                String contentType=appCMSPageAPI.getModules().get(i).getContentData().get(0).getGist().getContentType();
 
                                                                 getTransactionData(appCMSPageAPI.getModules().get(i).getContentData().get(0).getGist().getId(), updatedContentDatum -> {
 
                                                                     appCMSPageAPI.getModules().get(position).getContentData().get(0).getGist().setObjTransactionDataValue(updatedContentDatum);
                                                                     appCMSPageAPI.getModules().get(position).getContentData().get(0).getGist().setRentedDialogShow(false);
                                                                     launchNavigationPageWithBundleData(appCMSPageAPIAction, appCMSPageAPI, screenType, screenName);
-                                                                }, null, false);
+                                                                }, null, false,contentType);
                                                                 break;
                                                             }
 
@@ -13164,7 +13178,7 @@ public class AppCMSPresenter {
                         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(tintTextColor);
                         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(tintTextColor);
 
-                        if(isShowNegativeBtn){
+                        if(!isShowNegativeBtn){
                             dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setVisibility(View.GONE);
                         }
                     } catch (Exception e) {
@@ -15938,7 +15952,7 @@ public class AppCMSPresenter {
                             .url(appCMSMain.getAndroid())
                             .xApiKey(apikey)
                             .loadFromFile(appCMSMain.shouldLoadFromFile())
-                            .bustCache(false)
+                            .bustCache(true)
                             .build();
 //                    Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
             new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {

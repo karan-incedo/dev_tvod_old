@@ -786,7 +786,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
                                             }
 
-                                        }, null, false);
+                                        }, null, false,"Video");
                                     }else {
 
                                     if (!appCMSPresenter.launchVideoPlayer(data,
